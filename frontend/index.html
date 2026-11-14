@@ -262,8 +262,6 @@
 
   <div id="fabs">
     <button id="help-btn" class="fab" type="button" aria-haspopup="dialog" title="replay the guided tour"><span>how it works</span></button>
-    <button id="team-btn" class="fab" type="button" aria-haspopup="dialog" title="meet the team"><span>team</span></button>
-    <button id="validation-btn" class="fab" type="button" aria-haspopup="dialog" title="how we validated the data"><span>validation</span></button>
   </div>
 
   <!-- ============ intro: Helios title + the welcome questions (plain dark, smooth motion) ============ -->
@@ -446,106 +444,6 @@
           <button id="h-annual-csv" type="button" class="exp-btn"><b>yearly totals + trend</b><small>csv</small></button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- ============ meet the team ============ -->
-  <div id="team" class="modal page" role="dialog" aria-modal="true" aria-labelledby="team-title" hidden>
-    <div class="card page-card">
-      <button class="x" type="button" data-close aria-label="close">×</button>
-      <p class="eyebrow">meet the team</p>
-      <h2 id="team-title">the people behind Helios</h2>
-      <!-- EDIT ME: one short line about the team -->
-      <p class="page-lead">we built Helios for the 2026 NASA Space Apps Challenge, "Harmonization of MODIS and VIIRS Hot Spots", so that anyone can see how fire activity in a place compares with the last 25 years.</p>
-
-      <!-- EDIT ME: one <article> per teammate. Photos go in frontend/img/team/ (square, ~400 px).
-           If a photo is missing, the initials in data-initials are shown instead. -->
-      <div class="team-grid">
-        <article class="member">
-          <div class="avatar" data-initials="BV"><img src="img/team/bhavishaya.jpg" alt="Bhavishaya Vignesh" onerror="this.remove()"></div>
-          <h3>Bhavishaya Vignesh</h3>
-          <p class="role">role · school</p>
-          <p class="bio">lived through the Alberta and British Columbia wildfires and wanted to understand the smoke in the air. built Helios so satellite fire data feels as friendly as opening a map.</p>
-        </article>
-        <article class="member">
-          <div class="avatar" data-initials="TM"><img src="img/team/teammate2.jpg" alt="" onerror="this.remove()"></div>
-          <h3>teammate name</h3>
-          <p class="role">role · school</p>
-          <p class="bio">one or two lines about what they worked on.</p>
-        </article>
-        <article class="member">
-          <div class="avatar" data-initials="TM"><img src="img/team/teammate3.jpg" alt="" onerror="this.remove()"></div>
-          <h3>teammate name</h3>
-          <p class="role">role · school</p>
-          <p class="bio">one or two lines about what they worked on.</p>
-        </article>
-        <article class="member">
-          <div class="avatar" data-initials="TM"><img src="img/team/teammate4.jpg" alt="" onerror="this.remove()"></div>
-          <h3>teammate name</h3>
-          <p class="role">role · school</p>
-          <p class="bio">one or two lines about what they worked on.</p>
-        </article>
-      </div>
-      <p class="page-foot">NASA Space Apps Challenge 2026 · data: NASA FIRMS (MODIS), NASA VIIRS VNP14A1, Copernicus Sentinel-5P and Sentinel-2, via Google Earth Engine</p>
-    </div>
-  </div>
-
-  <!-- ============ validation ============ -->
-  <div id="validation" class="modal page" role="dialog" aria-modal="true" aria-labelledby="val-title" hidden>
-    <div class="card page-card">
-      <button class="x" type="button" data-close aria-label="close">×</button>
-      <p class="eyebrow">validation</p>
-      <h2 id="val-title">can you trust the harmonized record?</h2>
-      <!-- EDIT ME: replace this paragraph with a one-line summary of your validation -->
-      <p class="page-lead">how we checked that MODIS and VIIRS line up, and where the harmonized record is less reliable.</p>
-
-      <!-- EDIT ME: headline results. Replace each "–" and its caption. -->
-      <div class="val-tiles">
-        <div><b>–</b><span>result 1</span></div>
-        <div><b>–</b><span>result 2</span></div>
-        <div><b>–</b><span>result 3</span></div>
-        <div><b>–</b><span>result 4</span></div>
-      </div>
-
-      <section class="val-section">
-        <h3>live check for your area</h3>
-        <div id="val-live" class="val-live"><p class="note">pick a place on the map, then come back here to see how well the two satellites agree there.</p></div>
-      </section>
-
-      <section class="val-section">
-        <h3>what we compared</h3>
-        <!-- EDIT ME: methods. One <li> per check. -->
-        <ul class="val-list">
-          <li><b>check 1</b> — describe the reference data and what was compared.</li>
-          <li><b>check 2</b> — describe the reference data and what was compared.</li>
-          <li><b>check 3</b> — describe the reference data and what was compared.</li>
-        </ul>
-      </section>
-
-      <section class="val-section">
-        <h3>results</h3>
-        <!-- EDIT ME: one row per region or test -->
-        <div class="val-table-wrap">
-          <table class="val-table">
-            <thead><tr><th>region / test</th><th>period</th><th>metric</th><th>value</th></tr></thead>
-            <tbody>
-              <tr><td>–</td><td>–</td><td>–</td><td>–</td></tr>
-              <tr><td>–</td><td>–</td><td>–</td><td>–</td></tr>
-              <tr><td>–</td><td>–</td><td>–</td><td>–</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="val-section">
-        <h3>limitations</h3>
-        <!-- EDIT ME -->
-        <ul class="val-list">
-          <li>hotspot pixels are detections of heat, not individual fires, and clouds or smoke can hide fires from both satellites.</li>
-          <li>VIIRS sees smaller and cooler fires than MODIS, so the conversion factor k is an average: single months can differ more.</li>
-          <li>areas with very few fires give an unstable k; Helios falls back to the overall k when a calendar month has too little overlap.</li>
-        </ul>
-      </section>
     </div>
   </div>
 

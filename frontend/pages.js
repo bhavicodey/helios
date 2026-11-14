@@ -1,7 +1,5 @@
 "use strict";
-/* Helios panels and pages:
-   - the left panel's tabs (explore / calendar / export / saved)
-   - the "meet the team" and "validation" pages, with a live MODIS-vs-VIIRS check for the chosen area */
+/* Helios left panel tabs (explore / calendar / export / saved). */
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -32,36 +30,4 @@
   showTab((() => { try { return localStorage.getItem("firescout.tab"); } catch { return null; } })() || "explore");
   window.FireTabs = { show: showTab, reveal: revealInTabs };
 
-  // ---------------------------------------------------------------- team + validation pages
-  let lastFocus = null;
-  function open(m) { lastFocus = document.activeElement; m.hidden = false; m.querySelector("[data-close]")?.focus({ preventScroll: true }); if (m.id === "validation") live(); }
-  function close(m) { m.hidden = true; lastFocus?.focus?.({ preventScroll: true }); }
-  const team = $("#team"), val = $("#validation");
-  $("#team-btn").addEventListener("click", () => open(team));
-  $("#validation-btn").addEventListener("click", () => open(val));
-  [team, val].forEach((m) => {
-    m.querySelector("[data-close]").addEventListener("click", () => close(m));
-    m.addEventListener("click", (e) => { if (e.target === m) close(m); });
-  });
-  addEventListener("keydown", (e) => { if (e.key === "Escape") [team, val].forEach((m) => { if (!m.hidden) close(m); }); });
-
-  // live check: how well do MODIS and VIIRS agree in the area the user picked?
-  function live() {
-    const box = $("#val-live"), d = window.FireHistory?.data;
-    if (!state.pin) { box.innerHTML = '<p class="note">pick a place on the map, then come back here to see how well the two satellites agree there.</p>'; return; }
-    if (!d) { box.innerHTML = '<p class="note">the fire history for this area is still loading. open this page again in a moment.</p>'; return; }
-    const m = d.method, r = m.r;
-    const verdict = r == null ? "not enough overlapping months to judge." : r >= 0.8 ? "strong agreement: the harmonized record is reliable here." : r >= 0.5 ? "moderate agreement: trends are reliable, single months less so." : "weak agreement: treat pre-2012 values here with care.";
-    box.innerHTML = "";
-    const grid = document.createElement("div"); grid.className = "val-live-grid";
-    [["months both satellites observed", m.overlap_months], ["correlation (r)", r == null ? "–" : r.toFixed(2)], ["conversion factor k", m.k.toFixed(2)],
-      ["MODIS / VIIRS hotspots in overlap", `${m.overlap_modis_total.toLocaleString()} / ${m.overlap_viirs_total.toLocaleString()}`]]
-      .forEach(([k, v]) => { const c = document.createElement("div"); c.innerHTML = "<b></b><span></span>"; c.firstChild.textContent = v; c.lastChild.textContent = k; grid.append(c); });
-    const p = document.createElement("p"); p.className = "val-verdict"; p.dataset.level = r == null ? "" : r >= 0.8 ? "good" : r >= 0.5 ? "ok" : "weak";
-    p.textContent = verdict;
-    const btn = document.createElement("button"); btn.type = "button"; btn.className = "link-btn"; btn.textContent = "see the scatter plot in the fire history →";
-    btn.addEventListener("click", () => { close(val); window.FireHistory.open(); setTimeout(() => { const h = $("#h-method"); if (h) { h.open = true; h.scrollIntoView({ block: "center" }); } }, 300); });
-    box.append(grid, p, btn);
-  }
-  addEventListener("firescout:history", () => { if (!val.hidden) live(); });
 })();
