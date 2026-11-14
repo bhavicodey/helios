@@ -304,14 +304,12 @@
       </form>
 
       <form id="s-why" class="step card" autocomplete="off">
-        <h2 class="q">hi <span id="w-hello" class="name"></span>, what is this for?</h2>
-        <div class="opts" role="radiogroup" aria-label="what are you using this app for">
-          <label class="opt"><input type="radio" name="why" value="school"><span>school project</span></label>
-          <label class="opt"><input type="radio" name="why" value="research"><span>research paper</span></label>
-          <label class="opt"><input type="radio" name="why" value="curiosity"><span>curiosity</span></label>
-          <label class="opt"><input type="radio" name="why" value="other"><span>other</span></label>
+        <h2 class="q">hi <span id="w-hello" class="name"></span>, do you live in a wildfire-prone area?</h2>
+        <div class="opts opts-3" role="radiogroup" aria-label="do you live in a wildfire-prone area">
+          <label class="opt"><input type="radio" name="why" value="yes"><span>yes</span></label>
+          <label class="opt"><input type="radio" name="why" value="no"><span>no</span></label>
+          <label class="opt"><input type="radio" name="why" value="unsure"><span>not sure</span></label>
         </div>
-        <div class="other" id="w-other-wrap"><div><input id="w-other" type="text" maxlength="60" placeholder="a few words" aria-label="other purpose"></div></div>
         <button class="cta" type="submit" id="w-go" disabled><span>let's go</span> <i>→</i></button>
         <button class="back" type="button" id="w-back">← back</button>
       </form>

@@ -1,5 +1,5 @@
 "use strict";
-/* Helios intro: satellite (with CADs) -> name -> purpose -> guided spotlight tour (tour.js).
+/* Helios intro: satellite (with CADs) -> name -> "do you live in a wildfire-prone area?" -> guided spotlight tour (tour.js).
    "how it works" replays the guided tour. Independent of the map, so it works even if the map is slow to load. */
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
@@ -20,7 +20,7 @@
 
   // ------------------------------------------------------------ steps
   const sSensor = $("#s-sensor"), sName = $("#s-name"), sWhy = $("#s-why");
-  const nameIn = $("#w-name"), otherIn = $("#w-other"), otherWrap = $("#w-other-wrap"), goBtn = $("#w-go");
+  const nameIn = $("#w-name"), goBtn = $("#w-go");
 
   function go(next, focusEl) {
     const from = $(".step.active", intro);
@@ -51,18 +51,14 @@
   });
   $("#w-back").addEventListener("click", () => go(sName, nameIn));
 
-  $$("input[name=why]").forEach((r) => r.addEventListener("change", () => {
-    goBtn.disabled = false;
-    const isOther = r.value === "other" && r.checked;
-    otherWrap.classList.toggle("open", isOther);
-    if (isOther) setTimeout(() => otherIn.focus({ preventScroll: true }), 250);
-  }));
+  $$("input[name=why]").forEach((r) => r.addEventListener("change", () => { goBtn.disabled = false; }));
 
+  // "do you live in a wildfire-prone area?" -> yes / no / unsure
   sWhy.addEventListener("submit", async (e) => {
     e.preventDefault();
     const pick = $("input[name=why]:checked");
     if (!pick) return;
-    const profile = { sensor: $("input[name=welcome-sensor]:checked").value, name: nameIn.value.trim(), purpose: pick.value, other: pick.value === "other" ? otherIn.value.trim() : "" };
+    const profile = { sensor: $("input[name=welcome-sensor]:checked").value, name: nameIn.value.trim(), fireArea: pick.value };
     save(profile);
     const r = goBtn.getBoundingClientRect();
     burst(r.left + r.width / 2, r.top + r.height / 2);
@@ -71,9 +67,16 @@
   });
 
   // ------------------------------------------------------------ personalise + reveal
+  // the welcome line follows the wildfire answer
+  const LEDE = {
+    yes: "type your home's coordinates or draw your area to see its fire history.",
+    unsure: "type your home's coordinates to see how often fires burn near you.",
+    no: "pick a famous wildfire below, or click anywhere on the globe.",
+  };
   function personalize(p) {
-    $("#lede").textContent = `welcome, ${p.name}. click anywhere on the globe to read the area.`;
-    $$("#presets button").forEach((b) => b.classList.toggle("pick", (b.dataset.for || "").split(" ").includes(p.purpose)));
+    $("#lede").textContent = `welcome, ${p.name}. ${LEDE[p.fireArea] || "click anywhere on the globe to read the area."}`;
+    // suggest the LA fires as a first example (the tour also starts there)
+    $$("#presets button").forEach((b, i) => b.classList.toggle("pick", i === 0));
   }
 
   async function finish(profile, showTour) {
@@ -87,7 +90,7 @@
   }
 
   if (location.search.includes("skip")) {          // handy for testing: /?skip
-    const p = saved?.name ? saved : { name: "friend", purpose: "curiosity", other: "" };
+    const p = saved?.name ? saved : { name: "friend", fireArea: "unsure" };
     $$(".step", intro).forEach((s) => s.classList.remove("active"));
     intro.hidden = true; body.classList.remove("intro-on"); personalize(p);
     window.dispatchEvent(new CustomEvent("firescout:sensor", { detail: saved?.sensor || "modis" }));

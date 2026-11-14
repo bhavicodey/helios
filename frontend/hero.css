@@ -95,3 +95,7 @@
 }
 
 .hero-word { filter: none; }
+
+/* wildfire question: yes / no / not sure on one row */
+#intro .opts-3 { grid-template-columns: repeat(3, 1fr); }
+#intro .name { background: none; padding: 0; }
