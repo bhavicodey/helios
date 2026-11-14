@@ -482,5 +482,16 @@ def so2_series(
     return cached(("series", end, area_key(lat, lon, radius_km, pts), days), build)
 
 
+# Browsers must re-check the page files (html/js/css) on every visit, so updates show up right away
+# instead of an old cached copy. Videos and images can be cached for a day.
+@app.middleware("http")
+async def cache_headers(request, call_next):
+    resp = await call_next(request)
+    path = request.url.path
+    if not path.startswith("/api/"):
+        resp.headers["Cache-Control"] = "public, max-age=86400" if path.startswith("/media/") else "no-cache"
+    return resp
+
+
 # Serve the web app from the same server (no CORS, one command to run).
 app.mount("/", StaticFiles(directory=config.FRONTEND_DIR, html=True), name="frontend")

@@ -108,7 +108,7 @@
   });
   $("#cad-zoom-in").addEventListener("click", () => zoomAt(1.25));
   $("#cad-zoom-out").addEventListener("click", () => zoomAt(0.8));
-  $("#cad-reset").addEventListener("click", () => { reset(); speed.value = "1"; video.playbackRate = 1; setPlaying(true); });
+  $("#cad-reset").addEventListener("click", () => { reset(); speed.value = "0.5"; video.playbackRate = 0.5; setPlaying(true); });
   $("#cad-full").addEventListener("click", () => {
     if (document.fullscreenElement) document.exitFullscreen?.();
     else stage.requestFullscreen?.().catch(() => {});
@@ -253,6 +253,14 @@
   // can make some graphics cards draw them blank, so: intro cards during the intro, the dock in the app,
   // and the viewer's own video(s) only while it is open.
   const introVids = $$("#intro video"), dockVids = $$("#sat-dock video");
+  // all CAD models spin at half speed by default
+  // (browsers reset the speed when a video loads, so it is re-applied on load and on play;
+  //  the viewer's speed menu still wins once someone changes it)
+  const spinRate = (v) => (v === video || pairVids.includes(v) ? +speed.value : 0.5);
+  [...introVids, ...dockVids, ...pairVids, video].forEach((v) => {
+    const apply = () => { v.defaultPlaybackRate = spinRate(v); if (v.playbackRate !== spinRate(v)) v.playbackRate = spinRate(v); };
+    apply(); ["loadedmetadata", "play"].forEach((ev) => v.addEventListener(ev, apply));
+  });
   function syncVideos() {
     const introOn = document.body.classList.contains("intro-on");
     const viewerOpen = !modal.hidden;
