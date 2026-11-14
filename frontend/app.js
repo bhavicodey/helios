@@ -510,11 +510,6 @@ function selectSensor(sensor) {
   });
   $("#sensor-detail").textContent = SENSOR_DETAILS[sensor];
   $("#fire-source-caption").textContent = SENSOR_CAPTION[sensor];
-  // fire legend: MODIS hotspots are amber, VIIRS hotspots are red (same colors as on the map and in the 3D scene)
-  const fireRow = $('.layer[data-layer="fire"]');
-  const LEG = { modis: ["linear-gradient(90deg,#FFB020,#FFB020)", "MODIS", ""], viirs: ["linear-gradient(90deg,#FF3355,#FF3355)", "", "VIIRS"],
-    harmonized: ["linear-gradient(90deg,#FFB020 0 50%,#FF3355 50% 100%)", "MODIS (to 2011)", "VIIRS (2012 →)"] }[sensor];
-  if (fireRow && LEG) { $(".bar", fireRow).style.background = LEG[0]; $(".lo", fireRow).textContent = LEG[1]; $(".hi", fireRow).textContent = LEG[2]; fireRow.dataset.legendSet = "1"; }
   window.dispatchEvent(new CustomEvent("firescout:sensor-changed"));
   $("#v-fire").textContent = "–";
   updateTimelineText();
@@ -634,7 +629,6 @@ async function boot() {
     const meta = await api("meta");
     for (const [name, m] of Object.entries(meta)) {
       const row = $(`.layer[data-layer="${name}"]`);
-      if (!row || row.dataset.legendSet) continue;          // the fire legend follows the chosen satellite
       $(".bar", row).style.background = `linear-gradient(90deg, ${m.palette.join(", ")})`;
       $(".lo", row).textContent = m.legend_min; $(".hi", row).textContent = m.legend_max;
     }

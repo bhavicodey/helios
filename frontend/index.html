@@ -204,7 +204,7 @@
     <header class="dock-head">
       <span class="dock-live"><i></i>satellites</span>
       <span class="dock-mode" id="dock-mode">harmonized</span>
-      <button type="button" class="dock-both" id="dock-both" title="both satellites scanning the same region, in 3D">3D scene</button>
+      <button type="button" class="dock-both" id="dock-both" title="see both 3D models side by side">side by side</button>
       <button type="button" class="dock-min" id="dock-min" aria-expanded="true" aria-label="minimize the satellite dock">–</button>
     </header>
     <div class="dock-sats">
@@ -413,7 +413,7 @@
               <label><span>show</span>
                 <select id="h-view">
                   <option value="count">hotspot counts</option>
-                  <option value="anomaly">vs past years (percentile)</option>
+                  <option value="anomaly">vs usual for that month</option>
                 </select>
               </label>
             </div>
@@ -449,44 +449,6 @@
           <button id="h-png" type="button" class="exp-btn"><b>history calendar image</b><small>png · years × months</small></button>
           <button id="h-annual-csv" type="button" class="exp-btn"><b>yearly totals + trend</b><small>csv</small></button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ satellite lab: MODIS + VIIRS in one synchronized 3D scene (lab.js) ============ -->
-  <div id="lab" class="modal lab" role="dialog" aria-modal="true" aria-labelledby="lab-title" hidden>
-    <div class="lab-card">
-      <header class="lab-head">
-        <div>
-          <p class="eyebrow">3D · two satellites, one region</p>
-          <h2 id="lab-title">MODIS and VIIRS over <span id="lab-region">your area</span></h2>
-        </div>
-        <div class="lab-legend"><span class="lg lg-modis"><i></i>MODIS · Terra · 705 km</span><span class="lg lg-viirs"><i></i>VIIRS · NOAA-20 · 824 km</span><span class="lg lg-both"><i></i>seen by both</span></div>
-        <button class="x" type="button" id="lab-x" aria-label="close">×</button>
-      </header>
-      <div class="lab-body">
-        <div class="lab-scene" id="lab-scene">
-          <canvas id="lab-canvas" aria-label="3D scene: MODIS and VIIRS orbiting Earth and scanning the same region"></canvas>
-          <div class="lab-labels" id="lab-labels" aria-hidden="true"></div>
-          <div class="lab-hud" role="status"><span class="lg-modis"><i></i><b id="lab-n-modis">0</b> fires flagged by MODIS</span><span class="lg-viirs"><i></i><b id="lab-n-viirs">0</b> by VIIRS</span></div>
-          <div class="lab-controls">
-            <button type="button" id="lab-play">pause</button>
-            <label>speed <select id="lab-speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
-            <span class="lab-sep"></span>
-            <button type="button" data-focus="both" aria-pressed="true">both</button>
-            <button type="button" data-focus="modis" aria-pressed="false">ride MODIS</button>
-            <button type="button" data-focus="viirs" aria-pressed="false">ride VIIRS</button>
-          </div>
-          <p class="lab-loading" id="lab-loading">loading the 3D satellites…</p>
-          <p class="lab-note">drag to orbit · scroll to zoom · heights, swath sweeps and timing are exaggerated so you can see them · fire points are examples</p>
-        </div>
-        <aside class="lab-side">
-          <div class="lab-tabs" role="tablist"><button type="button" role="tab" data-inst="modis" aria-selected="true">MODIS</button><button type="button" role="tab" data-inst="viirs" aria-selected="false">VIIRS</button></div>
-          <div class="lab-parts" role="group" aria-label="highlight a part"><button type="button" data-part="optics">optics</button><button type="button" data-part="scan">scanning</button><button type="button" data-part="detect">detectors</button></div>
-          <div class="lab-diagram" id="lab-diagram"></div>
-          <div class="lab-info" id="lab-info"></div>
-          <div class="lab-facts" id="lab-facts"></div>
-        </aside>
       </div>
     </div>
   </div>
@@ -537,7 +499,6 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
   <script src="intro.js"></script>
   <script src="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.js"></script>
   <script src="app.js"></script>
@@ -548,6 +509,5 @@
   <script src="exports.js"></script>
   <script src="tour.js"></script>
   <script src="pages.js"></script>
-  <script type="module" src="lab.js"></script>
 </body>
 </html>
