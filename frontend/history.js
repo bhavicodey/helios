@@ -17,6 +17,16 @@
   const compact = (v) => v == null ? "" : v >= 10000 ? `${Math.round(v / 1000)}k` : v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(Math.round(v));
   const ymOf = (ms) => { const d = new Date(ms); return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`; };
   const pct = (v) => v == null ? "–" : `${v > 0 ? "+" : ""}${Math.round(v)}%`;
+  // percentile: how many of the past years' same month this month beats (always 0–100%)
+  function addPercentiles(rows) {
+    for (const r of rows) {
+      const others = rows.filter((o) => o.mon === r.mon && o.year !== r.year && o.harmonized != null).map((o) => o.harmonized);
+      if (r.harmonized == null || others.length < 3) { r.percentile = null; continue; }
+      const below = others.filter((v) => v < r.harmonized).length + 0.5 * others.filter((v) => v === r.harmonized).length;
+      r.percentile = Math.round(100 * below / others.length);
+    }
+  }
+  const standing = (p, name) => p == null ? "–" : p >= 50 ? `busier than ${p}% of past ${name}s` : `quieter than ${100 - p}% of past ${name}s`;
   const ordinal = (n) => n === 1 ? "" : n + ({ 1: "st", 2: "nd", 3: "rd" }[n % 100 > 10 && n % 100 < 14 ? 0 : n % 10] || "th") + " ";
 
   // ---------------------------------------------------------------- loading
@@ -29,7 +39,7 @@
     try {
       const r = await api("history", { ...areaParams(), current: ymOf(state.end) });
       if (t !== token) return;
-      data = r; loading = false;
+      data = r; addPercentiles(data.rows); loading = false;
       window.dispatchEvent(new CustomEvent("firescout:history"));
       if (!modal.hidden) render();
     } catch (err) {
@@ -67,12 +77,12 @@
     const ym = ymOf(state.end), r = rowFor(ym), name = MONTH_LONG[+ym.slice(5) - 1];
     if (!r || r.harmonized == null) { box.dataset.level = ""; q("#anom-big").textContent = "no data"; q("#anom-sub").textContent = `no hotspot record for ${name} ${ym.slice(0, 4)} yet.`; return; }
     const n = data.rows.filter((x) => x.mon === r.mon && x.harmonized != null).length;
-    const a = r.anomaly_pct, level = judge(r), tiny = a != null && !meaningful(r);
+    const a = r.percentile, level = judge(r), tiny = a != null && !meaningful(r);
     const soFar = ym === ymOf(LATEST) ? " so far" : "";
     box.dataset.level = level;
     q(".anom-label").textContent = `whole month: ${name} ${r.year}${soFar} vs past ${name}s`;
     q("#anom-big").textContent = a == null ? compact(r.harmonized) + " hotspots"
-      : tiny ? `about usual for ${name}` : `${pct(a)} vs a usual ${name}`;
+      : tiny ? `about usual for ${name}` : standing(a, name);
     const critical = data.stats.critical_months.includes(r.mon) ? ` ${name} is one of this area's critical fire months.` : "";
     q("#anom-sub").textContent = `${compact(r.harmonized)} hotspot pixel-days in ${name} ${r.year}${soFar}; a usual ${name} has ${compact(r.baseline_median)}. `
       + (tiny ? "both numbers are very small, so the difference isn't meaningful." : (r.rank_in_month ? `${ordinal(r.rank_in_month)}highest of ${n} ${name}s on record.` : "") + critical);
@@ -86,10 +96,10 @@
     return Math.max(h, b) >= 20 && Math.abs(h - b) >= 10;
   }
   function judge(r) {
-    const a = r.anomaly_pct;
+    const a = r.percentile;
     if (a == null) return "";
     if (!meaningful(r)) return "normal";
-    return a >= 100 ? "high" : a >= 25 ? "up" : a <= -25 ? "down" : "normal";
+    return a >= 90 ? "high" : a >= 70 ? "up" : a <= 25 ? "down" : "normal";
   }
 
   // keep the 7-day banner and the whole-month card telling one story
@@ -98,7 +108,7 @@
     if (!ins) return;
     if (ins.signal === "none" && (level === "high" || level === "up")) {
       sig.dataset.level = "watch"; sig.classList.add("seen");
-      sig.textContent = `quiet in the last 7 days, but ${name}${soFar} is ${pct(r.anomaly_pct)} above a usual ${name}.`;
+      sig.textContent = `quiet in the last 7 days, but ${name}${soFar} is ${standing(r.percentile, name)}.`;
     } else {
       sig.dataset.level = ins.signal;
       sig.textContent = ins.signal_reason;
@@ -142,12 +152,12 @@
       ["worst year", s.peak_year ? String(s.peak_year.year) : "–", s.peak_year ? `${compact(s.peak_year.total)} hotspots` : "no complete year yet"],
       ["critical months", s.critical_months.length ? s.critical_months.map((m) => MON[m - 1]).join(" · ") : "–", "highest median activity"],
       ["long-term trend", s.trend_pct_per_decade == null ? "–" : `${s.trend_pct_per_decade > 0 ? "+" : ""}${s.trend_pct_per_decade}% / decade`, "across complete years"],
-      [`${name || "this month"} vs usual`, cur ? pct(cur.anomaly_pct) : "–", cur && cur.rank_in_month ? `${ordinal(cur.rank_in_month)}highest ${name} on record` : "needs 3+ years of history"],
+      [`${name || "this month"} vs past years`, cur && cur.percentile != null ? `busier than ${cur.percentile}%` : "–", cur && cur.rank_in_month ? `${ordinal(cur.rank_in_month)}highest ${name} on record` : "needs 3+ years of history"],
     ];
     box.replaceChildren(...items.map(([label, big, sub], i) => {
       const d = document.createElement("div"); d.className = "h-tile";
-      if (i === 4 && cur?.anomaly_pct != null) d.dataset.level = judge(cur);
-      if (i === 4 && cur?.anomaly_pct != null && !meaningful(cur)) { big = "about usual"; sub = "activity is very low either way"; }
+      if (i === 4 && cur?.percentile != null) d.dataset.level = judge(cur);
+      if (i === 4 && cur?.percentile != null && !meaningful(cur)) { big = "about usual"; sub = "activity is very low either way"; }
       d.innerHTML = "<span></span><b></b><small></small>";
       d.children[0].textContent = label; d.children[1].textContent = big; d.children[2].textContent = sub;
       return d;
@@ -162,10 +172,10 @@
   }
   function levelOf(v, th) { return v == null ? -1 : v <= 0 ? 0 : v <= th[0] ? 1 : v <= th[1] ? 2 : v <= th[2] ? 3 : 4; }
   function anomLevel(r) {
-    const a = r.anomaly_pct;
+    const a = r.percentile;
     if (a == null) return -1;
     if (!meaningful(r)) return 2;                 // tiny counts: shown as "about usual"
-    return a <= -50 ? 0 : a <= -15 ? 1 : a < 15 ? 2 : a < 100 ? 3 : 4;
+    return a <= 10 ? 0 : a <= 35 ? 1 : a < 65 ? 2 : a < 90 ? 3 : 4;
   }
   function textOn(hex) { const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (r * 299 + g * 587 + b * 114) / 1000 < 140 ? "#fff" : "#161a26"; }
 
@@ -192,12 +202,12 @@
         const lv = view === "anomaly" ? anomLevel(r) : levelOf(r.harmonized, th);
         const col = lv < 0 ? null : view === "anomaly" ? DIVERGE_DARK[lv] : pal[lv];
         if (col) { c.style.background = col; c.style.color = textOn(col); } else c.classList.add("missing");
-        c.textContent = view === "anomaly" ? (r.anomaly_pct == null ? "" : meaningful(r) ? pct(r.anomaly_pct) : "≈") : compact(r.harmonized);
+        c.textContent = view === "anomaly" ? (r.percentile == null ? "" : meaningful(r) ? `${r.percentile}%` : "≈") : compact(r.harmonized);
         if (r.source === "MODIS x k") c.classList.add("from-modis");
         if (r.month === ymOf(state.end)) c.classList.add("chosen");
         c.title = `${MONTH_LONG[m - 1]} ${y}: ${r.harmonized == null ? "no observations" : `${r.harmonized.toLocaleString()} hotspot pixel-days`}`
           + (r.source ? ` · ${r.source === "VIIRS" ? "VIIRS" : `MODIS ${r.modis} × k ${r.k_used}`}` : "")
-          + (r.baseline_median != null ? ` · usual ${MONTH_LONG[m - 1]}: ${r.baseline_median} (${pct(r.anomaly_pct)})` : "");
+          + (r.baseline_median != null ? ` · usual ${MONTH_LONG[m - 1]}: ${r.baseline_median} · busier than ${r.percentile ?? "–"}% of past ${MONTH_LONG[m - 1]}s)` : "");
         c.setAttribute("aria-label", c.title);
         c.addEventListener("click", () => {
           const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
@@ -218,7 +228,7 @@
     const lg = q("#h-legend"); lg.replaceChildren();
     const sw = (c, label) => { const s = document.createElement("span"); s.innerHTML = "<i></i>"; s.firstChild.style.background = c; s.append(label); return s; };
     if (view === "anomaly") {
-      ["far below usual", "below", "about usual (≈ = too few hotspots to compare)", "above", "2× usual or more"].forEach((l, i) => lg.append(sw(DIVERGE_DARK[i], l)));
+      ["quieter than 90% of past years", "quieter than usual", "about usual (≈ = too few hotspots)", "busier than usual", "busier than 90% of past years"].forEach((l, i) => lg.append(sw(DIVERGE_DARK[i], l)));
     } else {
       lg.append(sw(pal[0], "none"), sw(pal[1], `≤ ${compact(th[0])}`), sw(pal[2], `≤ ${compact(th[1])}`), sw(pal[3], `≤ ${compact(th[2])}`), sw(pal[4], `> ${compact(th[2])}`));
     }
@@ -311,7 +321,7 @@
 
   q("#h-csv").addEventListener("click", () => {
     const rows = data.rows.map((r) => ({ ...r, area: areaText(), k_global: data.method.k }));
-    save(`helios_harmonized_monthly_${areaTag()}.csv`, new Blob([csv(rows, ["month", "modis", "viirs", "k_used", "harmonized", "source", "baseline_median", "anomaly_pct", "rank_in_month", "k_global", "area"])], { type: "text/csv" }));
+    save(`helios_harmonized_monthly_${areaTag()}.csv`, new Blob([csv(rows, ["month", "modis", "viirs", "k_used", "harmonized", "source", "baseline_median", "percentile", "rank_in_month", "k_global", "area"])], { type: "text/csv" }));
   });
   q("#h-annual-csv").addEventListener("click", () => {
     const t = data.stats.trend_per_year, comp = data.annual.filter((a) => a.complete && a.total != null);
@@ -345,7 +355,7 @@
         const col = lv < 0 ? "#eceef2" : view === "anomaly" ? DIVERGE[lv] : pal[lv];
         g.fillStyle = col; g.beginPath(); g.roundRect ? g.roundRect(X + 2, Y + 2, cw - 4, ch - 4, 5) : g.rect(X + 2, Y + 2, cw - 4, ch - 4); g.fill();
         g.fillStyle = lv < 0 ? "#8a909b" : textOn(col); g.font = `600 12px ${sans}`;
-        g.fillText(view === "anomaly" ? (r.anomaly_pct == null ? "" : meaningful(r) ? pct(r.anomaly_pct) : "≈") : (r.harmonized == null ? "–" : compact(r.harmonized)), X + 10, Y + 19);
+        g.fillText(view === "anomaly" ? (r.percentile == null ? "" : meaningful(r) ? `${r.percentile}%` : "≈") : (r.harmonized == null ? "–" : compact(r.harmonized)), X + 10, Y + 19);
       }
       const a = data.annual.find((x) => x.year === y);
       g.fillStyle = "#161a26"; g.font = `700 13px ${sans}`; g.fillText(a?.total == null ? "–" : compact(a.total) + (a.complete ? "" : "*"), gx + 12 * cw + 14, gy + j * ch + 20);

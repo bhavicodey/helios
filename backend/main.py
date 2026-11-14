@@ -192,7 +192,8 @@ def tiles(
                 raise HTTPException(404, "No clear Sentinel-2 images in the 30 days before this date.")
             img = L.burn_tile_image(region, end)
         try:
-            return img.getMapId(L.VIS[layer])["tile_fetcher"].url_format
+            vis = L.FIRE_VIS[sensor] if layer == "fire" else L.VIS[layer]
+            return img.getMapId(vis)["tile_fetcher"].url_format
         except ee.EEException as exc:
             raise HTTPException(502, f"Earth Engine error: {exc}") from exc
 

@@ -201,7 +201,8 @@
   $$(".cad-enlarge").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); open(b.dataset.cad); }));
   $("#cad-open-rail")?.addEventListener("click", () => {
     const pressed = document.querySelector(".sensor-switch button[aria-pressed=true]");
-    open(CADS[pressed?.dataset.sensor] ? pressed.dataset.sensor : "both");   // harmonized -> both side by side
+    const k = CADS[pressed?.dataset.sensor] ? pressed.dataset.sensor : "both";   // harmonized -> both satellites
+    window.FireLab ? window.FireLab.open(k) : open(k);
   });
 
   // ---- hover to spin: moving across any small CAD preview turns the model (the renders are turntables)
@@ -238,8 +239,10 @@
     }
     ["firescout:sensor-changed", "firescout:readout", "firescout:calendar", "firescout:area"].forEach((ev) => addEventListener(ev, syncDock));
     $("#slider")?.addEventListener("change", syncDock); $("#date")?.addEventListener("change", syncDock);
-    $$(".dock-sat", dock).forEach((b) => b.addEventListener("click", () => open(b.dataset.cad)));
-    $("#dock-both")?.addEventListener("click", () => open("both"));
+    // clicking a CAD on the main page opens the synchronized 3D scene (lab.js); the video viewer is the fallback
+    const openLab = (k) => (window.FireLab ? window.FireLab.open(k) : open(k));
+    $$(".dock-sat", dock).forEach((b) => b.addEventListener("click", () => openLab(b.dataset.cad)));
+    $("#dock-both")?.addEventListener("click", () => openLab("both"));
     $("#dock-min").addEventListener("click", () => {
       const min = dock.classList.toggle("min");
       $("#dock-min").setAttribute("aria-expanded", String(!min)); $("#dock-min").textContent = min ? "+" : "–";
@@ -263,13 +266,15 @@
   });
   function syncVideos() {
     const introOn = document.body.classList.contains("intro-on");
-    const viewerOpen = !modal.hidden;
+    const viewerOpen = !modal.hidden || !document.querySelector("#lab")?.hidden;
     const dockShown = !introOn && !viewerOpen && dock && !dock.classList.contains("min") && dock.offsetParent !== null;
     introVids.forEach((v) => (introOn && !viewerOpen ? v.play().catch(() => {}) : v.pause()));
     dockVids.forEach((v) => (dockShown ? v.play().catch(() => {}) : v.pause()));
   }
   new MutationObserver(syncVideos).observe(document.body, { attributes: true, attributeFilter: ["class"] });
   new MutationObserver(syncVideos).observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+  const labEl = document.querySelector("#lab");
+  if (labEl) new MutationObserver(syncVideos).observe(labEl, { attributes: true, attributeFilter: ["hidden"] });
   if (dock) new MutationObserver(syncVideos).observe(dock, { attributes: true, attributeFilter: ["class"] });
   addEventListener("resize", syncVideos);
   syncVideos();

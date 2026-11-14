@@ -16,16 +16,22 @@ VIS = {
     "so2": {"min": SO2_MIN, "max": SO2_MAX,
             "palette": ["#3A1A26", "#6E2A47", "#A8456F", "#E07A9E", "#FFC2D4"]},
     "fire": {"min": 0, "max": 1,
-             "palette": ["#FFB36B", "#FF7A3D", "#FF5A2B", "#FF3D2E"]},   # hotspots are 1s, so they draw in the last color
+             "palette": ["#FFB020", "#FF3355"]},   # legend only; the map uses FIRE_VIS below
     "burn": {"min": 0.1, "max": 1.0,
              "palette": ["#3D0A14", "#6E0F22", "#A3132F", "#D61F3C"]},
+}
+
+# each satellite draws its fire hotspots in its own color (hotspots are 1s, so they use the last color)
+FIRE_VIS = {
+    "modis": {"min": 0, "max": 1, "palette": ["#FFB020", "#FFB020"]},   # MODIS: amber
+    "viirs": {"min": 0, "max": 1, "palette": ["#FF3355", "#FF3355"]},   # VIIRS: hot red
 }
 
 META = {
     "so2": {"title": "Sulfur dioxide", "palette": VIS["so2"]["palette"],
             "legend_min": f"{SO2_MIN / DU:.1f} DU", "legend_max": f"{SO2_MAX / DU:.1f} DU"},
     "fire": {"title": "Active fires", "palette": VIS["fire"]["palette"],
-             "legend_min": "Fire detected", "legend_max": "Hotspot"},
+             "legend_min": "MODIS", "legend_max": "VIIRS"},
     "burn": {"title": "Burn scars", "palette": VIS["burn"]["palette"],
              "legend_min": "Low severity", "legend_max": "High severity"},
 }
