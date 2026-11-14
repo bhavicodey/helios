@@ -10,6 +10,9 @@ load_dotenv(ROOT / ".env")
 EE_PROJECT = os.getenv("EE_PROJECT", "").strip()
 EE_SERVICE_ACCOUNT = os.getenv("EE_SERVICE_ACCOUNT", "").strip()
 EE_KEY_FILE = os.getenv("EE_KEY_FILE", "").strip()
+# For hosting (Render, Railway, Cloud Run…): paste the whole service-account key JSON into this one variable.
+# Never commit it; set it in the host's dashboard. The service-account email is read from the key itself.
+EE_KEY_JSON = os.getenv("EE_KEY_JSON", "").strip()
 
 FRONTEND_DIR = ROOT / "frontend"
 

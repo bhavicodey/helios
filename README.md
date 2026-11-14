@@ -146,3 +146,20 @@ The first history load for a new area runs ~40 Earth Engine requests in parallel
 ## Name and welcome screen
 
 The app is now called **Helios**. The welcome screen (`frontend/hero.css`, starfield + parallax in `frontend/intro.js`) is a night sky with a blazing sun, MODIS and VIIRS on tilted orbits and the Earth's glowing limb; the app itself keeps the quiet light theme. The project folder is still named `firescout` so existing setups keep working.
+
+## Put Helios online (Render, free)
+
+The repo includes `render.yaml`, so Render can set everything up from GitHub.
+
+**1. Make an Earth Engine service account** (lets the server log in by itself)
+1. Google Cloud console → your Earth Engine project → **IAM & Admin → Service Accounts → Create service account** (e.g. `helios`).
+2. Give it the roles **Earth Engine Resource Viewer** and **Service Usage Consumer**.
+3. Open it → **Keys → Add key → JSON**. A `.json` file downloads. Keep it private; never commit it.
+4. Make sure the project is registered for Earth Engine (https://code.earthengine.google.com/register).
+
+**2. Deploy on Render**
+1. Sign in at https://render.com with GitHub → **New + → Blueprint** → pick the `helios` repo.
+2. When asked: `EE_PROJECT` = your project id, `EE_KEY_JSON` = open the key file in a text editor, copy **everything**, paste.
+3. Click **Apply**. After a few minutes you get a public link like `https://helios-xxxx.onrender.com`.
+
+Every `git push` to `main` redeploys automatically. On the free plan the site sleeps after 15 minutes without visitors; the first visit after that takes ~1 minute to wake up. Open the link once before a demo.

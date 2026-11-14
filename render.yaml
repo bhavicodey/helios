@@ -1,0 +1,18 @@
+# Render "Blueprint": in Render choose New + → Blueprint, pick this GitHub repo, and Render reads this file.
+# You only fill in the two secret values (EE_PROJECT, EE_KEY_JSON) when Render asks for them.
+services:
+  - type: web
+    name: helios
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/meta
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: EE_PROJECT          # your Google Cloud project id (registered for Earth Engine)
+        sync: false
+      - key: EE_KEY_JSON         # the whole service-account key .json, pasted as one value
+        sync: false
