@@ -30,4 +30,10 @@
   showTab((() => { try { return localStorage.getItem("firescout.tab"); } catch { return null; } })() || "explore");
   window.FireTabs = { show: showTab, reveal: revealInTabs };
 
+  const about = $("#about");
+  $("#about-btn").addEventListener("click", () => { about.hidden = false; about.querySelector("[data-close]").focus({ preventScroll: true }); });
+  about.querySelector("[data-close]").addEventListener("click", () => { about.hidden = true; });
+  about.addEventListener("click", (e) => { if (e.target === about) about.hidden = true; });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && !about.hidden) about.hidden = true; });
+
 })();

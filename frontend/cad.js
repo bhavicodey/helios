@@ -151,7 +151,95 @@
   }
 
   
+  const PARTS = {
+    modis: {
+      name: "MODIS on Terra", src: "media/cad-modis.mp4", t: 2.09,
+      parts: [
+        { name: "Solar panels", x: 27, y: 37, text: "They turn sunlight into electricity for the satellite." },
+        { name: "Dish antenna", x: 57, y: 13, text: "Sends the data back down to Earth." },
+        { name: "Main body", x: 52, y: 36, text: "Holds the computers, batteries and radios." },
+        { name: "Radiator panel", x: 42, y: 54, text: "Gets rid of extra heat so the electronics stay cool." },
+        { name: "Instruments", x: 62, y: 42, text: "Terra carries 5 instruments. MODIS is one of them." },
+      ],
+      inside: [
+        { name: "Scan mirror", text: "A spinning mirror sweeps the view across a 2,330 km strip, back and forth." },
+        { name: "Telescope", text: "Collects light from the ground and focuses it." },
+        { name: "Beam splitters", text: "Split the light by color so each color goes to its own detector." },
+        { name: "Detectors", text: "36 bands. Fires show up best in the 4 µm band." },
+        { name: "Cooler", text: "Keeps the infrared detectors very cold (about 83 K)." },
+      ],
+    },
+    viirs: {
+      name: "VIIRS on NOAA-20", src: "media/cad-viirs.mp4", t: 2.44,
+      parts: [
+        { name: "Solar panel", x: 30, y: 27, text: "Turns sunlight into electricity for the satellite." },
+        { name: "Dish antenna", x: 56, y: 13, text: "Sends the data back down to Earth." },
+        { name: "Main body", x: 50, y: 40, text: "The part with the NOAA logo. Holds the computers, batteries and radios." },
+        { name: "Instruments", x: 52, y: 76, text: "NOAA-20 carries 5 instruments. VIIRS is one of them." },
+      ],
+      inside: [
+        { name: "Rotating telescope", text: "The whole telescope spins to sweep a 3,040 km strip." },
+        { name: "Half-angle mirror", text: "Turns at half the speed so the picture stays still on the detectors." },
+        { name: "Beam splitters", text: "Split the light by color." },
+        { name: "Detectors", text: "22 bands. The fire bands are I4 (3.74 µm, 375 m pixels) and M13 (4.05 µm)." },
+        { name: "Cooler", text: "Keeps the heat sensors cold (about 80 K)." },
+      ],
+    },
+  };
+  const partsBox = $("#cad-parts"), partsVideo = $("#parts-video"), partsTip = $("#parts-tip"), partsInfo = $("#parts-info");
+  let partsInst = "modis";
+  function describe(item) { partsInfo.textContent = item ? `${item.name}: ${item.text}` : "hover a dot on the satellite, or a part below."; }
+  function renderParts(k) {
+    partsInst = k; const d = PARTS[k];
+    $$("[data-pinst]", partsBox).forEach((b) => b.setAttribute("aria-selected", String(b.dataset.pinst === k)));
+    $("#parts-name").textContent = d.name;
+    if (!partsVideo.src.endsWith(d.src)) { partsVideo.src = d.src; partsVideo.preload = "auto"; }
+    const seek = () => { partsVideo.currentTime = d.t; partsVideo.pause(); };
+    partsVideo.readyState >= 1 ? seek() : partsVideo.addEventListener("loadedmetadata", seek, { once: true });
+    partsTip.hidden = true; describe(null);
+    const dots = $("#parts-dots"); dots.replaceChildren();
+    d.parts.forEach((p) => {
+      const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", p.name);
+      b.style.left = p.x + "%"; b.style.top = p.y + "%";
+      const on = () => {
+        partsTip.innerHTML = "<b></b><span></span>"; partsTip.firstChild.textContent = p.name; partsTip.lastChild.textContent = p.text;
+        partsTip.hidden = false;
+        const flip = p.x > 55;
+        partsTip.style.left = flip ? `calc(${p.x}% - 246px)` : `calc(${p.x}% + 18px)`;
+        partsTip.style.top = `min(${p.y}%, calc(100% - 96px))`;
+        describe(p); $$("#parts-list button", partsBox).forEach((x) => x.classList.toggle("on", x.dataset.n === p.name));
+      };
+      const off = () => { partsTip.hidden = true; describe(null); $$("#parts-list .on", partsBox).forEach((x) => x.classList.remove("on")); };
+      b.addEventListener("mouseenter", on); b.addEventListener("focus", on); b.addEventListener("mouseleave", off); b.addEventListener("blur", off);
+      b.addEventListener("click", on);
+      dots.append(b);
+    });
+    const fill = (ul, items, withDot) => {
+      ul.replaceChildren();
+      items.forEach((p) => {
+        const li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.textContent = p.name; b.dataset.n = p.name;
+        const show = () => { describe(p); b.classList.add("on"); if (withDot) $$("#parts-dots button", partsBox).forEach((x) => x.classList.toggle("on", x.getAttribute("aria-label") === p.name)); };
+        const hide = () => { describe(null); b.classList.remove("on"); $$("#parts-dots .on", partsBox).forEach((x) => x.classList.remove("on")); };
+        b.addEventListener("mouseenter", show); b.addEventListener("focus", show); b.addEventListener("mouseleave", hide); b.addEventListener("blur", hide); b.addEventListener("click", show);
+        li.append(b); ul.append(li);
+      });
+    };
+    fill($("#parts-list"), d.parts, true); fill($("#parts-inside"), d.inside, false);
+  }
+  $$("[data-pinst]", partsBox).forEach((b) => b.addEventListener("click", () => renderParts(b.dataset.pinst)));
+  function leaveParts() { modal.classList.remove("explaining"); partsBox.hidden = true; partsVideo.pause(); }
+  function showParts() {
+    if (comparing) { comparing = false; modal.classList.remove("comparing"); compare.hidden = true; pairVids.forEach((v) => v.pause()); }
+    current = "parts"; video.pause();
+    $("#cad-title").textContent = "explain parts";
+    $$(".cad-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.cad === "parts")));
+    modal.classList.add("explaining"); partsBox.hidden = false;
+    renderParts(partsInst);
+  }
+
   function show(key) {
+    if (key === "parts") { showParts(); return; }
+    leaveParts();
     if (key === "both") { showBoth(); return; }
     const c = CADS[key]; if (!c) return;
     if (comparing) { comparing = false; modal.classList.remove("comparing"); compare.hidden = true; pairVids.forEach((v) => v.pause()); }
@@ -187,7 +275,7 @@
   function close() {
     if (modal.hidden) return;
     if (document.fullscreenElement) document.exitFullscreen?.();
-    modal.hidden = true; video.pause(); pairVids.forEach((v) => v.pause());
+    modal.hidden = true; video.pause(); partsVideo.pause(); pairVids.forEach((v) => v.pause());
     lastFocus?.focus?.({ preventScroll: true });
   }
   $("#cad-x").addEventListener("click", close);

@@ -375,7 +375,7 @@ body.intro-on #sat-dock { opacity: 0; transform: translateY(-30px); }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (max-width: 700px) { .cad-compare { grid-template-columns: 1fr 1fr; gap: 8px; } .cad-pair figcaption span { display: none; } }
 
-.cad-tabs { grid-template-columns: repeat(3, auto); }
+.cad-tabs { grid-template-columns: repeat(4, auto); }
 .cad-pair-stage { aspect-ratio: 16 / 9; }
 
 .team-credit { margin: 18px 0 8px; padding: 12px 14px; border-radius: 12px; background: var(--paper); text-align: center; }
@@ -446,3 +446,43 @@ input[type=range]::-webkit-slider-thumb { box-shadow: 0 1px 3px rgba(0, 0, 0, .4
 .dock-pass { margin-left: auto; padding: 3px 10px; border: 0; border-radius: 99px; font-size: 11px; font-weight: 600; color: #fff; background: var(--paper-2); white-space: nowrap; }
 .dock-pass:hover:not(:disabled) { background: var(--accent); }
 .dock-pass:disabled { opacity: .5; cursor: default; }
+
+.cal-legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11.5px; color: var(--muted); }
+.cal-legend i { width: 22px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+.cal-legend span:first-child { margin-right: 4px; }
+.cal-legend span:last-child { margin-left: 4px; }
+
+#cad.explaining .cad-grid, #cad.explaining .cad-controls, #cad.explaining #cad-use, #cad.explaining .cad-compare { display: none; }
+.cad-parts { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.cad-parts[hidden] { display: none; }
+.parts-stage { position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #2a2a2a; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+.parts-stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+#parts-dots button { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0; border-radius: 50%; border: 2px solid #fff; background: rgba(229, 56, 59, .55); }
+#parts-dots button::after { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: #fff; }
+#parts-dots button:hover, #parts-dots button:focus-visible, #parts-dots button.on { background: var(--accent); transform: scale(1.2); }
+#parts-tip { position: absolute; z-index: 3; width: 230px; padding: 10px 12px; border-radius: 12px; background: rgba(21, 13, 14, .97); border-left: 4px solid var(--accent); pointer-events: none; box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+#parts-tip[hidden] { display: none; }
+#parts-tip b { display: block; color: var(--ink); font-size: 14px; text-transform: none; }
+#parts-tip span { display: block; margin-top: 3px; font-size: 12.5px; color: var(--text); text-transform: none; }
+.parts-hint { position: absolute; left: 10px; bottom: 10px; margin: 0 !important; padding: 4px 11px; border-radius: 99px; background: rgba(10, 6, 7, .72); color: #fff; font-size: 12px; }
+.parts-pick { display: inline-grid; grid-auto-flow: column; gap: 3px; padding: 3px; border-radius: 10px; background: var(--paper); }
+.parts-pick button { padding: 6px 16px; border: 0; border-radius: 8px; background: none; color: var(--muted); font-weight: 700; font-size: 13px; text-transform: none; }
+.parts-pick button[aria-selected="true"] { background: var(--accent); color: #fff; }
+.parts-title { margin: 10px 0 0 !important; font-weight: 650; color: var(--ink); text-transform: none; }
+.parts-info { min-height: 3.4em; margin: 4px 0 8px !important; padding: 9px 12px; border-radius: 10px; background: var(--paper); font-size: 13px; color: var(--text); text-transform: none; }
+.cad-parts h4 { margin: 10px 0 6px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.cad-parts ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.cad-parts li button { width: 100%; text-align: left; padding: 7px 10px; border: 0; border-radius: 8px; background: var(--paper); color: var(--text); font-size: 13px; text-transform: none; }
+.cad-parts li button:hover, .cad-parts li button:focus-visible, .cad-parts li button.on { background: var(--paper-2); color: #fff; }
+@media (max-width: 900px) { .cad-parts { grid-template-columns: 1fr; } }
+
+.about-sec { margin-top: 18px; }
+.about-sec:first-of-type { margin-top: 10px; }
+.about-sec h3 { margin: 0 0 8px !important; font-size: 15px !important; color: var(--ink) !important; text-transform: none; }
+.about-sec p, .about-list li { font-size: 14px; color: var(--text); text-transform: none; margin: 0 0 8px; }
+.about-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.tech-grid > div { padding: 12px 14px; border-radius: 12px; background: var(--paper); }
+.tech-grid h4 { margin: 0 0 6px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-2); }
+.tech-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.tech-grid li { font-size: 13px; color: var(--text); text-transform: none; }

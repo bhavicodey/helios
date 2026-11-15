@@ -63,7 +63,7 @@
     {
       target: () => $("#h-calendar").closest("section"),
       title: "Daily calendar",
-      body: () => "Each square is a day. Darker = more fire.",
+      body: () => "Each square is a day. Brighter = more fire.",
     },
     {
       target: () => $("#history-open"),

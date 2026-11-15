@@ -119,6 +119,7 @@
           <div class="calendar-nav"><button id="cal-prev" type="button" aria-label="Previous month">‹</button><strong id="cal-title">month</strong><button id="cal-next" type="button" aria-label="Next month">›</button></div>
           <div class="cal-weekdays" aria-hidden="true"><span>su</span><span>mo</span><span>tu</span><span>we</span><span>th</span><span>fr</span><span>sa</span></div>
           <div id="fire-calendar" class="fire-calendar" aria-label="Daily fire activity calendar"></div>
+          <div class="cal-legend" aria-hidden="true"><span>less fire</span><i style="background:var(--h0)"></i><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><span>more fire</span></div>
           <p id="calendar-note" class="note" role="status">pick a place to see the calendar.</p>
           </section>
       </div>
@@ -179,6 +180,7 @@
       <footer class="team-credit">
         <p class="team-label">meet the team</p>
         <p class="team-names">made by <b>Akhilesh Madhavan</b> + <b>Bhavishyaa Vignesh</b></p>
+        <p class="team-event">Foothill High School</p>
         <p class="team-event">for the NASA Space Apps Challenge</p>
         <p class="team-event">CAD done on Blender</p>
       </footer>
@@ -260,6 +262,7 @@
   </nav>
 
   <div id="fabs">
+    <button id="about-btn" class="fab" type="button" aria-haspopup="dialog"><span>about</span></button>
     <button id="help-btn" class="fab" type="button" aria-haspopup="dialog" title="replay the guided tour"><span>how it works</span></button>
     <a id="feedback-btn" class="fab fab-accent" href="https://forms.gle/YNwHiS4tBCrbS3LJ9" target="_blank" rel="noopener" title="share your feedback (opens a Google Form)"><span>give feedback</span></a>
   </div>
@@ -324,6 +327,7 @@
         <button type="button" role="tab" data-cad="modis" aria-selected="true">MODIS</button>
         <button type="button" role="tab" data-cad="viirs" aria-selected="false">VIIRS</button>
         <button type="button" role="tab" data-cad="both" aria-selected="false">side by side</button>
+        <button type="button" role="tab" data-cad="parts" aria-selected="false">explain parts</button>
       </div>
       <div class="cad-compare" id="cad-compare" hidden>
         <figure class="cad-pair" data-cad="modis">
@@ -335,6 +339,23 @@
           <figcaption><b>VIIRS</b><span>since 2012</span></figcaption>
         </figure>
         <label class="cad-sync"><input type="checkbox" id="cad-sync" checked> spin both together</label>
+      </div>
+      <div class="cad-parts" id="cad-parts" hidden>
+        <div class="parts-stage" id="parts-stage">
+          <video id="parts-video" muted playsinline preload="none" aria-label="satellite model"></video>
+          <div id="parts-dots"></div>
+          <div id="parts-tip" hidden></div>
+          <p class="parts-hint">hover a dot</p>
+        </div>
+        <aside class="parts-side">
+          <div class="parts-pick" role="tablist"><button type="button" role="tab" data-pinst="modis" aria-selected="true">MODIS</button><button type="button" role="tab" data-pinst="viirs" aria-selected="false">VIIRS</button></div>
+          <p class="parts-title" id="parts-name"></p>
+          <p class="parts-info" id="parts-info">hover a dot on the satellite, or a part below.</p>
+          <h4>on the satellite</h4>
+          <ul id="parts-list"></ul>
+          <h4>inside the instrument</h4>
+          <ul id="parts-inside"></ul>
+        </aside>
       </div>
       <div class="cad-grid">
         <div class="cad-stage" id="cad-stage" tabindex="0" aria-label="drag to spin the model, scroll to zoom">
@@ -408,7 +429,7 @@
           </div>
           <div id="h-grid" class="h-grid" aria-label="years by months hotspot calendar"></div>
           <div class="h-legend" id="h-legend"></div>
-          <p class="note">each box is a month. darker = more fire.</p>
+          <p class="note">each box is a month. brighter = more fire.</p>
         </div>
 
         <div class="h-two">
@@ -438,6 +459,47 @@
           <button id="h-annual-csv" type="button" class="exp-btn"><b>yearly totals + trend</b><small>csv</small></button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="about" class="modal page" role="dialog" aria-modal="true" aria-labelledby="about-title" hidden>
+    <div class="card page-card">
+      <button class="x" type="button" data-close aria-label="close">×</button>
+      <h2 id="about-title">about helios</h2>
+
+      <section class="about-sec">
+        <h3>the challenge</h3>
+        <p>NASA Space Apps 2026: <b>Harmonization of MODIS and VIIRS Hot Spots</b>.</p>
+        <p>MODIS has tracked fires from space since 2000, but it is getting old. VIIRS is taking its place. The two count fires differently, so you can't just put their data together. We made one fire record out of both, so you can see how fire changes over the years.</p>
+      </section>
+
+      <section class="about-sec">
+        <h3>what helios does</h3>
+        <ul class="about-list">
+          <li>combines MODIS and VIIRS fire data into one record, 2000 to today</li>
+          <li>shows every month as a calendar, so you can see the busy months</li>
+          <li>tells you if this month is busier than past years</li>
+          <li>lets you type a place or draw your own area</li>
+          <li>downloads the data as CSV files and images</li>
+          <li>has a color-blind safe color option</li>
+          <li>3D models of both satellites, with their parts explained</li>
+        </ul>
+      </section>
+
+      <section class="about-sec">
+        <h3>technology we used</h3>
+        <div class="tech-grid">
+          <div><h4>data</h4><ul><li>NASA FIRMS (MODIS fires)</li><li>NASA VIIRS VNP14A1 (VIIRS fires)</li><li>Sentinel-5P (sulfur dioxide)</li><li>Sentinel-2 (burn scars)</li><li>Google Earth Engine</li></ul></div>
+          <div><h4>website</h4><ul><li>HTML, CSS and JavaScript</li><li>MapLibre GL JS (the map and globe)</li><li>three.js (3D satellites on the map)</li><li>CARTO basemap (OpenStreetMap data)</li><li>OpenStreetMap Nominatim (place search)</li><li>Google Fonts (Fraunces, Inter)</li></ul></div>
+          <div><h4>server</h4><ul><li>Python</li><li>FastAPI</li><li>Uvicorn</li><li>Earth Engine Python API</li><li>python-dotenv</li></ul></div>
+          <div><h4>tools</h4><ul><li>Blender (CAD models)</li><li>Git and GitHub</li><li>Render (hosting)</li><li>VS Code</li></ul></div>
+        </div>
+      </section>
+
+      <section class="about-sec">
+        <h3>meet the team</h3>
+        <p>Akhilesh Madhavan and Bhavishyaa Vignesh, from Foothill High School. We live in California, where wildfires are a real thing, so we wanted to know what is happening in our community.</p>
+      </section>
     </div>
   </div>
 
