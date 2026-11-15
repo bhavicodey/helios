@@ -1,25 +1,55 @@
 "use strict";
-/* Helios area of interest: type a latitude / longitude, or draw your own shape on the map.
+/* Helios area of interest: enter a place (city, town, address), or draw your own shape on the map.
+   Place search uses OpenStreetMap's free Nominatim service: only the typed text is sent, once per search.
    Loaded after app.js, so it shares app.js's globals (state, map, setPin, stopSpin, toast, place). */
 (function () {
   const q = (s) => document.querySelector(s);
   const bar = q("#draw-bar"), msg = q("#draw-msg"), navBtn = q("#draw-nav"), railBtn = q("#draw-area");
   let pts = [];
 
-  // ---- 1. latitude / longitude
-  q("#coord-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const lat = +q("#coord-lat").value, lon = +q("#coord-lon").value;
-    if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
-      toast("latitude goes from -90 to 90 and longitude from -180 to 180."); return;
-    }
+  // ---- 1. enter a place
+  const form = q("#place-form"), input = q("#place-q"), list = q("#place-results");
+  let searching = false, placeName = "", fromSearch = false;
+  function goTo(r) {
+    const lat = +r.lat, lon = +r.lon;
+    list.hidden = true; list.replaceChildren();
+    placeName = r.display_name.split(",").slice(0, 2).join(",").trim();
+    input.value = placeName;
     stopSpin();
-    setPin(lat, lon);
-    map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), 6), duration: reduceMotion ? 0 : 1800 });
+    fromSearch = true; setPin(lat, lon); fromSearch = false;
+    // fit the place's own size (a city vs a county), but never closer than zoom 6 or further than 9
+    const zoom = r.boundingbox ? Math.min(9, Math.max(6, 9 - Math.log2(Math.max(0.05, +r.boundingbox[1] - +r.boundingbox[0]) / 0.1))) : 7;
+    map.flyTo({ center: [lon, lat], zoom, duration: reduceMotion ? 0 : 1800 });
+    q("#place").textContent = placeName;
+  }
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || searching) return;
+    searching = true; form.classList.add("busy");
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&addressdetails=0&q=${encodeURIComponent(text)}`;
+      const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+      if (!res.ok) throw new Error(`place search failed (${res.status})`);
+      const found = await res.json();
+      if (!found.length) { toast(`couldn't find "${text}". try adding the state or country.`); return; }
+      if (found.length === 1) { goTo(found[0]); return; }
+      // several matches (e.g. Springfield): let the user pick
+      list.replaceChildren(...found.map((r) => {
+        const li = document.createElement("li"), b = document.createElement("button");
+        b.type = "button"; b.textContent = r.display_name; b.addEventListener("click", () => goTo(r));
+        li.append(b); return li;
+      }));
+      list.hidden = false; list.querySelector("button")?.focus();
+    } catch (err) {
+      toast(`place search isn't available right now (${err.message}). you can click the globe instead.`);
+    } finally { searching = false; form.classList.remove("busy"); }
   });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && !list.hidden) { list.hidden = true; input.focus(); } });
+  // when the pin moves for another reason (click, preset), clear the stale place name
   addEventListener("firescout:area", () => {
-    if (!state.pin) return;
-    q("#coord-lat").value = state.pin.lat.toFixed(4); q("#coord-lon").value = state.pin.lon.toFixed(4);
+    if (!state.pin || !placeName || fromSearch) return;
+    placeName = ""; input.value = "";
   });
 
   // ---- 2. drawing
@@ -37,20 +67,20 @@
     else if (ring.length === 2) f.push({ type: "Feature", geometry: { type: "LineString", coordinates: ring } });
     map.getSource("draw")?.setData({ type: "FeatureCollection", features: f.filter((x, i) => i < pts.length || x.geometry.type !== "Point") });
     msg.textContent = pts.length < 3
-      ? `click to add corners (${pts.length} so far, at least 3) · esc to cancel`
-      : `${pts.length} corners · click the first corner, double-click, or press enter to finish`;
+      ? `click the map to add corners (${pts.length}, need 3+) · esc to cancel`
+      : `${pts.length} corners · double-click or press enter to finish`;
   }
   function start() {
     if (!map.loaded()) { toast("the map is still loading, try again in a moment."); return; }
     stopSpin(); sources();
     pts = []; state.drawing = true; bar.hidden = false;
-    navBtn.setAttribute("aria-pressed", "true"); railBtn.classList.add("on");
+    navBtn?.setAttribute("aria-pressed", "true"); railBtn.classList.add("on");
     map.doubleClickZoom.disable(); map.getCanvas().style.cursor = "crosshair";
     paint();
   }
   function stop() {
     state.drawing = false; bar.hidden = true; pts = [];
-    navBtn.setAttribute("aria-pressed", "false"); railBtn.classList.remove("on");
+    navBtn?.setAttribute("aria-pressed", "false"); railBtn.classList.remove("on");
     map.getSource("draw")?.setData({ type: "FeatureCollection", features: [] });
     setTimeout(() => map.doubleClickZoom.enable(), 300);
     map.getCanvas().style.cursor = "";
@@ -64,7 +94,7 @@
     setPin(lat, lon, { poly });
     const b = poly.reduce((bb, p) => [Math.min(bb[0], p[0]), Math.min(bb[1], p[1]), Math.max(bb[2], p[0]), Math.max(bb[3], p[1])], [180, 90, -180, -90]);
     map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 120, duration: reduceMotion ? 0 : 1200, maxZoom: 9 });
-    toast("area saved. everything now reads inside your shape.");
+    toast("area set. all numbers are now for your drawn area.");
   }
   const near = (a, b) => { const pa = map.project(a), pb = map.project(b); return Math.hypot(pa.x - pb.x, pa.y - pb.y) < 12; };
 
@@ -86,6 +116,6 @@
   });
   q("#draw-undo").addEventListener("click", () => { pts.pop(); paint(); });
   q("#draw-cancel").addEventListener("click", stop);
-  navBtn.addEventListener("click", () => (state.drawing ? stop() : start()));
+  navBtn?.addEventListener("click", () => (state.drawing ? stop() : start()));
   railBtn.addEventListener("click", () => (state.drawing ? stop() : start()));
 })();

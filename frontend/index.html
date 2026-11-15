@@ -24,7 +24,7 @@
     <header class="panel-head">
       <div>
         <h1>Helios</h1>
-        <p class="lede" id="lede">25 years of satellite fire hotspots, harmonized.</p>
+        <p class="lede" id="lede">see 25 years of fire near any place.</p>
       </div>
       <button class="panel-toggle" type="button" aria-expanded="true" aria-label="show or hide layers">layers</button>
     </header>
@@ -45,8 +45,7 @@
             <button type="button" data-sensor="modis" aria-pressed="false">MODIS</button>
             <button type="button" data-sensor="viirs" aria-pressed="false">VIIRS</button>
           </div>
-          <p id="sensor-detail" class="note">MODIS and VIIRS joined into one record since Nov 2000.</p>
-          <button id="cad-open-rail" type="button" class="ghost wide-btn cad-rail-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>view satellite CAD</button>
+          <p id="sensor-detail" class="note">both satellites combined, 2000 – today.</p>
         </section>
 
         <section aria-labelledby="h-places">
@@ -57,18 +56,20 @@
             <button type="button" data-lat="41.0" data-lon="26.1" data-date="2023-08-28" data-radius="80" data-zoom="7" data-for="research" data-burn="1" data-fire="1">evros wildfire, greece, aug 2023</button>
             <button type="button" data-lat="19.4" data-lon="-155.28" data-date="2025-01-05" data-radius="100" data-zoom="7" data-for="research school" data-burn="0">kīlauea eruption, jan 2025</button>
           </div>
-          <p class="note">kīlauea shows sulfur dioxide from a volcano, with no fires behind it.</p>
+          <p class="note">kīlauea is a volcano: it shows sulfur dioxide but no fires.</p>
         </section>
 
         <section id="area-section" aria-labelledby="h-area">
           <h2 id="h-area">area of interest</h2>
-          <form id="coord-form" class="coord-form" autocomplete="off">
-            <label><span>latitude</span><input id="coord-lat" type="number" step="any" min="-90" max="90" placeholder="34.05" required></label>
-            <label><span>longitude</span><input id="coord-lon" type="number" step="any" min="-180" max="180" placeholder="-118.55" required></label>
+          <form id="place-form" class="place-form" autocomplete="off" role="search">
+            <label class="place-field"><span>enter a place</span>
+              <input id="place-q" type="search" placeholder="e.g. Sacramento, CA" aria-label="enter a city, town or address" required>
+            </label>
             <button type="submit" class="ghost coord-go">go</button>
           </form>
+          <ul id="place-results" class="place-results" hidden></ul>
           <button id="draw-area" type="button" class="ghost wide-btn draw-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 8 5l9 3 3 9-9 3z"/><circle cx="4" cy="18" r="1.6"/><circle cx="8" cy="5" r="1.6"/><circle cx="17" cy="8" r="1.6"/><circle cx="20" cy="17" r="1.6"/><circle cx="11" cy="20" r="1.6"/></svg><span>draw an area on the map</span></button>
-          <p id="area-note" class="note">drop a pin for a circle, or draw your own shape.</p>
+          <p id="area-note" class="note">click the map for a circle, or draw an area.</p>
         </section>
 
         <section aria-labelledby="h-layers">
@@ -108,8 +109,7 @@
       <div class="tab-panel" role="tabpanel" data-panel="calendar" hidden>
         <section aria-labelledby="h-calendar">
           <h2 id="h-calendar">burning activity calendar</h2>
-          <p class="note">select a place on the map to show satellite hotspot detections by day.</p>
-          <button id="history-open-rail" type="button" class="solid history-btn" disabled>open fire history since 2000</button>
+          <p class="note">each square is a day. darker means more fire.</p>
           <label class="field"><span>colors</span>
             <select id="palette" aria-label="calendar color ramp">
               <option value="warm">warm (orange → red)</option>
@@ -120,15 +120,14 @@
           <div class="calendar-nav"><button id="cal-prev" type="button" aria-label="Previous month">‹</button><strong id="cal-title">month</strong><button id="cal-next" type="button" aria-label="Next month">›</button></div>
           <div class="cal-weekdays" aria-hidden="true"><span>su</span><span>mo</span><span>tu</span><span>we</span><span>th</span><span>fr</span><span>sa</span></div>
           <div id="fire-calendar" class="fire-calendar" aria-label="Daily fire activity calendar"></div>
-          <p id="calendar-note" class="note" role="status">choose an area to load the calendar.</p>
-          <p class="note">colors show relative daily hotspot counts within this month, not number of fires or area burned.</p>
-        </section>
+          <p id="calendar-note" class="note" role="status">pick a place to see the calendar.</p>
+          </section>
       </div>
 
       <div class="tab-panel" role="tabpanel" data-panel="export" hidden>
         <section id="export-section" aria-labelledby="h-export">
           <h2 id="h-export">export for reports</h2>
-          <p class="note">uses your area, satellite and the date range below.</p>
+          <p class="note">uses your place, satellite and dates.</p>
           <div class="range-row">
             <label><span>from</span><input id="exp-from" type="date" aria-label="export start date"></label>
             <label><span>to</span><input id="exp-to" type="date" aria-label="export end date"></label>
@@ -162,13 +161,13 @@
         <section aria-labelledby="h-watch">
           <h2 id="h-watch">watched places</h2>
           <ul id="watchlist"></ul>
-          <p id="watch-empty" class="note">pin a place, then choose “watch this place”.</p>
+          <p id="watch-empty" class="note">pin a place, then click “watch this place” to save it.</p>
           <button id="watch-check" type="button" class="ghost" hidden>check all for this date</button>
         </section>
 
         <details class="how" id="how">
           <summary>how the data is extracted</summary>
-          <p class="how-lead">nothing is downloaded or stored. every time you pick a date or drop a pin, google earth engine reads satellite archives for just that area and sends back map tiles and numbers.</p>
+          <p class="how-lead">Helios reads NASA satellite data live from Google Earth Engine for the place and date you choose. Nothing is saved.</p>
           <ol>
             <li data-layer="so2"><b>sulfur dioxide</b> comes from the sentinel-5p satellite. cloudy pixels (over 30% cloud) are thrown out, the 7 days up to your date are combined into a median, and the result is shown in dobson units. the readout compares it with the same area's average over the 30 days before.</li>
             <li data-layer="fire"><b>active fires</b> come from MODIS FIRMS (~1 km, since 2000) and VIIRS VNP14A1 (daily 1 km, since 2012). the two sensors see fires differently, so <b>harmonized</b> mode joins them: VIIRS wherever it exists, and before 2012 MODIS multiplied by k, the VIIRS ÷ MODIS ratio measured for your area in the years both satellites flew together. counts are detected fire pixels per day, not verified fires or prescribed burns.</li>
@@ -196,15 +195,13 @@
     <button id="home" type="button" aria-label="reset the view" data-tip="reset view"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></button>
     <button id="spin" type="button" aria-label="spin the globe" aria-pressed="false" data-tip="spin globe"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg></button>
     <button id="proj" type="button" aria-label="switch to flat map" data-tip="flat map"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18M9 6v12M15 6v12"/></svg></button>
-    <i class="sep"></i>
-    <button id="draw-nav" type="button" aria-label="draw an area" aria-pressed="false" data-tip="draw an area"><svg viewBox="0 0 24 24"><path d="M4 18 8 5l9 3 3 9-9 3z"/></svg></button>
   </div>
   <!-- ============ satellite dock: the CADs of the satellites you're reading, always on screen ============ -->
   <section id="sat-dock" aria-label="satellites in use">
     <header class="dock-head">
       <span class="dock-live"><i></i>satellites</span>
       <span class="dock-mode" id="dock-mode">harmonized</span>
-      <button type="button" class="dock-both" id="dock-both" title="see both 3D models side by side">side by side</button>
+      <button type="button" class="dock-pass" id="pass-play" disabled title="watch MODIS and VIIRS fly over your place once">watch a pass</button>
       <button type="button" class="dock-min" id="dock-min" aria-expanded="true" aria-label="minimize the satellite dock">–</button>
     </header>
     <div class="dock-sats">
@@ -220,15 +217,15 @@
     <p class="dock-note" id="dock-note">hover to spin · click to enlarge</p>
   </section>
 
-  <div id="draw-bar" hidden><span id="draw-msg">click to add corners · click the first corner or double-click to finish</span><button id="draw-undo" type="button">undo</button><button id="draw-cancel" type="button">cancel</button></div>
-  <p id="hint"><b>drag</b> to turn the globe · <b>scroll</b> to zoom · <b>click</b> to drop a pin · <b>click inside the dashed area</b> to open the fire render</p>
+  <div id="draw-bar" hidden><span id="draw-msg">click the map to add corners (need 3+)</span><button id="draw-undo" type="button">undo</button><button id="draw-cancel" type="button">cancel</button></div>
+  <p id="hint"><b>drag</b> to turn · <b>scroll</b> to zoom · <b>click</b> to pick a place</p>
 
   <!-- ============ right: readout ============ -->
   <aside id="readout" class="panel" aria-label="area readout">
     <header class="panel-head">
       <div>
         <h2 id="place">no place chosen</h2>
-        <p class="note" id="place-sub">click the globe, or pick a place on the left.</p>
+        <p class="note" id="place-sub">click the map or enter a place on the left.</p>
       </div>
       <button class="panel-toggle" type="button" aria-expanded="true" aria-label="show or hide readout">readout</button>
     </header>
@@ -400,7 +397,7 @@
       <p class="eyebrow">fire history · harmonized MODIS + VIIRS</p>
       <h2 id="h-title">your area since 2000</h2>
       <p class="note" id="h-sub"></p>
-      <p id="h-loading" class="h-loading" role="status">reading 25 years of satellite hotspots… the first load for a new area can take a minute.</p>
+      <p id="h-loading" class="h-loading" role="status">loading 25 years of fire data… a new place takes about a minute.</p>
 
       <div id="h-body" hidden>
         <div class="h-tiles" id="h-tiles"></div>
@@ -413,26 +410,26 @@
               <label><span>show</span>
                 <select id="h-view">
                   <option value="count">hotspot counts</option>
-                  <option value="anomaly">vs usual for that month</option>
+                  <option value="anomaly">vs past years (percentile)</option>
                 </select>
               </label>
             </div>
           </div>
           <div id="h-grid" class="h-grid" aria-label="years by months hotspot calendar"></div>
           <div class="h-legend" id="h-legend"></div>
-          <p class="note">each cell is one month: hotspot pixel-days in VIIRS-equivalent units. the outlined columns are the area's critical months. click a cell to open that month on the map.</p>
+          <p class="note">each box is one month. darker means more fire. red-outlined columns are the busiest months. click a box to open that month.</p>
         </div>
 
         <div class="h-two">
           <div class="h-block">
             <h3>seasonal pattern</h3>
             <div id="h-season" class="h-chart"></div>
-            <p class="note">grey band: middle half of all years · dark line: median year · red line: <span id="h-season-year">this year</span>.</p>
+            <p class="note">grey band: the usual range · white line: the typical year · red line: <span id="h-season-year">this year</span>.</p>
           </div>
           <div class="h-block">
             <h3>hotspots per year</h3>
             <div id="h-annual" class="h-chart"></div>
-            <p class="note" id="h-annual-note">dashed line: trend across complete years.</p>
+            <p class="note" id="h-annual-note">dashed line: the trend over time.</p>
           </div>
         </div>
 
@@ -499,6 +496,7 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
 
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
   <script src="intro.js"></script>
   <script src="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.js"></script>
   <script src="app.js"></script>
@@ -509,5 +507,6 @@
   <script src="exports.js"></script>
   <script src="tour.js"></script>
   <script src="pages.js"></script>
+  <script type="module" src="passes.js"></script>
 </body>
 </html>

@@ -69,12 +69,12 @@
   // ------------------------------------------------------------ personalise + reveal
   // the welcome line follows the wildfire answer
   const LEDE = {
-    yes: "type your home's coordinates or draw your area to see its fire history.",
-    unsure: "type your home's coordinates to see how often fires burn near you.",
-    no: "pick a famous wildfire below, or click anywhere on the globe.",
+    yes: "enter your town to see its fire history.",
+    unsure: "enter your town to see how often fires burn near you.",
+    no: "pick a wildfire to explore, or click the map.",
   };
   function personalize(p) {
-    $("#lede").textContent = `welcome, ${p.name}. ${LEDE[p.fireArea] || "click anywhere on the globe to read the area."}`;
+    $("#lede").textContent = `welcome, ${p.name}. ${LEDE[p.fireArea] || "click the map to start."}`;
     // suggest the LA fires as a first example (the tour also starts there)
     $$("#presets button").forEach((b, i) => b.classList.toggle("pick", i === 0));
   }

@@ -52,9 +52,9 @@
     const pin = !!state.pin, cal = !!state.calendarDays;
     btns.hot.disabled = !pin; btns.monthly.disabled = !pin;
     btns.png.disabled = !cal; btns.cal.disabled = !cal;
-    if (!pin) say("drop a pin or pick a place to enable exports.");
-    else if (!cal && note.dataset.kind !== "warn") say("calendar exports unlock once the month has loaded.");
-    else if (note.dataset.kind !== "warn" && note.dataset.kind !== "ok") say("ready. files download straight to your computer.");
+    if (!pin) say("pick a place to turn on downloads.");
+    else if (!cal && note.dataset.kind !== "warn") say("calendar downloads turn on once the month loads.");
+    else if (note.dataset.kind !== "warn" && note.dataset.kind !== "ok") say("ready. files download to your computer.");
   }
   ["firescout:pin", "firescout:calendar", "firescout:readout"].forEach((ev) => addEventListener(ev, () => { if (note.dataset.kind === "warn") note.dataset.kind = ""; sync(); }));
 

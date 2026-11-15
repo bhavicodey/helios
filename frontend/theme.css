@@ -429,3 +429,55 @@ a.fab { text-decoration: none; display: inline-flex; align-items: center; }
   50% { box-shadow: 0 0 0 6px rgba(229, 56, 59, .18), 0 10px 44px rgba(229, 56, 59, .75); } }
 @media (max-width: 820px) { #feedback-btn { padding: 12px 20px; font-size: 15px; } }
 @media (prefers-reduced-motion: reduce) { #feedback-btn { animation: none; } }
+
+/* enter a place */
+.place-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+.place-field { display: grid; gap: 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.place-field input { width: 100%; min-width: 0; padding: 9px 11px; border-radius: 10px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 14px; text-transform: none; }
+.place-field input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.place-form.busy .coord-go { opacity: .5; pointer-events: none; }
+.place-results { list-style: none; margin: 8px 0 0; padding: 4px; border-radius: 10px; background: var(--panel-solid); box-shadow: var(--shadow); display: grid; gap: 2px; }
+.place-results[hidden] { display: none; }
+.place-results button { width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: var(--text); font-size: 12.5px; text-transform: none; }
+.place-results button:hover, .place-results button:focus-visible { background: var(--paper-2); color: #fff; }
+#place { text-transform: none; }
+
+.dock-head button { white-space: nowrap; }
+
+
+/* ---------------------------------------------------------------- calmer look: no pulsing, no big glows */
+h1 { filter: none; }
+.solid, #play, .cta, .history-main, .history-main:hover:not(:disabled) { background: var(--accent); box-shadow: none; }
+.solid:hover:not(:disabled), #play:hover, .cta:hover:not(:disabled) { background: var(--accent-2); box-shadow: none; transform: none; }
+.solid::after, #play::after, .cta::after { display: none; }
+#feedback-btn { animation: none; background: var(--accent); box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
+#feedback-btn:hover { background: var(--accent-2); transform: none; }
+#sat-dock { box-shadow: var(--shadow); }
+#sat-dock::before { display: none; }
+.dock-live i, .coach-todo::before, .dot[data-level="alert"] { animation: none; }
+.dock-sat:hover, .dock-sat.reading, .dock-sat.both, .dock-sat.both.reading { box-shadow: 0 0 0 1px rgba(255, 255, 255, .22); }
+.dock-both, .sensor-switch button[aria-pressed="true"], #nav button[aria-pressed="true"], .cad-tabs button[aria-selected="true"], .rail-tabs button[aria-selected="true"]::after { box-shadow: none; }
+.dock-3d { box-shadow: none; }
+#signal[data-level="alert"] { animation: none; }
+.pin span { box-shadow: 0 0 0 3px rgba(229, 56, 59, .25); }
+.pin span::after { animation: none; display: none; }
+.layer .switch input:checked { box-shadow: none; }
+.rows > div[data-layer] dt::before { box-shadow: none; }
+.fab:hover { box-shadow: var(--shadow); }
+#loadbar { box-shadow: none; }
+input[type=range]::-webkit-slider-thumb { box-shadow: 0 1px 3px rgba(0, 0, 0, .4); }
+.card, .modal .card, .cad-stage, .cad-pair, .render-stage { box-shadow: 0 0 0 1px rgba(255, 255, 255, .07), 0 20px 50px rgba(0, 0, 0, .5); }
+.coach-hole { box-shadow: 0 0 0 200vmax rgba(4, 1, 2, .72); outline: 2px solid rgba(255, 255, 255, .7); }
+
+/* instructions and help text use normal sentence case so they are easy to read */
+.coach-card, .coach-card *, .note, .lede, #hint, .src, #draw-msg, .h-loading, .status, .how-lead, .dock-note, #place-sub, .toast, #toast { text-transform: none; }
+.coach-card h2 { font-size: 20px; }
+#coach-text { font-size: 14.5px; line-height: 1.5; }
+
+/* one-time satellite pass */
+.pass-tag { display: grid; padding: 4px 9px; border-radius: 8px; background: rgba(10, 6, 7, .82); border-left: 3px solid var(--c); white-space: nowrap; pointer-events: none; }
+.pass-tag b { font-size: 12.5px; color: var(--c); text-transform: none; }
+.pass-tag span { font-size: 10.5px; color: var(--muted); text-transform: none; }
+.dock-pass { margin-left: auto; padding: 3px 10px; border: 0; border-radius: 99px; font-size: 11px; font-weight: 600; color: #fff; background: var(--paper-2); white-space: nowrap; }
+.dock-pass:hover:not(:disabled) { background: var(--accent); }
+.dock-pass:disabled { opacity: .5; cursor: default; }

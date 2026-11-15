@@ -15,17 +15,24 @@ VIS = {
     # red giant theme (dark map): rose haze for gas, hot orange-white for fire, deep crimson for burn scars
     "so2": {"min": SO2_MIN, "max": SO2_MAX,
             "palette": ["#3A1A26", "#6E2A47", "#A8456F", "#E07A9E", "#FFC2D4"]},
-    "fire": {"min": 0, "max": 1,
-             "palette": ["#FFB36B", "#FF7A3D", "#FF5A2B", "#FF3D2E"]},   # hotspots are 1s, so they draw in the last color
+    "fire": {"min": 1, "max": 3, "palette": ["#E5383B", "#FFD60A", "#FF9F1C"]},   # see FIRE_VIS
     "burn": {"min": 0.1, "max": 1.0,
              "palette": ["#3D0A14", "#6E0F22", "#A3132F", "#D61F3C"]},
+}
+
+# MODIS is red, VIIRS is yellow. Harmonized draws both in one image: 1 = MODIS only (red), 2 = VIIRS only (yellow),
+# 3 = both satellites saw it (orange).
+FIRE_VIS = {
+    "modis": {"min": 0, "max": 1, "palette": ["#E5383B", "#E5383B"]},
+    "viirs": {"min": 0, "max": 2, "palette": ["#FFD60A", "#FFD60A"]},
+    "harmonized": {"min": 1, "max": 3, "palette": ["#E5383B", "#FFD60A", "#FF9F1C"]},
 }
 
 META = {
     "so2": {"title": "Sulfur dioxide", "palette": VIS["so2"]["palette"],
             "legend_min": f"{SO2_MIN / DU:.1f} DU", "legend_max": f"{SO2_MAX / DU:.1f} DU"},
     "fire": {"title": "Active fires", "palette": VIS["fire"]["palette"],
-             "legend_min": "Fire detected", "legend_max": "Hotspot"},
+             "legend_min": "MODIS", "legend_max": "VIIRS"},
     "burn": {"title": "Burn scars", "palette": VIS["burn"]["palette"],
              "legend_min": "Low severity", "legend_max": "High severity"},
 }
@@ -125,8 +132,25 @@ def fire_tile_image(start: str, end: str, sensor: str = "modis") -> ee.Image:
     return fire_image(start, end, sensor).focalMax(1.5, "circle", "pixels")
 
 
+def fire_tile_coded(start: str, end: str, sensor: str) -> ee.Image:
+    """Hotspots coded by satellite: MODIS = 1, VIIRS = 2, both = 3. Harmonized combines the two."""
+    if sensor == "modis":
+        return fire_tile_image(start, end, "modis")
+    if sensor == "viirs":
+        return fire_tile_image(start, end, "viirs").multiply(2)
+    m = fire_image(start, end, "modis").unmask(0)
+    v = fire_image(start, end, "viirs").unmask(0).multiply(2)
+    both = m.add(v)
+    return both.updateMask(both.gt(0)).focalMax(1.5, "circle", "pixels")
+
+
 def fire_pixel_count(region, start: str, end: str, sensor: str = "modis"):
-    return fire_image(start, end, sensor).reduceRegion(
+    if sensor == "harmonized":      # pixels where MODIS, VIIRS or both detected fire
+        img = fire_image(start, end, "modis").unmask(0).max(fire_image(start, end, "viirs").unmask(0))
+        img = img.updateMask(img.gt(0))
+    else:
+        img = fire_image(start, end, sensor)
+    return img.reduceRegion(
         ee.Reducer.count(), region, 1000, maxPixels=1e9, bestEffort=True
     ).get("hotspot").getInfo()
 

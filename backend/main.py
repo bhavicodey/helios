@@ -170,11 +170,12 @@ def tiles(
     pts = parse_geom(geom)
     if layer == "burn" and not pts and (lat is None or lon is None):
         raise HTTPException(400, "Click the globe to choose an area for burn scars.")
-    sensor = L.resolve_sensor(sensor, end)
+    # harmonized draws MODIS and VIIRS together (before 2012 only MODIS exists, so only red appears)
+    key_sensor = sensor
 
     key = ("tiles", layer, start, end,
            area_key(lat, lon, radius_km, pts) if layer == "burn" else None,
-           sensor if layer == "fire" else None)
+           key_sensor if layer == "fire" else None)
 
     def build():
         if layer == "so2":
@@ -182,9 +183,11 @@ def tiles(
                 raise HTTPException(404, "No sulfur dioxide data for this window yet. Try an earlier date.")
             img = L.so2_tile_image(start, end)
         elif layer == "fire":
-            if L.fire_collection(start, end, sensor).size().getInfo() == 0:
+            probe = "modis" if sensor == "harmonized" else sensor
+            if L.fire_collection(start, end, probe).size().getInfo() == 0 and (
+                    sensor != "harmonized" or L.fire_collection(start, end, "viirs").size().getInfo() == 0):
                 raise HTTPException(404, "No fire data for this window yet. Try an earlier date.")
-            img = L.fire_tile_image(start, end, sensor)
+            img = L.fire_tile_coded(start, end, sensor)
         else:
             region = region_of(lat, lon, radius_km, pts)
             (_, _), (post_a, post_b) = L.burn_windows(end)
@@ -192,7 +195,8 @@ def tiles(
                 raise HTTPException(404, "No clear Sentinel-2 images in the 30 days before this date.")
             img = L.burn_tile_image(region, end)
         try:
-            return img.getMapId(L.VIS[layer])["tile_fetcher"].url_format
+            vis = L.FIRE_VIS[sensor] if layer == "fire" else L.VIS[layer]
+            return img.getMapId(vis)["tile_fetcher"].url_format
         except ee.EEException as exc:
             raise HTTPException(502, f"Earth Engine error: {exc}") from exc
 
@@ -264,7 +268,7 @@ def insights(
         jobs = {
             "so2": lambda: L.so2_mean_du(region, start, end),
             "base": lambda: L.so2_mean_du(region, base_start, base_end),
-            "fire": lambda: L.fire_pixel_count(region, start, end, used),
+            "fire": lambda: L.fire_pixel_count(region, start, end, "harmonized" if sensor == "harmonized" else used),
         }
         if include_burn:
             jobs["burn"] = lambda: L.burned_hectares(burn_region, end, min(radius_km, 150))

@@ -19,25 +19,25 @@
   const STEPS = [
     {
       target: () => { const d = $("#sat-dock"); return d && d.offsetParent !== null ? d : $("#rail .sensor-section"); },
-      title: "the satellites",
-      body: () => "3D models of the two NASA satellites behind the data: MODIS (since 2000) and VIIRS (since 2012). hover to spin, click to enlarge.",
+      title: "Two satellites",
+      body: () => "Helios combines two NASA satellites: MODIS (since 2000) and VIIRS (since 2012). Click one to see its 3D model.",
       pad: 6,
     },
     {
       target: () => $("#rail .sensor-section"),
-      title: "your fire satellite",
-      body: () => `you picked ${sensorName() === "HARMONIZED" ? "harmonized: MODIS's long history and VIIRS's sharper detail joined into one record" : sensorName()}. switch any time. tap “view satellite CAD” to spin the satellite models up close.`,
+      title: "Choose your data",
+      body: () => `You chose ${sensorName() === "HARMONIZED" ? "harmonized: both satellites combined" : sensorName()}. Click MODIS or VIIRS to see just one.`,
     },
     {
       target: () => $("#area-section"),
-      title: "choose your area",
-      body: () => "type a latitude and longitude, or draw your own shape on the map. everything in Helios then reads inside that area.",
+      title: "Choose a place",
+      body: () => "Type a town or address, or draw an area on the map. All numbers are for that area.",
     },
     {
       target: () => $("#presets"),
-      title: "pick a place with lots of fires",
-      body: () => "fires are easiest to understand where there are a lot of them. choose one of these big wildfire events. the globe will fly there and drop a pin.",
-      todo: "choose a wildfire above to continue",
+      title: "Try a big wildfire",
+      body: () => "Pick one of these wildfires. The map flies there.",
+      todo: "Pick a wildfire to continue",
       wait: (done) => {
         $$("#presets button").forEach((b) => {
           const fire = b.dataset.fire === "1";
@@ -51,9 +51,9 @@
     },
     {
       target: () => $("#readout"),
-      title: "read the area",
-      body: () => "this readout counts the fire pixels, sulfur dioxide and burned area inside the dashed circle for the 7 days up to your date. the coloured banner sums it up.",
-      todo: "loading satellite numbers…",
+      title: "Read the numbers",
+      body: () => "Fire pixels, sulfur dioxide and burned area inside the circle, for the last 7 days. The banner tells you if it is unusual.",
+      todo: "Loading…",
       soft: (ready) => {
         const ok = () => { const s = snap(); return s.pin && !s.loading && (s.ins || s.series?.length); };
         if (ok()) { ready(); return () => {}; }
@@ -65,14 +65,14 @@
     },
     {
       target: () => $("#h-calendar").closest("section"),
-      title: "burning activity calendar",
-      body: () => "every square is a day. darker means more fire detections that day. click a day to jump the whole map to it. the colors menu switches to a color-blind safe ramp.",
+      title: "Daily calendar",
+      body: () => "Each square is one day. Darker means more fire. Click a day to jump to it.",
     },
     {
       target: () => $("#history-open"),
-      title: "25 years of fire history",
-      body: () => "open the fire history: every month since 2000 in one calendar, which months are critical here, how this month compares with the usual, and the yearly trend. close it to carry on.",
-      todo: "click “open fire history” to continue",
+      title: "25-year history",
+      body: () => "Open it to see every month since 2000, and how this month compares with past years. Close it to continue.",
+      todo: "Click “open fire history”",
       pad: 10,
       wait: (done) => {
         const h = $("#history");
@@ -87,19 +87,19 @@
     },
     {
       target: () => $("#h-layers").closest("section"),
-      title: "flip the layers",
-      body: () => "turn sulfur dioxide, active fires and burn scars on and off, and slide their opacity. the radius slider grows or shrinks your area.",
+      title: "Map layers",
+      body: () => "Turn layers on or off. The radius slider makes your area bigger or smaller.",
     },
     {
       target: () => $("#timeline"),
-      title: "travel through time",
-      body: () => "press play to watch the fire spread, drag the slider, or type a date. everything on screen updates together.",
+      title: "Change the date",
+      body: () => "Press play, drag the slider, or pick a date. Everything updates.",
     },
     {
       target: () => $("#render-open"),
-      title: "see the fire visualization",
-      body: () => "now open the 3d fire render. hover each part of the fire to see the real satellite numbers for your area. close it when you're done to finish the tour.",
-      todo: "click “open fire render” to continue",
+      title: "Fire render",
+      body: () => "Open it, then hover over the fire to see the data for your area. Close it to continue.",
+      todo: "Click “open fire render”",
       pad: 10,
       wait: (done) => {
         const render = $("#render");
@@ -114,13 +114,13 @@
     },
     {
       target: () => $("#export-section"),
-      title: "take it with you",
-      body: () => "pick a date range, then download the filtered hotspot records and the MODIS + VIIRS monthly summaries as CSVs, or save the calendar as an image for reports and briefings. the fire history has its own downloads too.",
+      title: "Download your data",
+      body: () => "Choose dates, then download the fire records, monthly totals or the calendar image.",
     },
     {
       target: null,
-      title: "you're all set",
-      body: () => "drag the globe, drop your own pins and explore. you can replay this tour any time from “how it works”.",
+      title: "You're ready",
+      body: () => "Drag the globe and try your own places. Replay this tour anytime with “how it works”.",
       final: true,
     },
   ];

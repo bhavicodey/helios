@@ -118,6 +118,7 @@ const map = new maplibregl.Map({
   center: [-100, 28], zoom: innerWidth < 820 ? 0.9 : 1.6,
   attributionControl: { compact: true },
 });
+window.firescoutMap = map;   // passes.js draws the one-time satellite pass on this map
 map.on("style.load", () => {
   map.setProjection({ type: "globe" });
   try { map.setSky({ "sky-color": "#0A0607", "horizon-color": "#3A1013", "fog-color": "#140A0B", "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] }); } catch { /* older builds */ }
@@ -198,7 +199,7 @@ function tileParams() {
 async function loadLayer(name) {
   const token = ++state.tokens[name];
   if (!state.layers[name].on) { removeRaster(name); setStatus(name, ""); return; }
-  if (name === "burn" && !state.pin) { removeRaster(name); setStatus(name, "Click the globe to choose an area first."); return; }
+  if (name === "burn" && !state.pin) { removeRaster(name); setStatus(name, "Pick a place first."); return; }
   setStatus(name, "loading…");
   try {
     const { url } = await api(`tiles/${name}`, tileParams());
@@ -227,7 +228,7 @@ function setPin(lat, lon, { refresh = true, poly = null } = {}) {
     : circle(lat, lon, state.radius));
   $("#place").textContent = poly ? `drawn area near ${place(lat, lon)}` : place(lat, lon);
   $("#place-sub").textContent = poly ? "inside your drawn shape" : `Within ${state.radius} km`;
-  $("#area-note").textContent = poly ? `using your drawn shape (${poly.length} corners). drop a pin to go back to a circle.` : `circle of ${state.radius} km around ${place(lat, lon)}.`;
+  $("#area-note").textContent = poly ? `your drawn area (${poly.length} corners). click the map to use a circle again.` : `circle of ${state.radius} km around ${place(lat, lon)}.`;
   window.dispatchEvent(new CustomEvent("firescout:area"));
   $("#watch-add").disabled = false;
   $("#render-open").disabled = false;
@@ -491,11 +492,11 @@ $("#watch-check").addEventListener("click", async () => {
 
 // ---------------------------------------------------------------- selected satellite and daily burning calendar
 const SENSOR_DETAILS = {
-  harmonized: "MODIS (2000–2012) and VIIRS (2012 → today) joined into one record. counts before 2012 are scaled to VIIRS-equivalent.",
-  modis: "MODIS FIRMS · active-fire record from Nov 2000 · ~1 km pixels",
-  viirs: "VIIRS VNP14A1 · daily fire-mask composite from Jan 2012 · 1 km grid",
+  harmonized: "both satellites combined, 2000 – today.",
+  modis: "MODIS only · since 2000 · ~1 km pixels.",
+  viirs: "VIIRS only · since 2012 · ~1 km pixels.",
 };
-const SENSOR_CAPTION = { harmonized: "harmonized MODIS + VIIRS hotspots", modis: "MODIS FIRMS hotspots", viirs: "VIIRS VNP14A1 fire-mask detections" };
+const SENSOR_CAPTION = { harmonized: "MODIS (red) + VIIRS (yellow) hotspots", modis: "MODIS FIRMS hotspots", viirs: "VIIRS VNP14A1 fire-mask detections" };
 const SENSOR_NAME = { harmonized: "harmonized", modis: "MODIS", viirs: "VIIRS" };
 function selectSensor(sensor) {
   if (!FIRST[sensor]) return;
@@ -510,6 +511,11 @@ function selectSensor(sensor) {
   });
   $("#sensor-detail").textContent = SENSOR_DETAILS[sensor];
   $("#fire-source-caption").textContent = SENSOR_CAPTION[sensor];
+  // fire legend: MODIS is red, VIIRS is yellow; harmonized shows both (orange where both satellites saw the fire)
+  const fireRow = $('.layer[data-layer="fire"]');
+  const LEG = { modis: ["linear-gradient(90deg,#E5383B,#E5383B)", "MODIS", ""], viirs: ["linear-gradient(90deg,#FFD60A,#FFD60A)", "", "VIIRS"],
+    harmonized: ["linear-gradient(90deg,#E5383B 0 40%,#FF9F1C 40% 60%,#FFD60A 60% 100%)", "MODIS", "VIIRS (orange = both)"] }[sensor];
+  if (fireRow && LEG) { $(".bar", fireRow).style.background = LEG[0]; $(".lo", fireRow).textContent = LEG[1]; $(".hi", fireRow).textContent = LEG[2]; fireRow.dataset.legendSet = "1"; }
   window.dispatchEvent(new CustomEvent("firescout:sensor-changed"));
   $("#v-fire").textContent = "–";
   updateTimelineText();
@@ -578,7 +584,7 @@ async function loadCalendar() {
   const empty = Array.from({length: daysInMonth}, (_, i) => ({date:`${ym}-${String(i+1).padStart(2,"0")}`, count:null}));
   showCalendar(empty, year, month); lastCalendar = null;
   state.calendarDays = null; window.dispatchEvent(new CustomEvent("firescout:calendar"));
-  if (!state.pin) { $("#calendar-note").textContent = "drop a pin or choose a preset to see daily activity."; return; }
+  if (!state.pin) { $("#calendar-note").textContent = "pick a place to see the calendar."; return; }
   $("#calendar-note").textContent = `loading ${SENSOR_NAME[state.sensor]} daily detections…`;
   try {
     const r = await api("fire_calendar", { year, month, sensor: state.sensor, ...areaParams() });
@@ -629,6 +635,7 @@ async function boot() {
     const meta = await api("meta");
     for (const [name, m] of Object.entries(meta)) {
       const row = $(`.layer[data-layer="${name}"]`);
+      if (!row || row.dataset.legendSet) continue;          // the fire legend follows the chosen satellite
       $(".bar", row).style.background = `linear-gradient(90deg, ${m.palette.join(", ")})`;
       $(".lo", row).textContent = m.legend_min; $(".hi", row).textContent = m.legend_max;
     }
