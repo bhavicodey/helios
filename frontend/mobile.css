@@ -1,0 +1,51 @@
+/* Phone layout (600px and narrower). Loaded last so it only adjusts what the other sheets set. */
+@media (max-width: 600px) {
+  /* top: the brand/layers panel */
+  #rail { top: 10px; left: 10px; right: 10px; padding: 12px 14px 4px; max-height: 58vh; border-radius: 18px; }
+  #rail h1 { font-size: 26px; }
+
+  /* map controls: a slimmer column on the right */
+  #nav { top: 70px; right: 10px; padding: 3px; }
+  #nav button { width: 36px; height: 36px; }
+  #nav svg { width: 18px; height: 18px; }
+
+  /* about / how it works / feedback: a compact row under the top panel */
+  #fabs { top: 70px; left: 10px; right: 58px; bottom: auto; flex-direction: row; flex-wrap: wrap; align-items: flex-start; justify-content: flex-start; gap: 6px; }
+  .fab, #feedback-btn { padding: 6px 11px; font-size: 12px; font-weight: 600; }
+  #feedback-btn span::after { content: ""; }
+  body:has(#rail:not(.collapsed)) :is(#fabs, #nav) { opacity: 0; pointer-events: none; }
+
+  /* bottom: the date bar, one row of controls plus the slider */
+  #timeline { left: 10px; right: 10px; bottom: 10px; translate: none; width: auto; min-width: 0; grid-template-columns: auto 1fr; gap: 6px 8px; padding: 9px 12px 8px; border-radius: 16px; }
+  .tl-left { grid-row: 1; grid-column: 1; gap: 6px; }
+  #play { padding: 6px 14px; font-size: 13px; }
+  #tl-btn { padding: 6px 10px; font-size: 12px; }
+  #datebox { grid-row: 1; grid-column: 2; justify-self: end; gap: 4px; }
+  .step-btn { width: 28px; height: 28px; font-size: 16px; }
+  #date { width: 118px; padding: 4px 6px; font-size: 13px; }
+  #slider { grid-row: 2; grid-column: 1 / -1; }
+  #window-note { grid-row: 3; font-size: 11px; line-height: 1.35; }
+
+  /* readout card sits just above the date bar */
+  #readout { left: 10px; right: 10px; top: auto; bottom: 132px; max-height: 44vh; padding: 14px 16px; border-radius: 18px; }
+  body:has(#readout:not(.collapsed)) #rail { max-height: 30vh; }
+
+  /* time-lapse readout and toasts clear the date bar */
+  #tl-hud { bottom: 140px; width: calc(100% - 20px); }
+  #toast { bottom: 140px; max-width: calc(100vw - 24px); }
+  .maplibregl-ctrl-bottom-right { bottom: 124px; }
+
+  /* pop-up windows use the whole screen width */
+  .modal { padding: 8px; place-items: start center; }
+  .card.wide, .render-card { max-height: calc(100dvh - 16px); padding: 20px 14px 16px; border-radius: 18px; }
+  .card.wide h2, .render-card h2 { font-size: 22px; padding-right: 28px; }
+  .x { top: 10px; right: 12px; }
+  .r-list { grid-template-columns: 1fr; }
+  #r-tip { width: min(230px, 70vw); }
+}
+
+/* bigger tap targets on touch screens */
+@media (pointer: coarse) {
+  .step-btn, #nav button { min-width: 32px; min-height: 32px; }
+  input[type=range]::-webkit-slider-thumb { width: 22px; height: 22px; }
+}

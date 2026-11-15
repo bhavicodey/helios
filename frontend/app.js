@@ -389,6 +389,10 @@ $("#render-open").addEventListener("click", openRender);
 
 $$(".panel-toggle").forEach((btn) => btn.addEventListener("click", () => {
   const p = btn.closest(".panel"); const c = p.classList.toggle("collapsed"); btn.setAttribute("aria-expanded", String(!c));
+  // on phones only one panel is open at a time, so they never cover each other
+  if (!c && innerWidth <= 600) $$(".panel").forEach((other) => {
+    if (other !== p && !other.classList.contains("collapsed")) { other.classList.add("collapsed"); other.querySelector(".panel-toggle")?.setAttribute("aria-expanded", "false"); }
+  });
 }));
 if (innerWidth < 820) $$(".panel-toggle").forEach((b) => b.click());
 

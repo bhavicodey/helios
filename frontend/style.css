@@ -14,6 +14,9 @@
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
+/* keep off-screen (sliding-in) panels from widening the page on phones */
+html { overflow: hidden; }
+body { position: relative; overflow: clip; }
 body { color: var(--text); background: #fff; font-size: 14px; line-height: 1.5; overflow: hidden; text-transform: lowercase; -webkit-font-smoothing: antialiased; }
 button, input { font: inherit; color: inherit; text-transform: lowercase; }
 button { cursor: pointer; }
