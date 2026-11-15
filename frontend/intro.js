@@ -1,5 +1,5 @@
 "use strict";
-// welcome screens
+
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -11,13 +11,13 @@
   body.classList.add("intro-on");
 
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } };
-  const save = (p) => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch { /* storage blocked */ } };
+  const save = (p) => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {  } };
 
-  // plain intro: no background effects, just smooth motion
-  // (burst stays as a no-op so other files can still call FireIntro.burst safely)
+  
+  
   function burst() {}
 
-  // steps
+  
   const sSensor = $("#s-sensor"), sName = $("#s-name"), sWhy = $("#s-why");
   const nameIn = $("#w-name"), goBtn = $("#w-go");
 
@@ -52,7 +52,7 @@
 
   $$("input[name=why]").forEach((r) => r.addEventListener("change", () => { goBtn.disabled = false; }));
 
-  // "do you live in a wildfire-prone area?" -> yes / no / unsure
+  
   sWhy.addEventListener("submit", async (e) => {
     e.preventDefault();
     const pick = $("input[name=why]:checked");
@@ -65,8 +65,8 @@
     finish(profile, true);
   });
 
-  // personalise + reveal
-  // the welcome line follows the wildfire answer
+  
+  
   const LEDE = {
     yes: "enter your town to see its fire history.",
     unsure: "enter your town to see how often fires burn near you.",
@@ -74,7 +74,7 @@
   };
   function personalize(p) {
     $("#lede").textContent = `welcome, ${p.name}. ${LEDE[p.fireArea] || "click the map to start."}`;
-    // suggest the LA fires as a first example (the tour also starts there)
+    
     $$("#presets button").forEach((b, i) => b.classList.toggle("pick", i === 0));
   }
 
@@ -82,20 +82,20 @@
     personalize(profile);
     intro.classList.add("leaving");
     await sleep(reduce ? 0 : 700);
-    body.classList.remove("intro-on");           // panels float in
+    body.classList.remove("intro-on");           
     await sleep(reduce ? 0 : 500);
     intro.hidden = true;
     if (showTour) { await sleep(reduce ? 0 : 600); window.FireTour?.start(); }
   }
 
-  if (location.search.includes("skip")) {          // handy for testing: /?skip
+  if (location.search.includes("skip")) {          
     const p = saved?.name ? saved : { name: "friend", fireArea: "unsure" };
     $$(".step", intro).forEach((s) => s.classList.remove("active"));
     intro.hidden = true; body.classList.remove("intro-on"); personalize(p);
     window.dispatchEvent(new CustomEvent("firescout:sensor", { detail: saved?.sensor || "modis" }));
   }
 
-  // modals
+  
   let lastFocus = null;
   function openModal(m) { lastFocus = document.activeElement; m.hidden = false; (m.querySelector(".cta, .x, input") || m).focus?.({ preventScroll: true }); }
   function closeModal(m) { m.hidden = true; lastFocus?.focus?.({ preventScroll: true }); }

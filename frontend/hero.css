@@ -1,4 +1,3 @@
-/* welcome screen */
 #intro {
   --red-0: #FFE9E3; --red-1: #FF9C8C; --red-2: #FF5A4E; --red-3: #E5383B; --red-4: #8E1022;
   --glass-line: rgba(255, 255, 255, .1); --glass-text: #F6EEEE; --glass-muted: #A9979A;
@@ -8,7 +7,6 @@
 }
 #intro .stage { width: min(800px, 100%); margin: 0 auto; }
 
-/* title */
 .hero-head { text-align: center; margin: 6vh 0 24px; }
 .hero-kicker { display: inline-block; margin: 0 0 12px; padding: 5px 14px; border-radius: 999px; font-size: 11.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
   color: var(--red-1); border: 1px solid rgba(255, 110, 100, .28); animation: fadeUp .8s cubic-bezier(.2, .9, .25, 1) both; }
@@ -19,7 +17,6 @@
 .hero-word span:nth-child(4) { animation-delay: .28s; } .hero-word span:nth-child(5) { animation-delay: .34s; } .hero-word span:nth-child(6) { animation-delay: .4s; }
 .hero-tag { margin: 12px 0 0; font-size: clamp(15px, 2vw, 18px); color: var(--glass-muted); animation: fadeUp .9s cubic-bezier(.2, .9, .25, 1) .55s both; }
 
-/* cards */
 #intro .card { background: var(--panel-solid, #150D0E); border: 1px solid var(--glass-line); outline: 0; border-radius: 22px; color: var(--glass-text);
   box-shadow: 0 24px 60px rgba(0, 0, 0, .45); backdrop-filter: none; }
 #intro .step.active { animation: cardIn .7s cubic-bezier(.2, .9, .25, 1) .45s both; }
@@ -30,7 +27,6 @@
 #intro .back:hover { color: #fff; }
 #intro .name { color: var(--red-1); }
 
-/* satellite choices: both CADs always side by side */
 #intro .sensor-choices { grid-template-columns: 1fr 1fr; }
 #intro .sensor-choice { background: rgba(255, 255, 255, .03); border: 1px solid var(--glass-line); transition: border-color .3s, background .3s, transform .4s cubic-bezier(.2, .9, .25, 1), box-shadow .4s; }
 #intro .step.active .sensor-choice { animation: fadeUp .7s cubic-bezier(.2, .9, .25, 1) both; }
@@ -42,37 +38,32 @@
 #intro .sensor-choice input { accent-color: var(--red-3); }
 #intro .harmonized-choice em { color: #fff; background: var(--red-3); }
 #intro .cad-thumb { aspect-ratio: 16 / 9; cursor: ew-resize; background: #2a2a2a; transition: box-shadow .4s; }
-#intro .cad-thumb video { filter: none; }   /* no CSS filters or transforms on videos: some GPUs then draw them blank */
+#intro .cad-thumb video { filter: none; }
 #intro .cad-thumb::after { content: "hover to spin"; position: absolute; left: 8px; top: 8px; padding: 3px 9px; border-radius: 99px; font-size: 10.5px; font-weight: 600;
   color: #fff; background: rgba(10, 6, 7, .7); opacity: 0; transform: translateY(-4px); transition: opacity .3s, transform .3s; pointer-events: none; }
 #intro .cad-thumb:hover::after { opacity: 1; transform: none; }
 #intro .cad-enlarge { background: var(--red-3); border-color: transparent; font-size: 12.5px; padding: 6px 12px 6px 9px; transition: background .2s, transform .3s cubic-bezier(.2, .9, .25, 1); }
 #intro .cad-enlarge:hover { background: var(--red-2); transform: scale(1.05); }
 
-/* name + purpose steps */
 #intro .opt span { background: rgba(255, 255, 255, .03); border: 1px solid var(--glass-line); color: var(--glass-text); transition: border-color .25s, background .25s, transform .35s cubic-bezier(.2, .9, .25, 1); }
 #intro .opt:hover span { border-color: rgba(255, 110, 100, .5); transform: translateY(-2px); box-shadow: none; }
 #intro .opt input:checked + span { background: var(--red-3); color: #fff; border-color: transparent; box-shadow: none; animation: none; }
 #intro #w-name, #intro #w-other { color: #fff; background-color: transparent; border-bottom-color: rgba(255, 255, 255, .18); background-image: linear-gradient(var(--red-2), var(--red-2)); }
 #intro input::placeholder { color: rgba(255, 255, 255, .3); }
 
-/* button */
 #intro .cta { color: #fff; font-weight: 700; background: var(--red-3); box-shadow: none; transition: background .25s, transform .35s cubic-bezier(.2, .9, .25, 1), box-shadow .35s; }
 #intro .cta::after { display: none; }
 #intro .cta:hover:not(:disabled) { background: var(--red-2); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(229, 56, 59, .35); }
 #intro .cta:disabled { opacity: .35; }
 
-/* no background effects on the welcome screen */
 #intro #petals, .sparkle-trail, .burst { display: none !important; }
 
-/* leaving: a soft fade and lift into the app */
 #intro.leaving { clip-path: none; opacity: 0; transform: scale(1.02); pointer-events: none; }
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes cardIn { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes letterIn { from { opacity: 0; transform: translateY(30px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
 
-/* fit the first step on a laptop screen */
 @media (max-height: 940px) {
   .hero-head { margin: 2vh 0 16px; }
   .hero-word { font-size: clamp(50px, 8.5vw, 100px); }
@@ -94,6 +85,5 @@
 
 .hero-word { filter: none; }
 
-/* wildfire question: yes / no / not sure on one row */
 #intro .opts-3 { grid-template-columns: repeat(3, 1fr); }
 #intro .name { background: none; padding: 0; }

@@ -1,6 +1,3 @@
-/* popups, tour, downloads */
-
-/* satellite CADs (intro cards + viewer) */
 .stage:has(#s-sensor.active) { width: min(760px, 100%); }
 .sensor-choices { grid-template-columns: 1fr 1fr; }
 .sensor-choice { flex-direction: column; align-items: stretch; padding: 10px; gap: 10px; transition: transform .3s var(--spring), border-color .2s, box-shadow .3s; }
@@ -15,7 +12,7 @@
 .cad-rail-btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
 @media (max-width: 600px) { .sensor-choices { grid-template-columns: 1fr; } .cad-thumb { aspect-ratio: 16 / 8; } }
 
-#cad { z-index: 75; }   /* above the intro (60) and the tour (55) */
+#cad { z-index: 75; }
 .cad-card { max-width: 1120px; text-align: left; max-height: 94vh; overflow-y: auto; padding: 26px 28px 24px; }
 .cad-card h2 { font-size: 28px; margin: 0; }
 .cad-tabs { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 12px 0 14px; padding: 4px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
@@ -51,7 +48,6 @@
   .cad-hint { display: none; }
 }
 
-/* exports */
 .field { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0 0; color: var(--muted); font-weight: 600; font-size: 13px; }
 .field select { max-width: 60%; font-size: 13px; }
 .export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
@@ -65,7 +61,6 @@
 #export-note[data-kind="ok"] { color: var(--calm); }
 @keyframes stripes { to { background-position: -45px 0; } }
 
-/* guided tour (spotlight) */
 #coach { position: fixed; inset: 0; z-index: 55; pointer-events: none; opacity: 0; transition: opacity .35s ease; }
 #coach.show { opacity: 1; }
 #coach[hidden] { display: none; }
@@ -99,13 +94,11 @@ body.touring #hint { opacity: 0; }
 @keyframes coachPing { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .coach-hole::after { display: none; } }
 
-/* harmonized sensor + intro option */
 .sensor-switch.three { grid-template-columns: 1.3fr 1fr 1fr; }
 .sensor-switch button { text-transform: none; }
 .harmonized-choice { grid-column: 1 / -1; padding: 12px 14px; }
 .harmonized-choice em { margin-left: 8px; padding: 2px 8px; border-radius: 99px; font-style: normal; font-size: 11px; font-weight: 700; color: var(--accent-2); background: var(--accent-soft); vertical-align: 2px; }
 
-/* area of interest */
 .coord-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; }
 .coord-form label { display: grid; gap: 3px; font-size: 12px; font-weight: 600; color: var(--muted); }
 .coord-form input { width: 100%; min-width: 0; padding: 7px 9px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); }
@@ -123,7 +116,6 @@ body.touring #hint { opacity: 0; }
 .range-row input { min-width: 0; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color-scheme: light; }
 .range-hint { font-size: 11.5px; margin-top: 4px; }
 
-/* color ramps: calendar follows the chosen palette */
 :root { --h0: #f1f5f0; --h1: #fee3cb; --h2: #fdb78d; --h3: #f47d54; --h4: #bd372b; }
 .cal-day[data-intensity="0"] { background: var(--h0); }
 .cal-day[data-intensity="1"] { background: var(--h1); }
@@ -133,7 +125,6 @@ body.touring #hint { opacity: 0; }
 :root[data-palette="cvd"] .cal-day[data-intensity="3"], :root[data-palette="mono"] .cal-day[data-intensity="3"] { color: #fff; }
 .cal-day.from-modis { box-shadow: inset 0 -3px 0 rgba(22,26,38,.25); }
 
-/* readout: this month vs its history */
 .anomaly { margin: 12px 0 4px; padding: 11px 14px; border-radius: 14px; border: 1px solid var(--line); border-left: 5px solid #c3cad6; background: var(--paper); }
 .anomaly[hidden] { display: none; }
 .anomaly[data-level="high"] { border-left-color: #d7191c; background: #fdeceb; }
@@ -148,7 +139,6 @@ body.touring #hint { opacity: 0; }
 .history-btn { margin: 10px 0 0; padding: 10px 14px; }
 .is-loading { opacity: .75; }
 
-/* fire history dashboard */
 .history-card { max-width: 1180px; text-align: left; max-height: 94vh; overflow-y: auto; padding: 26px 28px 24px; }
 .history-card h2 { font-size: 28px; margin: 0; }
 .history-card h3 { margin: 0 0 10px !important; font-size: 17px !important; color: var(--ink) !important; }

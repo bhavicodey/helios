@@ -1,4 +1,4 @@
-// satellite fly-over on the map
+
 const $ = (s, r = document) => r.querySelector(s);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const KM = 1000, R_EARTH = 6371;
@@ -52,7 +52,7 @@ function update(t) {
     const half = s.swathKm / 2;
     const line = []; for (let i = 0; i <= 40; i++) line.push(destination(p.start, s.heading, PASS_KM * i / 40));
     track.push({ type: "Feature", properties: { sat: k }, geometry: { type: "LineString", coordinates: line } });
-    // faint footprint behind the satellite
+    
     const n = 24, keep = PASS_KM * 0.45;
     for (let i = 0; i < n; i++) {
       const a = Math.max(0, p.along - keep * (i + 1) / n), b = Math.max(0, p.along - keep * i / n);
@@ -88,7 +88,7 @@ function updateTags() {
   }
 }
 
-// 3D satellites inside the map (three.js custom layer)
+
 async function threeLayer() {
   const T = await import("three");
   const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
@@ -135,7 +135,7 @@ async function threeLayer() {
   };
 }
 
-// play once, then clear
+
 function frame(now) {
   raf = 0;
   if (!playing) return;
@@ -162,7 +162,7 @@ function onArea() {
   center = pin ? [pin.lon, pin.lat] : null;
   const b = $("#pass-play"); if (b && !playing) b.disabled = !center;
   const key = pin ? `${pin.lat.toFixed(2)},${pin.lon.toFixed(2)}` : "";
-  if (center && key !== lastPlaceKey && !document.body.classList.contains("intro-on")) setTimeout(play, 1800);   // a new place: one pass
+  if (center && key !== lastPlaceKey && !document.body.classList.contains("intro-on")) setTimeout(play, 1800);   
   lastPlaceKey = key;
 }
 

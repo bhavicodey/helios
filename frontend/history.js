@@ -1,18 +1,18 @@
 "use strict";
-// fire history popup
+
 (function () {
   const q = (s, r = document) => r.querySelector(s);
   const MON = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
   const MONTH_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const DIVERGE = ["#2c7bb6", "#abd9e9", "#f4f4f2", "#fdae61", "#d7191c"];   // below usual ... above usual (colour-blind friendly; used in white exported images)
-  const DIVERGE_DARK = ["#3E73A8", "#2C4258", "#2A2426", "#B4363A", "#FF5A5D"];   // same idea for the dark screen
+  const DIVERGE = ["#2c7bb6", "#abd9e9", "#f4f4f2", "#fdae61", "#d7191c"];   
+  const DIVERGE_DARK = ["#3E73A8", "#2C4258", "#2A2426", "#B4363A", "#FF5A5D"];   
   const modal = q("#history"), NS = "http://www.w3.org/2000/svg";
   let data = null, token = 0, loading = false, lastFocus = null;
 
   const compact = (v) => v == null ? "" : v >= 10000 ? `${Math.round(v / 1000)}k` : v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(Math.round(v));
   const ymOf = (ms) => { const d = new Date(ms); return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`; };
   const pct = (v) => v == null ? "–" : `${v > 0 ? "+" : ""}${Math.round(v)}%`;
-  // percentile: how many of the past years' same month this month beats (always 0–100%)
+  
   function addPercentiles(rows) {
     for (const r of rows) {
       const others = rows.filter((o) => o.mon === r.mon && o.year !== r.year && o.harmonized != null).map((o) => o.harmonized);
@@ -24,7 +24,7 @@
   const standing = (p, name) => p == null ? "–" : p >= 50 ? `busier than ${p}% of past ${name}s` : `quieter than ${100 - p}% of past ${name}s`;
   const ordinal = (n) => n === 1 ? "" : n + ({ 1: "st", 2: "nd", 3: "rd" }[n % 100 > 10 && n % 100 < 14 ? 0 : n % 10] || "th") + " ";
 
-  // loading
+  
   async function load() {
     if (!state.pin) return;
     const t = ++token; loading = true; data = null;
@@ -54,7 +54,7 @@
     q("#history-open").textContent = loading ? "loading fire history…" : "open fire history";
   }
 
-  // the k used for a given month (calendar harmonization)
+  
   function k(month) {
     if (!data) return null;
     const s = data.method.seasonal_k?.[String(month)];
@@ -62,7 +62,7 @@
   }
   window.FireHistory = { k, get data() { return data; }, open, load };
 
-  // readout card: this month vs its history
+  
   function rowFor(ym) { return data?.rows.find((r) => r.month === ym); }
   function renderAnomaly() {
     const box = q("#anomaly");
@@ -84,7 +84,7 @@
     syncBanner(r, level, name, soFar);
   }
 
-  // tiny numbers (like 13 vs 4) are not really unusual
+  
   function meaningful(r) {
     const h = r.harmonized ?? 0, b = r.baseline_median ?? 0;
     return Math.max(h, b) >= 20 && Math.abs(h - b) >= 10;
@@ -96,7 +96,7 @@
     return a >= 90 ? "high" : a >= 70 ? "up" : a <= 25 ? "down" : "normal";
   }
 
-  // keep the 7-day banner and the whole-month card telling one story
+  
   function syncBanner(r, level, name, soFar) {
     const sig = q("#signal"), ins = state.readout?.ins;
     if (!ins) return;
@@ -109,7 +109,7 @@
     }
   }
 
-  // dashboard
+  
   function open() {
     if (!state.pin) return;
     lastFocus = document.activeElement;
@@ -130,14 +130,14 @@
     const from = q("#h-from"), to = q("#h-to");
     if (!from.options.length || from.dataset.span !== `${years[0]}-${years.at(-1)}`) {
       from.replaceChildren(...years.map((y) => new Option(y, y))); to.replaceChildren(...years.map((y) => new Option(y, y)));
-      from.value = years.includes(2020) ? 2020 : years[0]; to.value = years.at(-1);   // default view: 2020 to now from.dataset.span = `${years[0]}-${years.at(-1)}`;
+      from.value = years.includes(2020) ? 2020 : years[0]; to.value = years.at(-1);   
     }
     tiles(); grid(); season(); annual(); method();
   }
   ["#h-from", "#h-to", "#h-view"].forEach((s) => q(s).addEventListener("change", () => { if (data) grid(); }));
   addEventListener("firescout:palette", () => { if (data && !modal.hidden) { grid(); season(); annual(); } });
 
-  // headline tiles
+  
   function tiles() {
     const s = data.stats, box = q("#h-tiles");
     const cur = s.current, name = cur ? MONTH_LONG[cur.mon - 1] : "";
@@ -158,7 +158,7 @@
     }));
   }
 
-  // years x months calendar
+  
   function levels(rows) {
     const vals = rows.map((r) => r.harmonized).filter((v) => v != null && v > 0).sort((a, b) => a - b);
     const qv = (p) => vals.length ? vals[Math.min(vals.length - 1, Math.floor(p * vals.length))] : 0;
@@ -168,7 +168,7 @@
   function anomLevel(r) {
     const a = r.percentile;
     if (a == null) return -1;
-    if (!meaningful(r)) return 2;                 // tiny counts: shown as "about usual"
+    if (!meaningful(r)) return 2;                 
     return a <= 10 ? 0 : a <= 35 ? 1 : a < 65 ? 2 : a < 90 ? 3 : 4;
   }
   function textOn(hex) { const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (r * 299 + g * 587 + b * 114) / 1000 < 140 ? "#fff" : "#161a26"; }
@@ -218,7 +218,7 @@
       row.append(tot);
       box.append(row);
     }
-    // legend
+    
     const lg = q("#h-legend"); lg.replaceChildren();
     const sw = (c, label) => { const s = document.createElement("span"); s.innerHTML = "<i></i>"; s.firstChild.style.background = c; s.append(label); return s; };
     if (view === "anomaly") {
@@ -230,13 +230,13 @@
     const st = document.createElement("span"); st.textContent = "* year not complete"; lg.append(st);
   }
 
-  // small svg helpers
+  
   function svg(w, h) { const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", `0 0 ${w} ${h}`); s.setAttribute("role", "img"); return s; }
   function el(name, attrs, parent) { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); parent?.append(e); return e; }
   function text(parent, x, y, t, attrs = {}) { const e = el("text", { x, y, ...attrs }, parent); e.textContent = t; return e; }
   function quant(xs, p) { const s = xs.slice().sort((a, b) => a - b); if (!s.length) return null; const i = (s.length - 1) * p, lo = Math.floor(i); return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo); }
 
-  // seasonal pattern
+  
   function season() {
     const W = 520, H = 230, L = 46, R = 12, T = 12, B = 28, s = svg(W, H);
     const pal = window.firescoutPalette();
@@ -260,7 +260,7 @@
     q("#h-season").replaceChildren(s);
   }
 
-  // yearly totals + trend
+  
   function annual() {
     const W = 520, H = 230, L = 46, R = 12, T = 12, B = 28, s = svg(W, H), pal = window.firescoutPalette();
     const a = data.annual, max = Math.max(1, ...a.map((x) => x.total || 0)) * 1.1;
@@ -285,7 +285,7 @@
     q("#h-annual-note").textContent = `dashed line: trend across complete years${st.trend_pct_per_decade == null ? " (needs 5+ complete years)" : `, ${st.trend_pct_per_decade > 0 ? "+" : ""}${st.trend_pct_per_decade}% per decade`}. pale bars are years not yet complete.`;
   }
 
-  // harmonization check: MODIS vs VIIRS in the months both flew
+  
   function method() {
     const m = data.method, pts = data.overlap_points, W = 360, H = 260, L = 46, R = 12, T = 12, B = 34, s = svg(W, H);
     const mx = Math.max(1, ...pts.map((p) => p[0])) * 1.05, my = Math.max(1, ...pts.map((p) => p[1])) * 1.05;
@@ -305,7 +305,7 @@
     add("p", "from 2012 on we use VIIRS. before that we use MODIS × k, so every year is on the same scale.");
   }
 
-  // downloads
+  
   const cell = (v) => { if (v == null) return ""; const s = String(v); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   const csv = (rows, cols) => "﻿" + [cols.join(","), ...rows.map((r) => cols.map((c) => cell(r[c])).join(","))].join("\r\n") + "\r\n";
   function save(name, blob) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }

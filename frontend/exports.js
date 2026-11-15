@@ -1,11 +1,11 @@
 "use strict";
-// csv and png downloads
+
 (function () {
   const q = (s) => document.querySelector(s);
   const btns = { hot: q("#exp-hotspots"), monthly: q("#exp-monthly"), png: q("#exp-cal-png"), cal: q("#exp-cal-csv") };
   const note = q("#export-note");
 
-  // helpers
+  
   const cell = (v) => {
     if (v === null || v === undefined) return "";
     const s = String(v);
@@ -27,7 +27,7 @@
   };
   const fromIn = q("#exp-from"), toIn = q("#exp-to");
   let rangeTouched = false;
-  function defaultRange() {                                 // follow the map date until the user picks a range
+  function defaultRange() {                                 
     if (rangeTouched) return;
     fromIn.value = iso(state.end - 6 * DAY); toIn.value = iso(state.end);
   }
@@ -45,7 +45,7 @@
     finally { btn.classList.remove("working"); small.textContent = old; sync(); }
   }
 
-  // enable / disable
+  
   function sync() {
     const pin = !!state.pin, cal = !!state.calendarDays;
     btns.hot.disabled = !pin; btns.monthly.disabled = !pin;
@@ -56,7 +56,7 @@
   }
   ["firescout:pin", "firescout:calendar", "firescout:readout"].forEach((ev) => addEventListener(ev, () => { if (note.dataset.kind === "warn") note.dataset.kind = ""; sync(); }));
 
-  // 1. filtered hotspot records
+  
   btns.hot.addEventListener("click", () => busy(btns.hot, "fetching records…", async () => {
     let start = fromIn.value, end = toIn.value; const conf = q("#exp-conf").value;
     if (!start || !end) throw new Error("choose a from and to date first.");
@@ -69,7 +69,7 @@
     say(`${rows.length.toLocaleString()} hotspot records saved (${state.sensor.toUpperCase()}, ${conf} confidence, ${start} → ${end})${r.truncated ? ". some days hit the 5,000-rows-per-month cap; shorten the range or shrink the area for the rest" : ""}.`, "ok");
   }));
 
-  // 2. monthly harmonised summaries (MODIS + VIIRS on one schema)
+  
   btns.monthly.addEventListener("click", () => busy(btns.monthly, "summarising months…", async () => {
     const months = q("#exp-months").value;
     const r = await api("monthly_summary", { end: iso(state.end), ...areaParams(), months });
@@ -79,7 +79,7 @@
     say(`saved ${r.months.length} months.`, "ok");
   }));
 
-  // 3. calendar days csv
+  
   btns.cal.addEventListener("click", () => busy(btns.cal, "saving…", async () => {
     const c = state.calendarDays;
     const rows = c.days.map((d) => ({
@@ -94,8 +94,8 @@
     say(`saved ${ym}.`, "ok");
   }));
 
-  // 4. calendar image (png) for reports and briefings
-  const shades = () => ({ missing: "#eceef2", ...window.firescoutPrintPalette() });   // white report image
+  
+  const shades = () => ({ missing: "#eceef2", ...window.firescoutPrintPalette() });   
   const INK = "#161a26", MUTED = "#667085", LINE = "#e3e7ee";
   btns.png.addEventListener("click", () => busy(btns.png, "drawing…", async () => {
     await document.fonts?.ready;

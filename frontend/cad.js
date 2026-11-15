@@ -1,5 +1,5 @@
 "use strict";
-// 3D satellite popup and the satellite dock
+
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -21,9 +21,9 @@
   const scrub = $("#cad-scrub"), playBtn = $("#cad-play"), speed = $("#cad-speed"), badge = $("#cad-zoom-badge");
   let current = "modis", zoom = 1, ox = 0, oy = 0, lastFocus = null, playing = true;
 
-  // transform (zoom + pan)
+  
   function apply() {
-    const max = (zoom - 1) / 2;                      // keep the video covering the stage
+    const max = (zoom - 1) / 2;                      
     ox = Math.max(-max, Math.min(max, ox)); oy = Math.max(-max, Math.min(max, oy));
     video.style.transform = `translate(${ox * 100}%, ${oy * 100}%) scale(${zoom})`;
     badge.textContent = `${Math.round(zoom * 100)}%`;
@@ -32,13 +32,13 @@
   }
   function zoomAt(factor, cx = 0.5, cy = 0.5) {
     const z = Math.max(1, Math.min(5, zoom * factor)), k = z / zoom;
-    // keep the point under the cursor still: offset is in stage fractions
+    
     ox = (ox - (cx - 0.5)) * k + (cx - 0.5); oy = (oy - (cy - 0.5)) * k + (cy - 0.5);
     zoom = z; apply();
   }
   function reset() { zoom = 1; ox = 0; oy = 0; apply(); }
 
-  // play / scrub
+  
   function setPlaying(on) {
     playing = on; playBtn.textContent = on ? "pause" : "play";
     if (on) video.play().catch(() => {}); else video.pause();
@@ -48,7 +48,7 @@
   playBtn.addEventListener("click", () => (comparing ? setPairsPlaying(!playing) : setPlaying(!playing)));
   speed.addEventListener("change", () => { video.playbackRate = +speed.value; pairVids.forEach((v) => { v.playbackRate = +speed.value; }); });
 
-  // drag: sideways spins the model; with zoom on, shift-drag (or two fingers) pans
+  
   const pointers = new Map();
   let drag = null, pinch = null;
   stage.addEventListener("pointerdown", (e) => {
@@ -75,7 +75,7 @@
     const dx = (e.clientX - drag.x) / r.width, dy = (e.clientY - drag.y) / r.height;
     if (drag.pan && zoom > 1) { ox = drag.ox + dx; oy = drag.oy + dy; apply(); return; }
     if (!video.duration) return;
-    // one full stage width of drag = one full turn of the model
+    
     let t = (drag.t - dx * video.duration) % video.duration;
     if (t < 0) t += video.duration;
     video.currentTime = t;
@@ -112,7 +112,7 @@
   });
   document.addEventListener("fullscreenchange", () => { $("#cad-full").textContent = document.fullscreenElement ? "exit full screen" : "full screen"; });
 
-  // side by side: both models at once, drag either one to spin (together by default)
+  
   const compare = $("#cad-compare"), pairVids = $$("#cad-compare video"), sync = $("#cad-sync");
   let comparing = false;
   function setPairsPlaying(on) {
@@ -150,7 +150,7 @@
     $("#cad-use span").textContent = "use both";
   }
 
-  // which CAD
+  
   function show(key) {
     if (key === "both") { showBoth(); return; }
     const c = CADS[key]; if (!c) return;
@@ -168,7 +168,7 @@
   }
   $$(".cad-tabs button").forEach((b) => b.addEventListener("click", () => show(b.dataset.cad)));
 
-  // "use MODIS / VIIRS": picks the sensor in the intro (if open) or switches the live map
+  
   $("#cad-use").addEventListener("click", () => {
     const pick = current === "both" ? "harmonized" : current;
     const radio = document.querySelector(`input[name=welcome-sensor][value="${pick}"]`);
@@ -194,14 +194,14 @@
   modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden && !document.fullscreenElement) close(); });
 
-  // entry points: intro cards + left panel button
+  
   $$(".cad-enlarge").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); open(b.dataset.cad); }));
   $("#cad-open-rail")?.addEventListener("click", () => {
     const pressed = document.querySelector(".sensor-switch button[aria-pressed=true]");
-    open(CADS[pressed?.dataset.sensor] ? pressed.dataset.sensor : "both");   // harmonized -> both side by side
+    open(CADS[pressed?.dataset.sensor] ? pressed.dataset.sensor : "both");   
   });
 
-  // hover to spin: moving across any small CAD preview turns the model (the renders are turntables)
+  
   function scrubbable(v) {
     const box = v.parentElement;
     box.addEventListener("pointermove", (e) => {
@@ -213,7 +213,7 @@
   }
   $$(".cad-thumb video, .dock-vid video").forEach(scrubbable);
 
-  // satellite dock: always shows which satellite(s) the current reading comes from
+  
   const dock = $("#sat-dock");
   if (dock && typeof state !== "undefined") {
     const VIIRS_FIRST = Date.UTC(2012, 0, 19);
@@ -224,7 +224,7 @@
       $$(".dock-sat", dock).forEach((b) => {
         const k = b.dataset.cad, used = s === "harmonized" || s === k;
         b.classList.toggle("used", used); b.classList.toggle("reading", k === reading);
-        b.classList.toggle("both", s === "harmonized");                  // harmonized: both satellites are selected
+        b.classList.toggle("both", s === "harmonized");                  
         b.querySelector(".dock-state").textContent = s === "harmonized"
           ? (k === "modis" ? "2000 – 2011" : "2012 – today")
           : k === reading ? "selected" : "not in use";
@@ -237,17 +237,17 @@
     $("#dock-min").addEventListener("click", () => {
       const min = dock.classList.toggle("min");
       $("#dock-min").setAttribute("aria-expanded", String(!min)); $("#dock-min").textContent = min ? "+" : "–";
-      try { localStorage.setItem("firescout.dockMin", min ? "1" : ""); } catch { /* storage blocked */ }
+      try { localStorage.setItem("firescout.dockMin", min ? "1" : ""); } catch {  }
     });
-    try { if (localStorage.getItem("firescout.dockMin")) $("#dock-min").click(); } catch { /* storage blocked */ }
+    try { if (localStorage.getItem("firescout.dockMin")) $("#dock-min").click(); } catch {  }
     syncDock();
   }
 
-  // only play the videos you can see (a lot of video at once can show up blank)
+  
   const introVids = $$("#intro video"), dockVids = $$("#sat-dock video");
-  // all CAD models spin at half speed by default
-  // (browsers reset the speed when a video loads, so it is re-applied on load and on play;
-  //  the viewer's speed menu still wins once someone changes it)
+  
+  
+  
   const spinRate = (v) => (v === video || pairVids.includes(v) ? +speed.value : 0.5);
   [...introVids, ...dockVids, ...pairVids, video].forEach((v) => {
     const apply = () => { v.defaultPlaybackRate = spinRate(v); if (v.playbackRate !== spinRate(v)) v.playbackRate = spinRate(v); };

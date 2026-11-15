@@ -1,5 +1,5 @@
 "use strict";
-// fire render popup
+
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -8,7 +8,7 @@
   const tip = $("#r-tip"), list = $("#r-list"), dots = $("#r-dots"), loading = $("#r-loading"), playBtn = $("#r-play");
   const zoneEl = Object.fromEntries([...svg.querySelectorAll(".zone")].map((z) => [z.dataset.zone, z]));
 
-  // what each zone means, and where its colour comes from (matches the app's layer colours)
+  
   const ZONES = {
     fire:  { name: "fire pixels",      color: "#e5391f" },
     heat:  { name: "heat intensity",   color: "#f59e0b" },
@@ -19,7 +19,7 @@
   const ORDER = ["fire", "heat", "burn", "smoke", "air"];
   for (const [k, z] of Object.entries(ZONES)) zoneEl[k].style.setProperty("--c", z.color);
 
-  // where the fire is in the frame (x0, x1, y0, y1 as fractions of the frame), sampled 4x a second
+  
   let track = null, fps = 4;
   const FALLBACK = [0.24, 0.76, 0.40, 0.98];
   fetch("media/fire-track.json").then((r) => r.json()).then((j) => { track = j.track; fps = j.fps; }).catch(() => {});
@@ -29,7 +29,7 @@
     return track[i].map((v, n) => v + (track[j][n] - v) * k);
   }
 
-  // place the zones on the fire (svg units: 1600 x 900)
+  
   let lastKey = "";
   function layout(t) {
     const [x0, x1, y0, y1] = box(t), W = 1600, H = 900;
@@ -37,10 +37,10 @@
     if (key === lastKey) return; lastKey = key;
     const X0 = x0 * W, X1 = x1 * W, Y0 = y0 * H, Y1 = y1 * H, w = X1 - X0, h = Y1 - Y0, cx = (X0 + X1) / 2;
     const set = (el, o) => { for (const k in o) el.setAttribute(k, o[k]); };
-    set(zoneEl.smoke, { x: 0.14 * W, y: 0.02 * H, width: 0.72 * W, height: Y0 - 0.02 * H + 0.03 * h });   // drifting particles above the flames
-    set(zoneEl.heat,  { x: X0, y: Y0, width: w, height: 0.27 * h });                                        // flame tips
-    set(zoneEl.fire,  { x: X0, y: Y0 + 0.2 * h, width: w, height: 0.8 * h });                               // the wall of flames
-    set(zoneEl.burn,  { cx, cy: Y0 + 0.72 * h, rx: 0.36 * w, ry: 0.26 * h });                               // scorched ground in the middle
+    set(zoneEl.smoke, { x: 0.14 * W, y: 0.02 * H, width: 0.72 * W, height: Y0 - 0.02 * H + 0.03 * h });   
+    set(zoneEl.heat,  { x: X0, y: Y0, width: w, height: 0.27 * h });                                        
+    set(zoneEl.fire,  { x: X0, y: Y0 + 0.2 * h, width: w, height: 0.8 * h });                               
+    set(zoneEl.burn,  { cx, cy: Y0 + 0.72 * h, rx: 0.36 * w, ry: 0.26 * h });                               
     const spots = { smoke: [cx, Y0 * 0.55], heat: [cx + w * 0.28, Y0 + 0.11 * h], fire: [X0 + w * 0.07, Y0 + 0.5 * h],
                     burn: [cx, Y0 + 0.74 * h], air: [0.08 * W, 0.55 * H] };
     if (!dots.children.length) for (const k of ORDER) {
@@ -56,7 +56,7 @@
     requestAnimationFrame(loop);
   }
 
-  // reading the numbers
+  
   const fmtN = (n) => Number(n).toLocaleString();
   function heatLevel(n) { return n == null ? null : n === 0 ? "none detected" : n < 10 ? "low" : n < 50 ? "moderate" : "high"; }
   function info(zone) {
@@ -99,7 +99,7 @@
     return out;
   }
 
-  // tooltip
+  
   let active = null, pinned = null, lastPointer = { x: 0, y: 0, fromKey: false };
   function renderTip(zone) {
     const z = ZONES[zone], d = info(zone);
@@ -161,7 +161,7 @@
   }
   stage.addEventListener("click", (e) => { if (pinned && !e.target.classList?.contains("zone")) { pinned = null; hide(); } });
 
-  // side list (same five readings, easy to use on touch screens too)
+  
   function buildList() {
     list.replaceChildren();
     for (const k of ORDER) {
@@ -181,7 +181,7 @@
   buildList();
   window.addEventListener("firescout:readout", () => { if (!modal.hidden) { refreshTitle(); refreshList(); } });
 
-  // open / close
+  
   let lastFocus = null, srcSet = false;
   function refreshTitle() {
     const s = window.firescout.snapshot();

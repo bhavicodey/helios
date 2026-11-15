@@ -1,5 +1,5 @@
 "use strict";
-// guided tour
+
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -12,7 +12,7 @@
   const sensorName = () => ($(".sensor-switch button[aria-pressed=true]")?.dataset.sensor || "modis").toUpperCase();
   const snap = () => window.firescout?.snapshot?.() || {};
 
-  // the steps. `target` = what stays lit; `wait` = an action the user must do before moving on
+  
   const STEPS = [
     {
       target: () => { const d = $("#sat-dock"); return d && d.offsetParent !== null ? d : $("#rail .sensor-section"); },
@@ -41,7 +41,7 @@
           b.disabled = !fire; b.classList.toggle("tour-off", !fire);
           if (fire) b.addEventListener("click", onPick, { once: true });
         });
-        function onPick() { cleanup(); setTimeout(done, reduce ? 200 : 2600); }   // let the fly-to land
+        function onPick() { cleanup(); setTimeout(done, reduce ? 200 : 2600); }   
         function cleanup() { $$("#presets button").forEach((b) => { b.disabled = false; b.classList.remove("tour-off"); b.removeEventListener("click", onPick); }); }
         return cleanup;
       },
@@ -56,7 +56,7 @@
         if (ok()) { ready(); return () => {}; }
         const h = () => ok() && ready();
         addEventListener("firescout:readout", h);
-        const t = setTimeout(ready, 9000);                         // never trap the user if earth engine is slow
+        const t = setTimeout(ready, 9000);                         
         return () => { removeEventListener("firescout:readout", h); clearTimeout(t); };
       },
     },
@@ -124,31 +124,31 @@
 
   let i = -1, target = null, cleanup = null, raf = 0, active = false, ready = true;
 
-  // dots
+  
   dotsBox.replaceChildren(...STEPS.map(() => document.createElement("i")));
 
-  // step aside while any popup (fire render, CAD viewer, name-a-place…) is open on top
+  
   const modals = $$(".modal");
   const syncAway = () => coach.classList.toggle("away", modals.some((m) => !m.hidden));
   const modalWatch = new MutationObserver(syncAway);
   modals.forEach((m) => modalWatch.observe(m, { attributes: true, attributeFilter: ["hidden"] }));
 
-  // make sure the target is visible (expand collapsed panels on phones, scroll the rail)
+  
   function reveal(el) {
-    window.FireTabs?.reveal(el);                     // switch the left panel to the tab holding the target
+    window.FireTabs?.reveal(el);                     
     const panel = el?.closest(".panel");
     if (panel?.classList.contains("collapsed")) panel.querySelector(".panel-toggle")?.click();
     if (el && el !== panel) el.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
   }
 
-  // geometry: hole + four blockers + card placement, every frame while open
+  
   function frame() {
     if (!active) return;
     const W = innerWidth, H = innerHeight;
     let r;
     if (target && target.isConnected) {
       const b = target.getBoundingClientRect(), pad = STEPS[i].pad ?? 8;
-      // clip to the scrolling panel so the hole never spills past it
+      
       const clip = target.closest(".panel")?.getBoundingClientRect();
       let top = b.top - pad, bottom = b.bottom + pad, left = b.left - pad, right = b.right + pad;
       if (clip && target !== target.closest(".panel")) { top = Math.max(top, clip.top); bottom = Math.min(bottom, clip.bottom); }
@@ -163,7 +163,7 @@
     Object.assign(blocks.left.style, { top: r.top + "px", left: 0, width: r.left + "px", height: Math.max(0, r.bottom - r.top) + "px" });
     Object.assign(blocks.right.style, { top: r.top + "px", left: r.right + "px", width: Math.max(0, W - r.right) + "px", height: Math.max(0, r.bottom - r.top) + "px" });
 
-    // card: right of the hole, else left, else below, else above, else centred
+    
     const cw = card.offsetWidth, chh = card.offsetHeight, m = 18;
     let x, y;
     if (!target) { x = (W - cw) / 2; y = (H - chh) / 2; }
@@ -177,7 +177,7 @@
     raf = requestAnimationFrame(frame);
   }
 
-  // step control
+  
   function go(n) {
     cleanup?.(); cleanup = null;
     i = n; const s = STEPS[i];
@@ -187,7 +187,7 @@
     $("#coach-skip").hidden = !!s.final;
     title.textContent = s.title; text.textContent = s.body();
     [...dotsBox.children].forEach((d, k) => d.className = k < i ? "done" : k === i ? "on" : "");
-    backBtn.hidden = i === 0 || s.final || !!STEPS[i - 1]?.wait;          // can't un-do a required action
+    backBtn.hidden = i === 0 || s.final || !!STEPS[i - 1]?.wait;          
     nextBtn.querySelector("span").textContent = s.final ? "start exploring" : "next";
     card.classList.remove("swap"); void card.offsetWidth; card.classList.add("swap");
 
@@ -224,7 +224,7 @@
 
   nextBtn.addEventListener("click", () => { if (!ready) return; STEPS[i].final ? finish() : go(i + 1); });
   backBtn.addEventListener("click", () => { if (i > 0) go(i - 1); });
-  // skip: end the tour on any step (it can be replayed from "how it works")
+  
   function skip() {
     if (!active) return;
     finish();
@@ -232,12 +232,12 @@
   }
   $("#coach-skip").addEventListener("click", skip);
 
-  // clicks on the dark area: nudge the card instead of doing anything
+  
   $$(".coach-block", coach).forEach((b) => b.addEventListener("pointerdown", (e) => {
     e.preventDefault(); e.stopPropagation();
     card.classList.remove("nudge"); void card.offsetWidth; card.classList.add("nudge");
   }));
-  // keep Tab inside the tour box
+  
   addEventListener("keydown", (e) => {
     if (!active || coach.classList.contains("away")) return;
     if (e.key === "Escape") { e.preventDefault(); skip(); return; }

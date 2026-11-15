@@ -6,19 +6,18 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
-# Earth Engine
 EE_PROJECT = os.getenv("EE_PROJECT", "").strip()
 EE_SERVICE_ACCOUNT = os.getenv("EE_SERVICE_ACCOUNT", "").strip()
 EE_KEY_FILE = os.getenv("EE_KEY_FILE", "").strip()
-# for hosting: the whole key json goes in this one variable (never commit it)
+
 EE_KEY_JSON = os.getenv("EE_KEY_JSON", "").strip()
 
 FRONTEND_DIR = ROOT / "frontend"
 
-# Signal thresholds (tweak freely)
-ALERT_MIN_FIRE_PIXELS = 1      # fires + raised SO2 together  -> "alert"
-ALERT_SO2_RATIO = 1.5          # SO2 vs the area's own 30-day normal
-WATCH_FIRE_PIXELS = 10         # lots of fire alone           -> "watch"
-WATCH_SO2_RATIO = 2.0          # SO2 far above normal alone   -> "watch"
+ALERT_MIN_FIRE_PIXELS = 1
+ALERT_SO2_RATIO = 1.5
+WATCH_FIRE_PIXELS = 10
+WATCH_SO2_RATIO = 2.0
 
 CACHE_SECONDS = 3600
+

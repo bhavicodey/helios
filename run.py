@@ -17,7 +17,6 @@ ROOT = Path(__file__).resolve().parent
 os.chdir(ROOT)
 URL = "http://127.0.0.1:8000"
 
-
 def ensure_env_file() -> None:
     env, example = ROOT / ".env", ROOT / ".env.example"
     if not env.exists():
@@ -48,7 +47,6 @@ def ensure_env_file() -> None:
     env.write_text(text, encoding="utf-8")
     print("  saved to .env\n")
 
-
 def ensure_earth_engine() -> None:
     from backend import config, ee_client
 
@@ -60,17 +58,16 @@ def ensure_earth_engine() -> None:
         print(f"\n  {exc}")
 
     if config.EE_SERVICE_ACCOUNT:
-        return  # service account is configured; the page will show what's wrong
+        return
     print("\n  opening google sign-in in your browser (one time only)...\n")
     try:
         import ee
         ee.Authenticate()
         ee_client.ensure()
         print("  earth engine connected")
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         print(f"\n  couldn't finish sign-in: {exc}")
         print("  the app will still open and tell you what's missing.\n")
-
 
 if __name__ == "__main__":
     ensure_env_file()
@@ -81,3 +78,4 @@ if __name__ == "__main__":
     print(f"\n  Helios is running at {URL}  (press ctrl+c to stop)\n")
     threading.Timer(1.5, lambda: webbrowser.open(URL)).start()
     uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, log_level="warning")
+

@@ -19,3 +19,4 @@ checks = {
 for name, col in checks.items():
     print(f"  {name}: {col.size().getInfo()}")
 print("\nAll good. Run:  python run.py")
+

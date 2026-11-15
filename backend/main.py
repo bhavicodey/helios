@@ -24,7 +24,6 @@ _cache: dict = {}
 SENSOR = "^(modis|viirs|harmonized)$"
 DAY_HISTORY = 24 * 3600
 
-
 def cached(key, fn, ttl=config.CACHE_SECONDS):
     hit = _cache.get(key)
     if hit and time.time() - hit[0] < ttl:
@@ -33,8 +32,6 @@ def cached(key, fn, ttl=config.CACHE_SECONDS):
     _cache[key] = (time.time(), value)
     return value
 
-
-# disk cache: finished months never change, so they are fetched from Earth Engine once, ever
 _DISK_FILE = config.ROOT / ".cache" / "firescout_cache.json"
 _disk_lock = threading.Lock()
 _disk_timer = None
@@ -42,7 +39,6 @@ try:
     _disk = json.loads(_DISK_FILE.read_text(encoding="utf-8"))
 except (OSError, ValueError):
     _disk = {}
-
 
 def _disk_flush():
     global _disk_timer
@@ -57,7 +53,6 @@ def _disk_flush():
     except OSError as exc:
         log.warning("could not save the cache: %s", exc)
 
-
 def disk_cached(key: str, fn):
     """Like cached(), but kept on disk across restarts. Only use for data that can't change any more."""
     global _disk_timer
@@ -67,24 +62,21 @@ def disk_cached(key: str, fn):
     value = fn()
     with _disk_lock:
         _disk[key] = value
-        if _disk_timer is None:                     # batch writes: save at most every 2 seconds
+        if _disk_timer is None:
             _disk_timer = threading.Timer(2.0, _disk_flush)
             _disk_timer.daemon = True
             _disk_timer.start()
     return value
 
-
 def finished(last_day: date) -> bool:
     """True once a period is safely in the past (near-real-time fire data can still arrive for ~a week)."""
     return last_day < date.today() - timedelta(days=8)
-
 
 def require_ee():
     try:
         ee_client.ensure()
     except ee_client.EENotReady as exc:
         raise HTTPException(503, str(exc)) from exc
-
 
 def check_dates(start: str, end: str, max_days: int = 40):
     try:
@@ -96,17 +88,14 @@ def check_dates(start: str, end: str, max_days: int = 40):
     if e > date.today():
         raise HTTPException(400, "That date is in the future.")
 
-
 def safe(fn):
     """Run an Earth Engine call; return None instead of failing the whole request."""
     try:
         return fn()
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.warning("Earth Engine call failed: %s", exc)
         return None
 
-
-# area of interest: a circle (pin + radius) or a drawn polygon
 def parse_geom(geom: Optional[str]):
     """`geom` is a JSON list of [lon, lat] points (a polygon drawn on the map)."""
     if not geom:
@@ -122,23 +111,19 @@ def parse_geom(geom: Optional[str]):
         pts.append(pts[0])
     return pts
 
-
 def region_of(lat, lon, radius_km, pts, cap_km=None):
     if pts:
         return ee.Geometry.Polygon([pts], None, False)
     return ee.Geometry.Point([lon, lat]).buffer((min(radius_km, cap_km) if cap_km else radius_km) * 1000)
-
 
 def area_key(lat, lon, radius_km, pts):
     if pts:
         return "poly:" + hashlib.sha1(json.dumps(pts).encode()).hexdigest()[:16]
     return f"circle:{round(lat, 3)}:{round(lon, 3)}:{radius_km}"
 
-
 GEOM = Query(None, max_length=20000, description="JSON list of [lon, lat] points for a drawn area")
 
-
-# @app.get("/api/health")
+@app.get("/api/health")
 def health():
     try:
         ee_client.ensure()
@@ -146,11 +131,9 @@ def health():
     except ee_client.EENotReady as exc:
         return {"ok": False, "error": str(exc)}
 
-
 @app.get("/api/meta")
 def meta():
     return L.META
-
 
 @app.get("/api/tiles/{layer}", dependencies=[Depends(require_ee)])
 def tiles(
@@ -169,7 +152,7 @@ def tiles(
     pts = parse_geom(geom)
     if layer == "burn" and not pts and (lat is None or lon is None):
         raise HTTPException(400, "Click the globe to choose an area for burn scars.")
-    # harmonized draws MODIS and VIIRS together (before 2012 only MODIS exists, so only red appears)
+
     key_sensor = sensor
 
     key = ("tiles", layer, start, end,
@@ -201,7 +184,6 @@ def tiles(
 
     return {"url": cached(key, build), "sensor": sensor}
 
-
 def _calendar(region, akey, sensor, year, month):
     """Daily counts for one month; 'harmonized' months switch from MODIS to VIIRS on VIIRS's first day."""
     first, last = date(year, month, 1), date(year, month, cal.monthrange(year, month)[1])
@@ -223,7 +205,6 @@ def _calendar(region, akey, sensor, year, month):
     return [({**v, "source": "VIIRS"} if date.fromisoformat(v["date"]) >= L.VIIRS_FIRST else {**m, "source": "MODIS"})
             for m, v in zip(mo, vi)]
 
-
 @app.get("/api/fire_calendar", dependencies=[Depends(require_ee)])
 def fire_calendar(
     year: int = Query(..., ge=2000, le=2100),
@@ -243,7 +224,6 @@ def fire_calendar(
     region = region_of(lat, lon, radius_km, pts)
     days = _calendar(region, area_key(lat, lon, radius_km, pts), sensor, year, month)
     return {"sensor": sensor, "year": year, "month": month, "days": days}
-
 
 @app.get("/api/insights", dependencies=[Depends(require_ee)])
 def insights(
@@ -285,7 +265,6 @@ def insights(
 
     return cached(("ins", start, end, area_key(lat, lon, radius_km, pts), used, include_burn), build)
 
-
 @app.get("/api/burned", dependencies=[Depends(require_ee)])
 def burned(
     end: str,
@@ -303,7 +282,6 @@ def burned(
 
     return cached(("burn", end, area_key(lat, lon, radius_km, pts)), build)
 
-
 def classify(fire, ratio):
     fire = fire or 0
     if fire >= config.ALERT_MIN_FIRE_PIXELS and ratio and ratio >= config.ALERT_SO2_RATIO:
@@ -313,7 +291,6 @@ def classify(fire, ratio):
     if ratio and ratio >= config.WATCH_SO2_RATIO:
         return "watch", f"Last 7 days: sulfur dioxide at {ratio:.1f} times the usual level."
     return "none", "Nothing unusual in the last 7 days."
-
 
 @app.get("/api/hotspots", dependencies=[Depends(require_ee)])
 def hotspots(
@@ -336,7 +313,7 @@ def hotspots(
     chunks, a = [], s
     while a <= e:
         b = min(e, a + timedelta(days=30))
-        if sensor == "harmonized" and a < L.VIIRS_FIRST <= b:   # split at the MODIS -> VIIRS hand-over
+        if sensor == "harmonized" and a < L.VIIRS_FIRST <= b:
             b = L.VIIRS_FIRST - timedelta(days=1)
         chunks.append((a, b, L.resolve_sensor(sensor, a)))
         a = b + timedelta(days=1)
@@ -359,7 +336,6 @@ def hotspots(
                 "truncated": truncated, "records": rows[:limit]}
 
     return cached(("hotspots", start, end, area_key(lat, lon, radius_km, pts), sensor, confidence, limit), build)
-
 
 @app.get("/api/monthly_summary", dependencies=[Depends(require_ee)])
 def monthly_summary(
@@ -406,7 +382,6 @@ def monthly_summary(
         r["area"] = area
     return {"months": [f"{y}-{m:02d}" for y, m in ym], "rows": rows}
 
-
 @app.get("/api/history", dependencies=[Depends(require_ee)])
 def history(
     lat: float = Query(..., ge=-90, le=90),
@@ -428,14 +403,13 @@ def history(
             months.append(f"{y}-{m:02d}")
             y, m = (y + 1, 1) if m == 12 else (y, m + 1)
 
-        # one Earth Engine request per sensor-year, run in parallel
         jobs = []
         for sensor in ("modis", "viirs"):
             first = date.fromisoformat(L.FIRE_DATASETS[sensor]["first"])
             for year in range(first.year, latest.year + 1):
                 start_m = first.month if year == first.year else 1
                 end_m = latest.month if year == latest.year else 12
-                if year == latest.year and end_m > start_m:            # this year: past months (cacheable) + this month
+                if year == latest.year and end_m > start_m:
                     jobs.append((sensor, date(year, start_m, 1), end_m - start_m))
                     jobs.append((sensor, date(year, end_m, 1), 1))
                 else:
@@ -462,7 +436,6 @@ def history(
     res["area"] = "drawn polygon" if pts else {"lat": lat, "lon": lon, "radius_km": radius_km}
     return res
 
-
 @app.get("/api/so2_series", dependencies=[Depends(require_ee)])
 def so2_series(
     end: str,
@@ -484,9 +457,6 @@ def so2_series(
 
     return cached(("series", end, area_key(lat, lon, radius_km, pts), days), build)
 
-
-# Browsers must re-check the page files (html/js/css) on every visit, so updates show up right away
-# instead of an old cached copy. Videos and images can be cached for a day.
 @app.middleware("http")
 async def cache_headers(request, call_next):
     resp = await call_next(request)
@@ -495,6 +465,5 @@ async def cache_headers(request, call_next):
         resp.headers["Cache-Control"] = "public, max-age=86400" if path.startswith("/media/") else "no-cache"
     return resp
 
-
-# Serve the web app from the same server (no CORS, one command to run).
 app.mount("/", StaticFiles(directory=config.FRONTEND_DIR, html=True), name="frontend")
+
