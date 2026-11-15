@@ -20,11 +20,19 @@
   for (const [k, z] of Object.entries(ZONES)) zoneEl[k].style.setProperty("--c", z.color);
 
   
-  let track = null, fps = 4;
-  const FALLBACK = [0.24, 0.76, 0.40, 0.98];
-  fetch("media/fire-track.json").then((r) => r.json()).then((j) => { track = j.track; fps = j.fps; }).catch(() => {});
+  // one render per fire size: the small fire for low activity, bigger ones for moderate and high
+  const RENDERS = {
+    low:  { src: "media/fire-render.mp4",      track: "media/fire-track.json",      poster: "media/fire-render-poster.jpg", fallback: [0.24, 0.76, 0.40, 0.98] },
+    med:  { src: "media/fire-render-med.mp4",  track: "media/fire-track-med.json",  poster: "",                             fallback: [0.31, 0.69, 0.33, 0.84] },
+    high: { src: "media/fire-render-high.mp4", track: "media/fire-track-high.json", poster: "",                             fallback: [0.28, 0.72, 0.26, 0.84] },
+  };
+  const tracks = {};
+  for (const [k, r] of Object.entries(RENDERS)) fetch(r.track).then((x) => x.json()).then((j) => { tracks[k] = j; }).catch(() => {});
+  let size = "low";
+  function sizeOf(n) { return n == null || n < 10 ? "low" : n < 50 ? "med" : "high"; }
   function box(t) {
-    if (!track) return FALLBACK;
+    const tr = tracks[size], track = tr?.track, fps = tr?.fps;
+    if (!track) return RENDERS[size].fallback;
     const f = (t * fps) % track.length, i = Math.floor(f), j = (i + 1) % track.length, k = f - i;
     return track[i].map((v, n) => v + (track[j][n] - v) * k);
   }
@@ -68,8 +76,9 @@
     if (state === "none") { out.big = "no reading yet"; out.sub = "Helios couldn't read this area for this date. try an earlier date."; out.short = "–"; return out; }
     if (zone === "fire") {
       out.big = r.fire_pixels == null ? "no data" : `${fmtN(r.fire_pixels)} fire pixels`;
-      out.sub = `${sensor} detections within ${s.radius} km, ${win}.`;
-      out.note = "each pixel is a ~1 km hotspot, not a single fire.";
+      out.sub = `${sensor} detections within ${s.radius} km, ${win}.`
+        + (r.fire_count ? ` they group into ${fmtN(r.fire_count)} separate fire${r.fire_count === 1 ? "" : "s"}; the biggest covers ${fmtN(r.largest_fire_px)} pixels.` : "");
+      out.note = "each pixel is a ~1 km hotspot, not a single fire. pixels within ~2 km of each other count as one fire.";
       out.short = r.fire_pixels == null ? "–" : fmtN(r.fire_pixels);
     } else if (zone === "heat") {
       const lv = heatLevel(r.fire_pixels);
@@ -179,26 +188,34 @@
     if (active) renderTip(active);
   }
   buildList();
-  window.addEventListener("firescout:readout", () => { if (!modal.hidden) { refreshTitle(); refreshList(); } });
+  window.addEventListener("firescout:readout", () => { if (!modal.hidden) { pickRender(); refreshTitle(); refreshList(); } });
 
   
-  let lastFocus = null, srcSet = false;
+  let lastFocus = null, srcNow = "";
+  const SIZE_NAME = { low: "small fire", med: "medium fire", high: "large fire" };   // biggest fire: under 10 pixels, 10–49, 50 or more
   function refreshTitle() {
     const s = window.firescout.snapshot();
     $("#r-title").textContent = s.place || "your area";
-    $("#r-sub").textContent = `within ${s.radius} km · ${s.sensor.toUpperCase()} · 7 days to ${window.firescout.fmt(s.end)}`;
+    $("#r-sub").textContent = `within ${s.radius} km · ${s.sensor.toUpperCase()} · 7 days to ${window.firescout.fmt(s.end)} · showing a ${SIZE_NAME[size]}`;
+  }
+  // pick the render that matches how much is burning, and swap it in if it changed
+  function pickRender() {
+    const s = window.firescout.snapshot();
+    if (s.loading) return;
+    size = sizeOf(s.ins?.largest_fire_px ?? s.ins?.fire_pixels);   // the biggest single fire sets the render
+    const r = RENDERS[size];
+    if (srcNow === r.src) return;
+    srcNow = r.src; lastKey = ""; loading.hidden = false; loading.textContent = "loading render…";
+    video.addEventListener("loadeddata", () => { loading.hidden = true; }, { once: true });
+    video.addEventListener("error", () => { loading.hidden = false; loading.textContent = `the render couldn't load. check that ${r.src} is there.`; }, { once: true });
+    video.poster = r.poster; video.src = r.src; video.load();
+    if (!modal.hidden && !reduce) video.play().then(setPlayLabel).catch(setPlayLabel);
   }
   function open() {
     if (!modal.hidden) return;
     lastFocus = document.activeElement; pinned = null; active = null; tip.hidden = true; lastKey = "";
-    refreshTitle(); refreshList();
+    pickRender(); refreshTitle(); refreshList();
     modal.hidden = false; $("#render-x").focus({ preventScroll: true });
-    if (!srcSet) {
-      srcSet = true; loading.hidden = false;
-      video.addEventListener("loadeddata", () => { loading.hidden = true; }, { once: true });
-      video.addEventListener("error", () => { loading.hidden = false; loading.textContent = "the render couldn't load. check that media/fire-render.mp4 is there."; }, { once: true });
-      video.src = "media/fire-render.mp4"; video.load();
-    }
     if (reduce) { video.pause(); setPlayLabel(); }
     else video.play().then(setPlayLabel).catch(setPlayLabel);
     requestAnimationFrame(loop);

@@ -134,6 +134,24 @@ def fire_pixel_count(region, start: str, end: str, sensor: str = "modis"):
         ee.Reducer.count(), region, 1000, maxPixels=1e9, bestEffort=True
     ).get("hotspot").getInfo()
 
+def fire_clusters(region, start: str, end: str, sensor: str = "modis"):
+    """Separate fires in the window. Hotspot pixels that touch, or sit within one pixel (~2 km) of each
+    other, are grouped into one fire, since one fire usually lights up many neighbouring 1 km pixels.
+    Returns how many fires there are and how many pixels the biggest one covers."""
+    if sensor == "harmonized":
+        img = fire_image(start, end, "modis").unmask(0).max(fire_image(start, end, "viirs").unmask(0))
+    else:
+        img = fire_image(start, end, sensor).unmask(0)
+    img = img.gt(0).clip(region)
+    grouped = img.focalMax(1, "square", "pixels").selfMask().rename("zone")
+    fires = ee.Image.cat(grouped, img.rename("px")).reduceToVectors(
+        reducer=ee.Reducer.sum(), geometry=region, scale=1000, geometryType="centroid",
+        eightConnected=True, labelProperty="zone", maxPixels=1e9, bestEffort=True, tileScale=4,
+    ).filter(ee.Filter.gt("sum", 0))
+    sizes = fires.aggregate_array("sum").getInfo() or []
+    sizes = sorted((round(s) for s in sizes), reverse=True)
+    return {"count": len(sizes), "largest_px": sizes[0] if sizes else 0, "sizes": sizes[:20]}
+
 def fire_calendar(region, year: int, month: int, sensor: str = "modis"):
     """Daily detection-pixel counts in one requested month. Missing observations stay null."""
     import calendar

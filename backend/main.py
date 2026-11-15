@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config, ee_client
 from . import layers as L
+from . import reported as R
 
 log = logging.getLogger("firescout")
 app = FastAPI(title="Helios")
@@ -248,22 +249,48 @@ def insights(
             "so2": lambda: L.so2_mean_du(region, start, end),
             "base": lambda: L.so2_mean_du(region, base_start, base_end),
             "fire": lambda: L.fire_pixel_count(region, start, end, "harmonized" if sensor == "harmonized" else used),
+            "fires": lambda: L.fire_clusters(region, start, end, "harmonized" if sensor == "harmonized" else used),
         }
         if include_burn:
             jobs["burn"] = lambda: L.burned_hectares(burn_region, end, min(radius_km, 150))
-        with ThreadPoolExecutor(max_workers=4) as pool:
+        with ThreadPoolExecutor(max_workers=5) as pool:
             futures = {k: pool.submit(safe, fn) for k, fn in jobs.items()}
             r = {k: f.result() for k, f in futures.items()}
 
         ratio = r["so2"] / r["base"] if r["so2"] is not None and r["base"] and r["base"] > 0 else None
         level, reason = classify(r["fire"], ratio)
         return {
-            "fire_pixels": r["fire"], "so2_du": r["so2"], "so2_baseline_du": r["base"],
+            "fire_pixels": r["fire"],
+            "fire_count": (r.get("fires") or {}).get("count"), "largest_fire_px": (r.get("fires") or {}).get("largest_px"),
+            "fire_sizes": (r.get("fires") or {}).get("sizes"),
+            "so2_du": r["so2"], "so2_baseline_du": r["base"],
             "so2_ratio": ratio, "burned_ha": r.get("burn"),
             "signal": level, "signal_reason": reason, "sensor": sensor, "sensor_used": used,
         }
 
     return cached(("ins", start, end, area_key(lat, lon, radius_km, pts), used, include_burn), build)
+
+@app.get("/api/reported")
+def reported(
+    start: str,
+    end: str,
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    radius_km: int = Query(150, ge=5, le=300),
+    geom: Optional[str] = GEOM,
+):
+    """Wildfires reported by US fire agencies (NIFC), to set beside what the satellites detected."""
+    check_dates(start, end, max_days=366)
+    pts = parse_geom(geom)
+
+    def build():
+        try:
+            return R.reported_fires(start, end, lat, lon, radius_km, pts)
+        except Exception as exc:
+            log.warning("NIFC query failed: %s", exc)
+            raise HTTPException(502, "The US fire incident database didn't answer. Try again in a moment.") from exc
+
+    return cached(("reported", start, end, area_key(lat, lon, radius_km, pts)), build)
 
 @app.get("/api/burned", dependencies=[Depends(require_ee)])
 def burned(

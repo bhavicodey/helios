@@ -245,7 +245,7 @@ async function analyze() {
   let burnVal;                                            
   const area = areaParams();
   
-  $("#v-fire").textContent = "…"; $("#v-so2").firstChild.textContent = "…"; $("#n-so2").textContent = ""; $("#v-burn").textContent = "…";
+  $("#v-fire").textContent = "…"; setText("#v-fires", "…"); $("#n-fires").textContent = ""; $("#v-so2").firstChild.textContent = "…"; $("#n-so2").textContent = ""; $("#v-burn").textContent = "…";
   $("#signal").dataset.level = "none"; $("#signal").classList.remove("seen"); $("#signal").textContent = "reading the satellites…";
   $("#place-sub").textContent = `${state.poly ? "Inside your drawn shape" : `Within ${state.radius} km`}, 7 days to ${fmt(state.end)}`;
 
@@ -256,6 +256,16 @@ async function analyze() {
   const burnP = api("burned", { ...area, end: iso(state.end) })
     .catch(() => api("insights", { ...area, end: iso(state.end), sensor: state.sensor, start: iso(state.end - 6 * DAY) }));
   $("#v-burn").textContent = "measuring…";
+
+  // wildfires US agencies reported in the same window, beside what the satellites saw
+  setText("#v-reported", "…"); $("#n-reported").textContent = "";
+  const inUS = state.poly ? state.poly.some(([x, y]) => inUSBox(y, x)) : inUSBox(lat, lon);
+  if (!inUS) { setText("#v-reported", "US only"); $("#n-reported").textContent = "agency reports cover the United States"; state.readout.reported = null; }
+  else if (state.end < Date.UTC(2014, 0, 1)) { setText("#v-reported", "from 2014"); $("#n-reported").textContent = "US agency records start in 2014"; state.readout.reported = null; }
+  else api("reported", { ...area, start: iso(state.end - 6 * DAY), end: iso(state.end) }).then((rep) => {
+    if (token !== state.tokens.read) return;
+    state.readout.reported = rep; renderReported(rep); notifyReadout();
+  }).catch(() => { if (token === state.tokens.read) { setText("#v-reported", "No data"); $("#n-reported").textContent = ""; } });
 
   burnP.then((b) => {
     if (token !== state.tokens.read) return;
@@ -285,10 +295,30 @@ async function analyze() {
   notifyReadout();
 }
 
+// rough boxes around the lower 48, Alaska and Hawaii, where the NIFC agency records apply
+function inUSBox(lat, lon) {
+  return (lat > 24 && lat < 50 && lon > -125.5 && lon < -66) || (lat > 51 && lat < 72 && lon > -180 && lon < -129) || (lat > 18.5 && lat < 22.5 && lon > -161 && lon < -154);
+}
+function setText(sel, text) { const el = $(sel); if (el.firstChild?.nodeType === 3) el.firstChild.textContent = text; else el.prepend(text); }
+
+function renderReported(rep) {
+  if (!rep || rep.count == null) { setText("#v-reported", "No data"); $("#n-reported").textContent = ""; return; }
+  setText("#v-reported", rep.count.toLocaleString());
+  const big = rep.fires.find((f) => f.acres) || rep.fires[0];
+  const large = rep.fires.filter((f) => f.acres >= 100).length;   // satellites mostly see these; tiny incidents are often too small
+  $("#n-reported").textContent = !rep.count ? "no wildfires reported here" : big?.acres
+    ? `${large} over 100 acres · biggest: ${big.name}, ${Math.round(big.acres).toLocaleString()} acres` : "small incidents only";
+  $("#v-reported").title = rep.fires.slice(0, 8).map((f) => `${f.name} · found ${f.discovered}${f.acres ? ` · ${Math.round(f.acres).toLocaleString()} acres` : ""}`).join("\n")
+    + "\nsource: NIFC wildfire incidents reported by US fire agencies";
+}
+
 function renderInsights(r) {
   const sig = $("#signal");
-  if (!r) { sig.dataset.level = "none"; sig.classList.remove("seen"); sig.textContent = "No reading for this window."; return; }
+  if (!r) { sig.dataset.level = "none"; sig.classList.remove("seen"); sig.textContent = "No reading for this window."; setText("#v-fires", "No data"); $("#n-fires").textContent = ""; return; }
   $("#v-fire").textContent = r.fire_pixels == null ? "No data" : r.fire_pixels.toLocaleString();
+  setText("#v-fires", r.fire_count == null ? "No data" : r.fire_count.toLocaleString());
+  $("#n-fires").textContent = !r.fire_count ? "" : `biggest covers ${r.largest_fire_px.toLocaleString()} pixels (about ${r.largest_fire_px.toLocaleString()} km²)`;
+  $("#v-fires").title = "hotspot pixels that touch, or sit within ~2 km of each other, count as one fire";
   if (r.sensor_used) $("#v-fire").title = `read from ${r.sensor_used.toUpperCase()}${r.sensor === "harmonized" ? " (harmonized mode)" : ""}`;
   $("#v-so2").firstChild.textContent = r.so2_du == null ? "No data" : `${r.so2_du.toFixed(2)} DU`;
   $("#n-so2").textContent = r.so2_ratio == null ? "" : `${r.so2_ratio.toFixed(1)} times the 30-day normal`;
