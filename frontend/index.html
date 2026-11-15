@@ -254,8 +254,14 @@
     </div>
   </aside>
 
+  <div id="tl-hud" hidden data-state="loading" role="status">
+    <div class="tl-top"><b id="tl-date">loading…</b><button id="tl-stop" type="button" aria-label="close the time-lapse">×</button></div>
+    <div class="tl-counts"><span><i style="background:#E5383B"></i><b id="tl-n-modis">0</b> MODIS</span><span><i style="background:#FFD60A"></i><b id="tl-n-viirs">0</b> VIIRS</span></div>
+    <div class="tl-track"><i id="tl-bar"></i></div>
+  </div>
+
   <nav id="timeline" class="panel" aria-label="date">
-    <button id="play" type="button" aria-label="play through time">play</button>
+    <div class="tl-left"><button id="play" type="button" aria-label="play through time">play</button><button id="tl-btn" type="button" title="watch the last year of fires on the map" disabled>time-lapse</button></div>
     <input id="slider" type="range" min="0" max="1" step="1" value="1" aria-label="date slider">
     <div id="datebox"><button id="prev-day" class="step-btn" type="button" aria-label="one day earlier" title="one day earlier">‹</button><input id="date" type="date" aria-label="choose a date"><button id="next-day" class="step-btn" type="button" aria-label="one day later" title="one day later">›</button></div>
     <p id="window-note"></p>
@@ -343,6 +349,7 @@
       <div class="cad-parts" id="cad-parts" hidden>
         <div class="parts-stage" id="parts-stage">
           <video id="parts-video" muted playsinline preload="none" aria-label="satellite model"></video>
+          <div id="parts-spot"></div>
           <div id="parts-dots"></div>
           <div id="parts-tip" hidden></div>
           <p class="parts-hint">hover a dot</p>
@@ -558,6 +565,7 @@
   <script src="exports.js"></script>
   <script src="tour.js"></script>
   <script src="pages.js"></script>
+  <script src="timelapse.js"></script>
   <script type="module" src="passes.js"></script>
 </body>
 </html>

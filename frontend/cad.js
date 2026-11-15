@@ -196,20 +196,29 @@
     if (!partsVideo.src.endsWith(d.src)) { partsVideo.src = d.src; partsVideo.preload = "auto"; }
     const seek = () => { partsVideo.currentTime = d.t; partsVideo.pause(); };
     partsVideo.readyState >= 1 ? seek() : partsVideo.addEventListener("loadedmetadata", seek, { once: true });
-    partsTip.hidden = true; describe(null);
+    partsTip.hidden = true; $("#parts-spot")?.classList.remove("on"); describe(null);
     const dots = $("#parts-dots"); dots.replaceChildren();
-    d.parts.forEach((p) => {
+    const spot = $("#parts-spot");
+    d.parts.forEach((p, i) => {
       const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", p.name);
-      b.style.left = p.x + "%"; b.style.top = p.y + "%";
+      b.textContent = i + 1; b.style.left = p.x + "%"; b.style.top = p.y + "%";
       const on = () => {
-        partsTip.innerHTML = "<b></b><span></span>"; partsTip.firstChild.textContent = p.name; partsTip.lastChild.textContent = p.text;
-        partsTip.hidden = false;
         const flip = p.x > 55;
-        partsTip.style.left = flip ? `calc(${p.x}% - 246px)` : `calc(${p.x}% + 18px)`;
-        partsTip.style.top = `min(${p.y}%, calc(100% - 96px))`;
+        partsTip.className = flip ? "left" : "right";
+        partsTip.innerHTML = "<i></i><div><b></b><span></span></div>";
+        partsTip.querySelector("i").textContent = i + 1; partsTip.querySelector("b").textContent = p.name; partsTip.querySelector("span").textContent = p.text;
+        partsTip.style.left = flip ? `calc(${p.x}% - 268px)` : `calc(${p.x}% + 24px)`;
+        partsTip.style.top = `min(calc(${p.y}% - 18px), calc(100% - 100px))`;
+        partsTip.hidden = false; requestAnimationFrame(() => partsTip.classList.add("show"));
+        spot.style.setProperty("--sx", p.x + "%"); spot.style.setProperty("--sy", p.y + "%"); spot.classList.add("on");
+        $$("#parts-dots button", partsBox).forEach((x) => x.classList.toggle("on", x === b));
         describe(p); $$("#parts-list button", partsBox).forEach((x) => x.classList.toggle("on", x.dataset.n === p.name));
       };
-      const off = () => { partsTip.hidden = true; describe(null); $$("#parts-list .on", partsBox).forEach((x) => x.classList.remove("on")); };
+      const off = () => {
+        partsTip.classList.remove("show"); partsTip.hidden = true; spot.classList.remove("on");
+        $$("#parts-dots .on", partsBox).forEach((x) => x.classList.remove("on"));
+        describe(null); $$("#parts-list .on", partsBox).forEach((x) => x.classList.remove("on"));
+      };
       b.addEventListener("mouseenter", on); b.addEventListener("focus", on); b.addEventListener("mouseleave", off); b.addEventListener("blur", off);
       b.addEventListener("click", on);
       dots.append(b);
@@ -217,7 +226,7 @@
     const fill = (ul, items, withDot) => {
       ul.replaceChildren();
       items.forEach((p) => {
-        const li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.textContent = p.name; b.dataset.n = p.name;
+        const li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.textContent = withDot ? `${items.indexOf(p) + 1}  ${p.name}` : p.name; b.dataset.n = p.name;
         const show = () => { describe(p); b.classList.add("on"); if (withDot) $$("#parts-dots button", partsBox).forEach((x) => x.classList.toggle("on", x.getAttribute("aria-label") === p.name)); };
         const hide = () => { describe(null); b.classList.remove("on"); $$("#parts-dots .on", partsBox).forEach((x) => x.classList.remove("on")); };
         b.addEventListener("mouseenter", show); b.addEventListener("focus", show); b.addEventListener("mouseleave", hide); b.addEventListener("blur", hide); b.addEventListener("click", show);
