@@ -45,7 +45,7 @@
             <button type="button" data-sensor="modis" aria-pressed="false">MODIS</button>
             <button type="button" data-sensor="viirs" aria-pressed="false">VIIRS</button>
           </div>
-          <p id="sensor-detail" class="note">both satellites combined, 2000 – today.</p>
+          <p id="sensor-detail" class="note">MODIS + VIIRS combined.</p>
         </section>
 
         <section aria-labelledby="h-places">
@@ -56,7 +56,7 @@
             <button type="button" data-lat="41.0" data-lon="26.1" data-date="2023-08-28" data-radius="80" data-zoom="7" data-for="research" data-burn="1" data-fire="1">evros wildfire, greece, aug 2023</button>
             <button type="button" data-lat="19.4" data-lon="-155.28" data-date="2025-01-05" data-radius="100" data-zoom="7" data-for="research school" data-burn="0">kīlauea eruption, jan 2025</button>
           </div>
-          <p class="note">kīlauea is a volcano: it shows sulfur dioxide but no fires.</p>
+          
         </section>
 
         <section id="area-section" aria-labelledby="h-area">
@@ -69,7 +69,7 @@
           </form>
           <ul id="place-results" class="place-results" hidden></ul>
           <button id="draw-area" type="button" class="ghost wide-btn draw-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 8 5l9 3 3 9-9 3z"/><circle cx="4" cy="18" r="1.6"/><circle cx="8" cy="5" r="1.6"/><circle cx="17" cy="8" r="1.6"/><circle cx="20" cy="17" r="1.6"/><circle cx="11" cy="20" r="1.6"/></svg><span>draw an area on the map</span></button>
-          <p id="area-note" class="note">click the map for a circle, or draw an area.</p>
+          
         </section>
 
         <section aria-labelledby="h-layers">
@@ -109,7 +109,7 @@
       <div class="tab-panel" role="tabpanel" data-panel="calendar" hidden>
         <section aria-labelledby="h-calendar">
           <h2 id="h-calendar">burning activity calendar</h2>
-          <p class="note">each square is a day. darker means more fire.</p>
+          
           <label class="field"><span>colors</span>
             <select id="palette" aria-label="calendar color ramp">
               <option value="warm">warm (orange → red)</option>
@@ -127,12 +127,12 @@
       <div class="tab-panel" role="tabpanel" data-panel="export" hidden>
         <section id="export-section" aria-labelledby="h-export">
           <h2 id="h-export">export for reports</h2>
-          <p class="note">uses your place, satellite and dates.</p>
+          
           <div class="range-row">
             <label><span>from</span><input id="exp-from" type="date" aria-label="export start date"></label>
             <label><span>to</span><input id="exp-to" type="date" aria-label="export end date"></label>
           </div>
-          <p class="note range-hint">hotspot records cover up to 1 year at a time.</p>
+          
           <label class="field"><span>hotspot confidence</span>
             <select id="exp-conf" aria-label="hotspot confidence filter">
               <option value="all">all detections</option>
@@ -148,12 +148,12 @@
             </select>
           </label>
           <div class="export-grid">
-            <button id="exp-hotspots" type="button" class="exp-btn" disabled><b>hotspot records</b><small>csv · chosen date range</small></button>
-            <button id="exp-monthly" type="button" class="exp-btn" disabled><b>monthly summary</b><small>csv · MODIS + VIIRS</small></button>
-            <button id="exp-cal-png" type="button" class="exp-btn" disabled><b>calendar image</b><small>png · for slides</small></button>
-            <button id="exp-cal-csv" type="button" class="exp-btn" disabled><b>calendar days</b><small>csv · this month</small></button>
+            <button id="exp-hotspots" type="button" class="exp-btn" disabled><b>hotspot records</b><small>csv</small></button>
+            <button id="exp-monthly" type="button" class="exp-btn" disabled><b>monthly summary</b><small>csv</small></button>
+            <button id="exp-cal-png" type="button" class="exp-btn" disabled><b>calendar image</b><small>png</small></button>
+            <button id="exp-cal-csv" type="button" class="exp-btn" disabled><b>calendar days</b><small>csv</small></button>
           </div>
-          <p id="export-note" class="note" role="status">drop a pin or pick a place to enable exports.</p>
+          <p id="export-note" class="note" role="status">drop a pin or pick a place first.</p>
         </section>
       </div>
 
@@ -161,19 +161,19 @@
         <section aria-labelledby="h-watch">
           <h2 id="h-watch">watched places</h2>
           <ul id="watchlist"></ul>
-          <p id="watch-empty" class="note">pin a place, then click “watch this place” to save it.</p>
+          <p id="watch-empty" class="note">no saved places yet.</p>
           <button id="watch-check" type="button" class="ghost" hidden>check all for this date</button>
         </section>
 
         <details class="how" id="how">
-          <summary>how the data is extracted</summary>
-          <p class="how-lead">Helios reads NASA satellite data live from Google Earth Engine for the place and date you choose. Nothing is saved.</p>
+          <summary>about the data</summary>
+          
           <ol>
-            <li data-layer="so2"><b>sulfur dioxide</b> comes from the sentinel-5p satellite. cloudy pixels (over 30% cloud) are thrown out, the 7 days up to your date are combined into a median, and the result is shown in dobson units. the readout compares it with the same area's average over the 30 days before.</li>
-            <li data-layer="fire"><b>active fires</b> come from MODIS FIRMS (~1 km, since 2000) and VIIRS VNP14A1 (daily 1 km, since 2012). the two sensors see fires differently, so <b>harmonized</b> mode joins them: VIIRS wherever it exists, and before 2012 MODIS multiplied by k, the VIIRS ÷ MODIS ratio measured for your area in the years both satellites flew together. counts are detected fire pixels per day, not verified fires or prescribed burns.</li>
-            <li data-layer="burn"><b>burn scars</b> come from sentinel-2 photos. clouds, shadows and snow are masked, then each pixel's near-infrared and shortwave-infrared light is compared before the fire and now. a big drop (dnbr above 0.27) on land that was green before counts as burned, and the pixels are added up in hectares.</li>
+            <li data-layer="so2"><b>sulfur dioxide:</b> Sentinel-5P satellite.</li>
+            <li data-layer="fire"><b>fires:</b> MODIS (since 2000) and VIIRS (since 2012). harmonized uses both.</li>
+            <li data-layer="burn"><b>burn scars:</b> Sentinel-2 satellite.</li>
           </ol>
-          <p class="how-foot"><b>alert</b> = fire plus sulfur dioxide at 1.5 times normal or more. <b>watch</b> = 10+ fire pixels, or sulfur dioxide at 2 times normal. it means the two show up together, not that one caused the other.</p>
+          <p class="how-foot"><b>alert</b> = fires and sulfur dioxide are both high. <b>watch</b> = lots of fires, or high sulfur dioxide.</p>
         </details>
       </div>
 
@@ -182,6 +182,7 @@
         <p class="team-label">meet the team</p>
         <p class="team-names">made by <b>Akhilesh Madhavan</b> + <b>Bhavishyaa Vignesh</b></p>
         <p class="team-event">for the NASA Space Apps Challenge</p>
+        <p class="team-event">CAD done on Blender</p>
       </footer>
     </div>
   </aside>
@@ -214,7 +215,7 @@
         <span class="dock-name"><b>VIIRS</b><small>Suomi NPP · NOAA-20 · since 2012</small><em class="dock-state"></em></span>
       </button>
     </div>
-    <p class="dock-note" id="dock-note">hover to spin · click to enlarge</p>
+    <p class="dock-note" id="dock-note">CAD done on Blender</p>
   </section>
 
   <div id="draw-bar" hidden><span id="draw-msg">click the map to add corners (need 3+)</span><button id="draw-undo" type="button">undo</button><button id="draw-cancel" type="button">cancel</button></div>
@@ -225,13 +226,13 @@
     <header class="panel-head">
       <div>
         <h2 id="place">no place chosen</h2>
-        <p class="note" id="place-sub">click the map or enter a place on the left.</p>
+        <p class="note" id="place-sub">click the map or enter a place.</p>
       </div>
       <button class="panel-toggle" type="button" aria-expanded="true" aria-label="show or hide readout">readout</button>
     </header>
 
     <div class="panel-body">
-      <p id="signal" data-level="none">waiting for a location.</p>
+      <p id="signal" data-level="none">no place yet.</p>
 
       <dl class="rows">
         <div data-layer="fire"><dt>fire pixels</dt><dd id="v-fire">–</dd></div>
@@ -275,7 +276,7 @@
     <div class="stage">
       <header class="hero-head">
         <h1 class="hero-word" aria-label="Helios"><span>H</span><span>E</span><span>L</span><span>I</span><span>O</span><span>S</span></h1>
-        <p class="hero-tag">satellite fire hotspots, 2000 – today</p>
+        <p class="hero-tag">fire data from space, 2000 to today</p>
       </header>
       <form id="s-sensor" class="step card" autocomplete="off">
         <h2 class="q">choose a satellite</h2>
@@ -295,7 +296,7 @@
             <span class="sensor-text"><input type="radio" name="welcome-sensor" value="viirs"><span><strong>VIIRS</strong><small>since 2012</small></span></span>
           </label>
           <label class="sensor-choice harmonized-choice">
-            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="harmonized" checked><span><strong>both, harmonized <em>recommended</em></strong><small>MODIS + VIIRS combined · 2000 – today</small></span></span>
+            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="harmonized" checked><span><strong>both, harmonized <em>recommended</em></strong><small>MODIS + VIIRS combined</small></span></span>
           </label>
         </div>
         <button class="cta" type="submit"><span>continue</span> <i>→</i></button>
@@ -335,18 +336,18 @@
       <div class="cad-compare" id="cad-compare" hidden>
         <figure class="cad-pair" data-cad="modis">
           <div class="cad-pair-stage"><video src="media/cad-modis.mp4" muted loop playsinline preload="none"></video></div>
-          <figcaption><b>MODIS</b><span>Terra · Aqua · ~1 km fire pixels · Nov 2000 → today</span></figcaption>
+          <figcaption><b>MODIS</b><span>since 2000</span></figcaption>
         </figure>
         <figure class="cad-pair" data-cad="viirs">
           <div class="cad-pair-stage"><video src="media/cad-viirs.mp4" muted loop playsinline preload="none"></video></div>
-          <figcaption><b>VIIRS</b><span>Suomi NPP · NOAA-20 · 375 m – 1 km · Jan 2012 → today</span></figcaption>
+          <figcaption><b>VIIRS</b><span>since 2012</span></figcaption>
         </figure>
         <label class="cad-sync"><input type="checkbox" id="cad-sync" checked> spin both together</label>
       </div>
       <div class="cad-grid">
         <div class="cad-stage" id="cad-stage" tabindex="0" aria-label="drag to spin the model, scroll to zoom">
           <video id="cad-video" muted loop playsinline preload="auto"></video>
-          <p class="cad-hint">drag to spin · scroll or pinch to zoom · double-click to reset</p>
+          <p class="cad-hint">drag to spin · scroll to zoom</p>
           <p class="cad-zoom-badge" id="cad-zoom-badge">100%</p>
         </div>
         <aside class="cad-side">
@@ -394,10 +395,10 @@
   <div id="history" class="modal" role="dialog" aria-modal="true" aria-labelledby="h-title" hidden>
     <div class="card history-card">
       <button class="x" type="button" id="history-x" aria-label="close">×</button>
-      <p class="eyebrow">fire history · harmonized MODIS + VIIRS</p>
+      <p class="eyebrow">fire history</p>
       <h2 id="h-title">your area since 2000</h2>
       <p class="note" id="h-sub"></p>
-      <p id="h-loading" class="h-loading" role="status">loading 25 years of fire data… a new place takes about a minute.</p>
+      <p id="h-loading" class="h-loading" role="status">loading… this can take a minute.</p>
 
       <div id="h-body" hidden>
         <div class="h-tiles" id="h-tiles"></div>
@@ -417,24 +418,24 @@
           </div>
           <div id="h-grid" class="h-grid" aria-label="years by months hotspot calendar"></div>
           <div class="h-legend" id="h-legend"></div>
-          <p class="note">each box is one month. darker means more fire. red-outlined columns are the busiest months. click a box to open that month.</p>
+          <p class="note">each box is a month. darker = more fire.</p>
         </div>
 
         <div class="h-two">
           <div class="h-block">
             <h3>seasonal pattern</h3>
             <div id="h-season" class="h-chart"></div>
-            <p class="note">grey band: the usual range · white line: the typical year · red line: <span id="h-season-year">this year</span>.</p>
+            <p class="note">red line: <span id="h-season-year">this year</span>. white line: typical year.</p>
           </div>
           <div class="h-block">
             <h3>hotspots per year</h3>
             <div id="h-annual" class="h-chart"></div>
-            <p class="note" id="h-annual-note">dashed line: the trend over time.</p>
+            <p class="note" id="h-annual-note">dashed line: trend.</p>
           </div>
         </div>
 
         <details class="h-block h-method" id="h-method">
-          <summary>how MODIS and VIIRS were harmonized here</summary>
+          <summary>how MODIS and VIIRS were combined</summary>
           <div class="h-two">
             <div id="h-scatter" class="h-chart"></div>
             <div id="h-method-text" class="h-method-text"></div>
@@ -442,8 +443,8 @@
         </details>
 
         <div class="h-downloads">
-          <button id="h-csv" type="button" class="exp-btn"><b>harmonized monthly record</b><small>csv · every month since 2000</small></button>
-          <button id="h-png" type="button" class="exp-btn"><b>history calendar image</b><small>png · years × months</small></button>
+          <button id="h-csv" type="button" class="exp-btn"><b>harmonized monthly record</b><small>csv</small></button>
+          <button id="h-png" type="button" class="exp-btn"><b>history calendar image</b><small>png</small></button>
           <button id="h-annual-csv" type="button" class="exp-btn"><b>yearly totals + trend</b><small>csv</small></button>
         </div>
       </div>
@@ -484,13 +485,13 @@
           <div id="r-tip" role="status" hidden></div>
           <p id="r-loading" class="r-loading">loading render…</p>
           <button id="r-play" class="r-play" type="button" aria-label="pause the render">pause</button>
-          <p class="r-hint">hover (or tap) the fire to read it</p>
+          <p class="r-hint">hover over the fire</p>
         </div>
 
         <ul id="r-list" class="r-list" aria-label="what the render shows"></ul>
       </div>
 
-      <p class="r-foot">the render is an illustration of a fire, not a live simulation. the numbers are Helios's satellite readings for the area you pinned.</p>
+      <p class="r-foot">the fire is an illustration. the numbers are real satellite data.</p>
     </div>
   </div>
 

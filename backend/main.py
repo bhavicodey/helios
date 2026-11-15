@@ -34,7 +34,7 @@ def cached(key, fn, ttl=config.CACHE_SECONDS):
     return value
 
 
-# ---- disk cache: finished months never change, so they are fetched from Earth Engine once, ever ----------
+# disk cache: finished months never change, so they are fetched from Earth Engine once, ever
 _DISK_FILE = config.ROOT / ".cache" / "firescout_cache.json"
 _disk_lock = threading.Lock()
 _disk_timer = None
@@ -106,7 +106,7 @@ def safe(fn):
         return None
 
 
-# ---- area of interest: a circle (pin + radius) or a drawn polygon --------------------
+# area of interest: a circle (pin + radius) or a drawn polygon
 def parse_geom(geom: Optional[str]):
     """`geom` is a JSON list of [lon, lat] points (a polygon drawn on the map)."""
     if not geom:
@@ -138,8 +138,7 @@ def area_key(lat, lon, radius_km, pts):
 GEOM = Query(None, max_length=20000, description="JSON list of [lon, lat] points for a drawn area")
 
 
-# ---------------------------------------------------------------------------
-@app.get("/api/health")
+# @app.get("/api/health")
 def health():
     try:
         ee_client.ensure()

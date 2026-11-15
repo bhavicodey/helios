@@ -1,6 +1,5 @@
 "use strict";
-/* Helios intro: satellite (with CADs) -> name -> "do you live in a wildfire-prone area?" -> guided spotlight tour (tour.js).
-   "how it works" replays the guided tour. Independent of the map, so it works even if the map is slow to load. */
+// welcome screens
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -14,11 +13,11 @@
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } };
   const save = (p) => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch { /* storage blocked */ } };
 
-  // ------------------------------------------------------------ plain intro: no background effects, just smooth motion
+  // plain intro: no background effects, just smooth motion
   // (burst stays as a no-op so other files can still call FireIntro.burst safely)
   function burst() {}
 
-  // ------------------------------------------------------------ steps
+  // steps
   const sSensor = $("#s-sensor"), sName = $("#s-name"), sWhy = $("#s-why");
   const nameIn = $("#w-name"), goBtn = $("#w-go");
 
@@ -66,7 +65,7 @@
     finish(profile, true);
   });
 
-  // ------------------------------------------------------------ personalise + reveal
+  // personalise + reveal
   // the welcome line follows the wildfire answer
   const LEDE = {
     yes: "enter your town to see its fire history.",
@@ -96,7 +95,7 @@
     window.dispatchEvent(new CustomEvent("firescout:sensor", { detail: saved?.sensor || "modis" }));
   }
 
-  // ------------------------------------------------------------ modals
+  // modals
   let lastFocus = null;
   function openModal(m) { lastFocus = document.activeElement; m.hidden = false; (m.querySelector(".cta, .x, input") || m).focus?.({ preventScroll: true }); }
   function closeModal(m) { m.hidden = true; lastFocus?.focus?.({ preventScroll: true }); }

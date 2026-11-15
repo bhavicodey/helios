@@ -12,7 +12,7 @@ SO2_BAND = "SO2_column_number_density"
 SO2_MIN, SO2_MAX = 0.0001, 0.0008  # mol/m2 display range
 
 VIS = {
-    # red giant theme (dark map): rose haze for gas, hot orange-white for fire, deep crimson for burn scars
+    # map colors
     "so2": {"min": SO2_MIN, "max": SO2_MAX,
             "palette": ["#3A1A26", "#6E2A47", "#A8456F", "#E07A9E", "#FFC2D4"]},
     "fire": {"min": 1, "max": 3, "palette": ["#E5383B", "#FFD60A", "#FF9F1C"]},   # see FIRE_VIS
@@ -20,8 +20,7 @@ VIS = {
              "palette": ["#3D0A14", "#6E0F22", "#A3132F", "#D61F3C"]},
 }
 
-# MODIS is red, VIIRS is yellow. Harmonized draws both in one image: 1 = MODIS only (red), 2 = VIIRS only (yellow),
-# 3 = both satellites saw it (orange).
+# MODIS = red, VIIRS = yellow. 1 = MODIS, 2 = VIIRS, 3 = both
 FIRE_VIS = {
     "modis": {"min": 0, "max": 1, "palette": ["#E5383B", "#E5383B"]},
     "viirs": {"min": 0, "max": 2, "palette": ["#FFD60A", "#FFD60A"]},
@@ -38,7 +37,7 @@ META = {
 }
 
 
-# ---- small helpers ----------------------------------------------------------
+# small helpers
 def _d(s: str) -> date:
     return date.fromisoformat(s)
 
@@ -51,7 +50,7 @@ def _empty(band: str) -> ee.Image:
     return ee.Image.constant(0).rename(band).selfMask()
 
 
-# ---- 1. Sulfur dioxide (Sentinel-5P) ------------------------------------------
+# 1. Sulfur dioxide (Sentinel-5P)
 def so2_collection(start: str, end: str) -> ee.ImageCollection:
     recent = (date.today() - _d(end)).days < 10
     name = "COPERNICUS/S5P/NRTI/L3_SO2" if recent else "COPERNICUS/S5P/OFFL/L3_SO2"
@@ -100,7 +99,7 @@ def so2_daily_du(region, end: str, days: int = 30):
     return out
 
 
-# ---- 2. Active fires (NASA FIRMS) -----------------------------------------------
+# 2. Active fires (NASA FIRMS)
 FIRE_DATASETS = {
     "modis": {"id": "FIRMS", "first": "2000-11-01", "description": "MODIS FIRMS (~1 km)"},
     "viirs": {"id": "NASA/VIIRS/002/VNP14A1", "first": "2012-01-19", "description": "VIIRS VNP14A1 daily 1 km composite"},
@@ -185,7 +184,7 @@ def fire_calendar(region, year: int, month: int, sensor: str = "modis"):
              "observations": f["properties"].get("observations", 0)} for f in features]
 
 
-# ---- 3. Burn scars (Sentinel-2 dNBR) --------------------------------------------
+# 3. Burn scars (Sentinel-2 dNBR)
 def s2_collection(region, start: str, end: str) -> ee.ImageCollection:
     def mask(img):
         scl = img.select("SCL")
@@ -233,7 +232,7 @@ def burned_hectares(region, end: str, radius_km: float = 50):
     return 0 if v is None else v / 10000
 
 
-# ---- 4. Exports: filtered hotspot records + monthly summaries ---------------------
+# 4. Exports: filtered hotspot records + monthly summaries
 # Confidence classes, harmonised across sensors:
 #   MODIS FIRMS "confidence" is 0-100  -> low < 30 <= nominal < 80 <= high
 #   VIIRS VNP14A1 "FireMask" 7/8/9      -> low / nominal / high
@@ -311,8 +310,8 @@ def summarize_month(days, year: int, month: int, sensor: str):
     }
 
 
-# ---- 5. MODIS + VIIRS harmonisation --------------------------------------------------
-# Unit everywhere: "hotspot pixel-days" = detected 1 km fire pixels, summed over the days of a month.
+# 5. MODIS + VIIRS harmonisation
+# a hotspot is a ~1 km fire pixel; monthly counts add up all the days
 VIIRS_FIRST = date(2012, 1, 19)
 
 

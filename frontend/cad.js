@@ -1,8 +1,5 @@
 "use strict";
-/* Helios CAD viewer.
-   "make bigger" on a satellite card (intro) or "view satellite CAD" (left panel) opens a large viewer.
-   The CADs are turntable renders, so dragging sideways scrubs the video = spins the model.
-   Scroll / pinch / +/- zoom toward the cursor, double-click resets, full screen fills the display. */
+// 3D satellite popup and the satellite dock
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -24,7 +21,7 @@
   const scrub = $("#cad-scrub"), playBtn = $("#cad-play"), speed = $("#cad-speed"), badge = $("#cad-zoom-badge");
   let current = "modis", zoom = 1, ox = 0, oy = 0, lastFocus = null, playing = true;
 
-  // ---- transform (zoom + pan)
+  // transform (zoom + pan)
   function apply() {
     const max = (zoom - 1) / 2;                      // keep the video covering the stage
     ox = Math.max(-max, Math.min(max, ox)); oy = Math.max(-max, Math.min(max, oy));
@@ -41,7 +38,7 @@
   }
   function reset() { zoom = 1; ox = 0; oy = 0; apply(); }
 
-  // ---- play / scrub
+  // play / scrub
   function setPlaying(on) {
     playing = on; playBtn.textContent = on ? "pause" : "play";
     if (on) video.play().catch(() => {}); else video.pause();
@@ -51,7 +48,7 @@
   playBtn.addEventListener("click", () => (comparing ? setPairsPlaying(!playing) : setPlaying(!playing)));
   speed.addEventListener("change", () => { video.playbackRate = +speed.value; pairVids.forEach((v) => { v.playbackRate = +speed.value; }); });
 
-  // ---- drag: sideways spins the model; with zoom on, shift-drag (or two fingers) pans
+  // drag: sideways spins the model; with zoom on, shift-drag (or two fingers) pans
   const pointers = new Map();
   let drag = null, pinch = null;
   stage.addEventListener("pointerdown", (e) => {
@@ -115,7 +112,7 @@
   });
   document.addEventListener("fullscreenchange", () => { $("#cad-full").textContent = document.fullscreenElement ? "exit full screen" : "full screen"; });
 
-  // ---- side by side: both models at once, drag either one to spin (together by default)
+  // side by side: both models at once, drag either one to spin (together by default)
   const compare = $("#cad-compare"), pairVids = $$("#cad-compare video"), sync = $("#cad-sync");
   let comparing = false;
   function setPairsPlaying(on) {
@@ -153,7 +150,7 @@
     $("#cad-use span").textContent = "use both";
   }
 
-  // ---- which CAD
+  // which CAD
   function show(key) {
     if (key === "both") { showBoth(); return; }
     const c = CADS[key]; if (!c) return;
@@ -204,7 +201,7 @@
     open(CADS[pressed?.dataset.sensor] ? pressed.dataset.sensor : "both");   // harmonized -> both side by side
   });
 
-  // ---- hover to spin: moving across any small CAD preview turns the model (the renders are turntables)
+  // hover to spin: moving across any small CAD preview turns the model (the renders are turntables)
   function scrubbable(v) {
     const box = v.parentElement;
     box.addEventListener("pointermove", (e) => {
@@ -216,7 +213,7 @@
   }
   $$(".cad-thumb video, .dock-vid video").forEach(scrubbable);
 
-  // ---- satellite dock: always shows which satellite(s) the current reading comes from
+  // satellite dock: always shows which satellite(s) the current reading comes from
   const dock = $("#sat-dock");
   if (dock && typeof state !== "undefined") {
     const VIIRS_FIRST = Date.UTC(2012, 0, 19);
@@ -232,9 +229,6 @@
           ? (k === "modis" ? "2000 – 2011" : "2012 – today")
           : k === reading ? "selected" : "not in use";
       });
-      $("#dock-note").textContent = s === "harmonized"
-        ? `MODIS until 2011 · VIIRS from 2012`
-        : `${s.toUpperCase()} only`;
     }
     ["firescout:sensor-changed", "firescout:readout", "firescout:calendar", "firescout:area"].forEach((ev) => addEventListener(ev, syncDock));
     $("#slider")?.addEventListener("change", syncDock); $("#date")?.addEventListener("change", syncDock);
@@ -249,9 +243,7 @@
     syncDock();
   }
 
-  // ---- only play the CAD videos that are on screen. Several full-HD videos decoding at once (most of them hidden)
-  // can make some graphics cards draw them blank, so: intro cards during the intro, the dock in the app,
-  // and the viewer's own video(s) only while it is open.
+  // only play the videos you can see (a lot of video at once can show up blank)
   const introVids = $$("#intro video"), dockVids = $$("#sat-dock video");
   // all CAD models spin at half speed by default
   // (browsers reset the speed when a video loads, so it is re-applied on load and on play;

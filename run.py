@@ -46,7 +46,7 @@ def ensure_env_file() -> None:
     else:
         text = f"EE_PROJECT={project}\n" + text
     env.write_text(text, encoding="utf-8")
-    print("  saved to .env ♡\n")
+    print("  saved to .env\n")
 
 
 def ensure_earth_engine() -> None:
@@ -54,7 +54,7 @@ def ensure_earth_engine() -> None:
 
     try:
         ee_client.ensure()
-        print("  earth engine connected ♡")
+        print("  earth engine connected")
         return
     except ee_client.EENotReady as exc:
         print(f"\n  {exc}")
@@ -66,7 +66,7 @@ def ensure_earth_engine() -> None:
         import ee
         ee.Authenticate()
         ee_client.ensure()
-        print("  earth engine connected ♡")
+        print("  earth engine connected")
     except Exception as exc:  # noqa: BLE001
         print(f"\n  couldn't finish sign-in: {exc}")
         print("  the app will still open and tell you what's missing.\n")

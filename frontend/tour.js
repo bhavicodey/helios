@@ -1,8 +1,5 @@
 "use strict";
-/* Helios guided tour.
-   A spotlight walks the user through the app: everything except the highlighted part is dimmed and
-   blocked, so the steps have to be followed in order. Some steps need an action (pick a fire location,
-   open the fire render) before the tour moves on. Starts after the intro, and again from "how it works". */
+// guided tour
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -15,12 +12,12 @@
   const sensorName = () => ($(".sensor-switch button[aria-pressed=true]")?.dataset.sensor || "modis").toUpperCase();
   const snap = () => window.firescout?.snapshot?.() || {};
 
-  // ---- the steps. `target` = what stays lit; `wait` = an action the user must do before moving on
+  // the steps. `target` = what stays lit; `wait` = an action the user must do before moving on
   const STEPS = [
     {
       target: () => { const d = $("#sat-dock"); return d && d.offsetParent !== null ? d : $("#rail .sensor-section"); },
       title: "Two satellites",
-      body: () => "Helios combines two NASA satellites: MODIS (since 2000) and VIIRS (since 2012). Click one to see its 3D model.",
+      body: () => "MODIS (since 2000) and VIIRS (since 2012). Click one for its 3D model.",
       pad: 6,
     },
     {
@@ -31,12 +28,12 @@
     {
       target: () => $("#area-section"),
       title: "Choose a place",
-      body: () => "Type a town or address, or draw an area on the map. All numbers are for that area.",
+      body: () => "Type a town, or draw an area on the map.",
     },
     {
       target: () => $("#presets"),
       title: "Try a big wildfire",
-      body: () => "Pick one of these wildfires. The map flies there.",
+      body: () => "Pick a wildfire.",
       todo: "Pick a wildfire to continue",
       wait: (done) => {
         $$("#presets button").forEach((b) => {
@@ -52,7 +49,7 @@
     {
       target: () => $("#readout"),
       title: "Read the numbers",
-      body: () => "Fire pixels, sulfur dioxide and burned area inside the circle, for the last 7 days. The banner tells you if it is unusual.",
+      body: () => "Fires, sulfur dioxide and burned area in the circle, for the last 7 days.",
       todo: "Loading…",
       soft: (ready) => {
         const ok = () => { const s = snap(); return s.pin && !s.loading && (s.ins || s.series?.length); };
@@ -66,12 +63,12 @@
     {
       target: () => $("#h-calendar").closest("section"),
       title: "Daily calendar",
-      body: () => "Each square is one day. Darker means more fire. Click a day to jump to it.",
+      body: () => "Each square is a day. Darker = more fire.",
     },
     {
       target: () => $("#history-open"),
       title: "25-year history",
-      body: () => "Open it to see every month since 2000, and how this month compares with past years. Close it to continue.",
+      body: () => "Every month since 2000. Close it to continue.",
       todo: "Click “open fire history”",
       pad: 10,
       wait: (done) => {
@@ -88,17 +85,17 @@
     {
       target: () => $("#h-layers").closest("section"),
       title: "Map layers",
-      body: () => "Turn layers on or off. The radius slider makes your area bigger or smaller.",
+      body: () => "Turn layers on or off. Change the area size with the radius slider.",
     },
     {
       target: () => $("#timeline"),
       title: "Change the date",
-      body: () => "Press play, drag the slider, or pick a date. Everything updates.",
+      body: () => "Press play or pick a date.",
     },
     {
       target: () => $("#render-open"),
       title: "Fire render",
-      body: () => "Open it, then hover over the fire to see the data for your area. Close it to continue.",
+      body: () => "Hover over the fire to see the data. Close it to continue.",
       todo: "Click “open fire render”",
       pad: 10,
       wait: (done) => {
@@ -115,28 +112,28 @@
     {
       target: () => $("#export-section"),
       title: "Download your data",
-      body: () => "Choose dates, then download the fire records, monthly totals or the calendar image.",
+      body: () => "Download the data as CSV files or an image.",
     },
     {
       target: null,
       title: "You're ready",
-      body: () => "Drag the globe and try your own places. Replay this tour anytime with “how it works”.",
+      body: () => "Try your own places. Replay this tour with “how it works”.",
       final: true,
     },
   ];
 
   let i = -1, target = null, cleanup = null, raf = 0, active = false, ready = true;
 
-  // ---- dots
+  // dots
   dotsBox.replaceChildren(...STEPS.map(() => document.createElement("i")));
 
-  // ---- step aside while any popup (fire render, CAD viewer, name-a-place…) is open on top
+  // step aside while any popup (fire render, CAD viewer, name-a-place…) is open on top
   const modals = $$(".modal");
   const syncAway = () => coach.classList.toggle("away", modals.some((m) => !m.hidden));
   const modalWatch = new MutationObserver(syncAway);
   modals.forEach((m) => modalWatch.observe(m, { attributes: true, attributeFilter: ["hidden"] }));
 
-  // ---- make sure the target is visible (expand collapsed panels on phones, scroll the rail)
+  // make sure the target is visible (expand collapsed panels on phones, scroll the rail)
   function reveal(el) {
     window.FireTabs?.reveal(el);                     // switch the left panel to the tab holding the target
     const panel = el?.closest(".panel");
@@ -144,7 +141,7 @@
     if (el && el !== panel) el.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
   }
 
-  // ---- geometry: hole + four blockers + card placement, every frame while open
+  // geometry: hole + four blockers + card placement, every frame while open
   function frame() {
     if (!active) return;
     const W = innerWidth, H = innerHeight;
@@ -180,7 +177,7 @@
     raf = requestAnimationFrame(frame);
   }
 
-  // ---- step control
+  // step control
   function go(n) {
     cleanup?.(); cleanup = null;
     i = n; const s = STEPS[i];
@@ -240,7 +237,7 @@
     e.preventDefault(); e.stopPropagation();
     card.classList.remove("nudge"); void card.offsetWidth; card.classList.add("nudge");
   }));
-  // keep keyboard users inside the tour: Enter = next, Tab is not allowed to wander behind the dark layer
+  // keep Tab inside the tour box
   addEventListener("keydown", (e) => {
     if (!active || coach.classList.contains("away")) return;
     if (e.key === "Escape") { e.preventDefault(); skip(); return; }

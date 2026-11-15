@@ -1,13 +1,11 @@
 "use strict";
-/* Helios area of interest: enter a place (city, town, address), or draw your own shape on the map.
-   Place search uses OpenStreetMap's free Nominatim service: only the typed text is sent, once per search.
-   Loaded after app.js, so it shares app.js's globals (state, map, setPin, stopSpin, toast, place). */
+// enter a place or draw an area
 (function () {
   const q = (s) => document.querySelector(s);
   const bar = q("#draw-bar"), msg = q("#draw-msg"), navBtn = q("#draw-nav"), railBtn = q("#draw-area");
   let pts = [];
 
-  // ---- 1. enter a place
+  // 1. enter a place
   const form = q("#place-form"), input = q("#place-q"), list = q("#place-results");
   let searching = false, placeName = "", fromSearch = false;
   function goTo(r) {
@@ -32,7 +30,7 @@
       const res = await fetch(url, { headers: { "Accept-Language": "en" } });
       if (!res.ok) throw new Error(`place search failed (${res.status})`);
       const found = await res.json();
-      if (!found.length) { toast(`couldn't find "${text}". try adding the state or country.`); return; }
+      if (!found.length) { toast(`couldn't find "${text}". try adding the state.`); return; }
       if (found.length === 1) { goTo(found[0]); return; }
       // several matches (e.g. Springfield): let the user pick
       list.replaceChildren(...found.map((r) => {
@@ -42,7 +40,7 @@
       }));
       list.hidden = false; list.querySelector("button")?.focus();
     } catch (err) {
-      toast(`place search isn't available right now (${err.message}). you can click the globe instead.`);
+      toast("search isn't working. click the map instead.");
     } finally { searching = false; form.classList.remove("busy"); }
   });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && !list.hidden) { list.hidden = true; input.focus(); } });
@@ -52,7 +50,7 @@
     placeName = ""; input.value = "";
   });
 
-  // ---- 2. drawing
+  // 2. drawing
   function sources() {
     if (map.getSource("draw")) return;
     map.addSource("draw", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
@@ -71,7 +69,7 @@
       : `${pts.length} corners · double-click or press enter to finish`;
   }
   function start() {
-    if (!map.loaded()) { toast("the map is still loading, try again in a moment."); return; }
+    if (!map.loaded()) { toast("map is still loading."); return; }
     stopSpin(); sources();
     pts = []; state.drawing = true; bar.hidden = false;
     navBtn?.setAttribute("aria-pressed", "true"); railBtn.classList.add("on");
@@ -86,7 +84,7 @@
     map.getCanvas().style.cursor = "";
   }
   function finish() {
-    if (pts.length < 3) { toast("an area needs at least 3 corners."); return; }
+    if (pts.length < 3) { toast("need at least 3 corners."); return; }
     const poly = pts.slice();
     // centre of the shape = where the pin goes (and what lat / lon the server receives)
     const lon = poly.reduce((a, p) => a + p[0], 0) / poly.length, lat = poly.reduce((a, p) => a + p[1], 0) / poly.length;
@@ -94,7 +92,7 @@
     setPin(lat, lon, { poly });
     const b = poly.reduce((bb, p) => [Math.min(bb[0], p[0]), Math.min(bb[1], p[1]), Math.max(bb[2], p[0]), Math.max(bb[3], p[1])], [180, 90, -180, -90]);
     map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 120, duration: reduceMotion ? 0 : 1200, maxZoom: 9 });
-    toast("area set. all numbers are now for your drawn area.");
+    
   }
   const near = (a, b) => { const pa = map.project(a), pb = map.project(b); return Math.hypot(pa.x - pb.x, pa.y - pb.y) < 12; };
 
@@ -103,7 +101,7 @@
     const p = [((e.lngLat.lng + 540) % 360) - 180, e.lngLat.lat];
     if (pts.length >= 3 && near(p, pts[0])) { finish(); return; }
     if (pts.length && near(p, pts[pts.length - 1])) return;      // ignore a repeat click on the same corner
-    if (pts.length >= 300) { toast("that's the most corners an area can have."); return; }
+    if (pts.length >= 300) { toast("too many corners."); return; }
     pts.push(p); paint();
   });
   map.on("dblclick", (e) => { if (state.drawing) { e.preventDefault(); if (pts.length > 3) pts.pop(); finish(); } });

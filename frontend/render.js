@@ -1,8 +1,5 @@
 "use strict";
-/* Helios fire render.
-   Opens when the user clicks inside the dashed area of interest. Plays the fire render and lays invisible
-   "zones" over it that follow the fire as the camera moves (fire-track.json holds the fire's position per
-   quarter second). Hovering a zone shows the matching satellite reading for the pinned area. */
+// fire render popup
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -11,7 +8,7 @@
   const tip = $("#r-tip"), list = $("#r-list"), dots = $("#r-dots"), loading = $("#r-loading"), playBtn = $("#r-play");
   const zoneEl = Object.fromEntries([...svg.querySelectorAll(".zone")].map((z) => [z.dataset.zone, z]));
 
-  // ---- what each zone means, and where its colour comes from (matches the app's layer colours)
+  // what each zone means, and where its colour comes from (matches the app's layer colours)
   const ZONES = {
     fire:  { name: "fire pixels",      color: "#e5391f" },
     heat:  { name: "heat intensity",   color: "#f59e0b" },
@@ -22,7 +19,7 @@
   const ORDER = ["fire", "heat", "burn", "smoke", "air"];
   for (const [k, z] of Object.entries(ZONES)) zoneEl[k].style.setProperty("--c", z.color);
 
-  // ---- where the fire is in the frame (x0, x1, y0, y1 as fractions of the frame), sampled 4x a second
+  // where the fire is in the frame (x0, x1, y0, y1 as fractions of the frame), sampled 4x a second
   let track = null, fps = 4;
   const FALLBACK = [0.24, 0.76, 0.40, 0.98];
   fetch("media/fire-track.json").then((r) => r.json()).then((j) => { track = j.track; fps = j.fps; }).catch(() => {});
@@ -32,7 +29,7 @@
     return track[i].map((v, n) => v + (track[j][n] - v) * k);
   }
 
-  // ---- place the zones on the fire (svg units: 1600 x 900)
+  // place the zones on the fire (svg units: 1600 x 900)
   let lastKey = "";
   function layout(t) {
     const [x0, x1, y0, y1] = box(t), W = 1600, H = 900;
@@ -59,7 +56,7 @@
     requestAnimationFrame(loop);
   }
 
-  // ---- reading the numbers
+  // reading the numbers
   const fmtN = (n) => Number(n).toLocaleString();
   function heatLevel(n) { return n == null ? null : n === 0 ? "none detected" : n < 10 ? "low" : n < 50 ? "moderate" : "high"; }
   function info(zone) {
@@ -102,7 +99,7 @@
     return out;
   }
 
-  // ---- tooltip
+  // tooltip
   let active = null, pinned = null, lastPointer = { x: 0, y: 0, fromKey: false };
   function renderTip(zone) {
     const z = ZONES[zone], d = info(zone);
@@ -164,7 +161,7 @@
   }
   stage.addEventListener("click", (e) => { if (pinned && !e.target.classList?.contains("zone")) { pinned = null; hide(); } });
 
-  // ---- side list (same five readings, easy to use on touch screens too)
+  // side list (same five readings, easy to use on touch screens too)
   function buildList() {
     list.replaceChildren();
     for (const k of ORDER) {
@@ -184,7 +181,7 @@
   buildList();
   window.addEventListener("firescout:readout", () => { if (!modal.hidden) { refreshTitle(); refreshList(); } });
 
-  // ---- open / close
+  // open / close
   let lastFocus = null, srcSet = false;
   function refreshTitle() {
     const s = window.firescout.snapshot();

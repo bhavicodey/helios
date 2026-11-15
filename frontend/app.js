@@ -7,7 +7,7 @@ if (typeof maplibregl === "undefined") {
   throw new Error("maplibre-gl failed to load");
 }
 
-// ---------------------------------------------------------------- constants
+// constants
 const DAY = 86400000;
 const FIRST = { modis: Date.UTC(2000, 10, 1), viirs: Date.UTC(2012, 0, 19), harmonized: Date.UTC(2000, 10, 1) };
 let MIN_DATE = FIRST.modis; // fire archives precede the Sentinel-5P record (2018)
@@ -44,7 +44,7 @@ const state = {
   readout: { ins: null, series: [], loading: false },   // latest numbers for the pinned area (the fire render reads these)
 };
 
-// ---------------------------------------------------------------- api + ui helpers
+// api + ui helpers
 let pending = 0;
 async function api(path, params = {}) {
   pending++; document.body.classList.add("loading");
@@ -70,7 +70,7 @@ function setStatus(name, text, kind = "") {
   const el = $(`.layer[data-layer="${name}"] .status`); el.textContent = text; el.dataset.kind = kind;
 }
 
-// ---------------------------------------------------------------- bridge to the fire render (render.js)
+// bridge to the fire render (render.js)
 function notifyReadout() { window.dispatchEvent(new CustomEvent("firescout:readout")); }
 window.firescout = {
   fmt, iso, DAY, drawSpark: (rows, cv) => drawSpark(rows, cv),
@@ -111,7 +111,7 @@ function insideArea(lat, lon) {
   return 2 * R * Math.asin(Math.sqrt(a)) <= state.radius;
 }
 
-// ---------------------------------------------------------------- map
+// map
 const map = new maplibregl.Map({
   container: "map",
   style: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
@@ -125,8 +125,7 @@ map.on("style.load", () => {
   tintBasemap();
 });
 
-// Earth palette: calm sea blue + soft sage land. Both are light and low-saturation so the data colors
-// (fire red, sulfur purple, burn brown) are the only strong colors on the map.
+// map colors
 const EARTH = {   // red giant: near-black land and sea so the red data layers glow
   land: "#161012", green: "#171214", forest: "#181315", ice: "#1E1A1C", sea: "#0B0A0E", river: "#16151C",
   building: "#1F181A", road: "#2A2124", border: "#5A3B40", label: "#A89497", seaLabel: "#5E5A66", halo: "rgba(10,6,7,.85)",
@@ -185,7 +184,7 @@ function setRaster(name, url) {
   }, beforeIdFor(name));
 }
 
-// ---------------------------------------------------------------- layers
+// layers
 const windowNote = (name) => name === "burn"
   ? `30 days to ${fmt(state.end)}, within ${Math.min(state.radius, 150)} km of the pin`
   : `7 days to ${fmt(state.end)}`;
@@ -218,7 +217,7 @@ async function refreshAll() {
 let refreshTimer;
 const scheduleRefresh = () => { clearTimeout(refreshTimer); refreshTimer = setTimeout(refreshAll, 300); };
 
-// ---------------------------------------------------------------- pin + readout
+// pin + readout
 function setPin(lat, lon, { refresh = true, poly = null } = {}) {
   state.pin = { lat, lon };
   state.poly = poly;
@@ -228,7 +227,7 @@ function setPin(lat, lon, { refresh = true, poly = null } = {}) {
     : circle(lat, lon, state.radius));
   $("#place").textContent = poly ? `drawn area near ${place(lat, lon)}` : place(lat, lon);
   $("#place-sub").textContent = poly ? "inside your drawn shape" : `Within ${state.radius} km`;
-  $("#area-note").textContent = poly ? `your drawn area (${poly.length} corners). click the map to use a circle again.` : `circle of ${state.radius} km around ${place(lat, lon)}.`;
+  const areaNote = $("#area-note"); if (areaNote) areaNote.textContent = poly ? `your drawn area (${poly.length} corners). click the map to use a circle again.` : `circle of ${state.radius} km around ${place(lat, lon)}.`;
   window.dispatchEvent(new CustomEvent("firescout:area"));
   $("#watch-add").disabled = false;
   $("#render-open").disabled = false;
@@ -250,7 +249,7 @@ async function analyze() {
   $("#signal").dataset.level = "none"; $("#signal").classList.remove("seen"); $("#signal").textContent = "reading the satellites…";
   $("#place-sub").textContent = `${state.poly ? "Inside your drawn shape" : `Within ${state.radius} km`}, 7 days to ${fmt(state.end)}`;
 
-  // three requests, each shown as soon as it lands: fire + SO2 (fast), the SO2 chart, burned area (slowest)
+  // 3 separate requests so the fast ones show first
   const insP = api("insights", { ...area, end: iso(state.end), sensor: state.sensor, start: iso(state.end - 6 * DAY), include_burn: false });
   const serP = api("so2_series", { ...area, end: iso(state.end), days: 30 });
   // older servers (started before /api/burned existed) still answer through /api/insights
@@ -315,7 +314,7 @@ function drawSpark(rows, cv = $("#spark")) {
   g.fillStyle = col; g.beginPath(); g.arc(x(last), y(vals[last]), 3.5, 0, 7); g.fill();
 }
 
-// ---------------------------------------------------------------- timeline
+// timeline
 const slider = $("#slider"), dateInput = $("#date");
 function configureDateLimits() { slider.max = Math.round((LATEST - MIN_DATE) / DAY); dateInput.min = iso(MIN_DATE); dateInput.max = iso(LATEST); }
 configureDateLimits();
@@ -347,7 +346,7 @@ async function togglePlay() {
 }
 $("#play").addEventListener("click", togglePlay);
 
-// ---------------------------------------------------------------- controls
+// controls
 $$(".layer").forEach((row) => {
   const name = row.dataset.layer;
   $("input[type=checkbox]", row).addEventListener("change", (e) => { state.layers[name].on = e.target.checked; loadLayer(name); });
@@ -380,7 +379,6 @@ map.on("click", (e) => {
   const lat = e.lngLat.lat, lon = wrapLng(e.lngLat.lng);
   if (state.pin && insideArea(lat, lon)) { openRender(); return; }
   setPin(lat, lon);
-  if (!renderSeen()) toast("pinned. now click inside the dashed area to open the fire render.");
 });
 map.on("mousemove", (e) => {
   const over = !!state.pin && insideArea(e.lngLat.lat, wrapLng(e.lngLat.lng));
@@ -394,7 +392,7 @@ $$(".panel-toggle").forEach((btn) => btn.addEventListener("click", () => {
 }));
 if (innerWidth < 820) $$(".panel-toggle").forEach((b) => b.click());
 
-// ---------------------------------------------------------------- globe spin (stops at first touch)
+// globe spin (stops at first touch)
 function spin() {
   if (!state.spinning || map.getZoom() > 3) return;
   const c = map.getCenter(); c.lng += 8;
@@ -405,7 +403,7 @@ function stopSpin() { state.spinning = false; $("#spin")?.setAttribute("aria-pre
 const hideHint = () => $("#hint")?.classList.add("gone");
 map.on("moveend", spin);
 
-// ---------------------------------------------------------------- map toolbar
+// map toolbar
 const HOME = { center: [-100, 28], zoom: innerWidth < 820 ? 0.9 : 1.6, bearing: 0, pitch: 0 };
 const ease = reduceMotion ? 0 : 600;
 $("#spin").setAttribute("aria-pressed", String(state.spinning));
@@ -434,7 +432,7 @@ setTimeout(hideHint, 25000);
 $("#prev-day").addEventListener("click", () => setDate(state.end - DAY));
 $("#next-day").addEventListener("click", () => setDate(state.end + DAY));
 
-// ---------------------------------------------------------------- watchlist
+// watchlist
 function loadWatch() { try { return JSON.parse(localStorage.getItem(WATCH_KEY) || "[]"); } catch { return []; } }
 function saveWatch() { try { localStorage.setItem(WATCH_KEY, JSON.stringify(state.watch)); } catch { /* storage blocked */ } }
 
@@ -489,8 +487,7 @@ $("#watch-check").addEventListener("click", async () => {
   renderWatch(); btn.disabled = false; btn.textContent = "check all for this date";
 });
 
-
-// ---------------------------------------------------------------- selected satellite and daily burning calendar
+// selected satellite and daily burning calendar
 const SENSOR_DETAILS = {
   harmonized: "both satellites combined, 2000 – today.",
   modis: "MODIS only · since 2000 · ~1 km pixels.",
@@ -511,7 +508,7 @@ function selectSensor(sensor) {
   });
   $("#sensor-detail").textContent = SENSOR_DETAILS[sensor];
   $("#fire-source-caption").textContent = SENSOR_CAPTION[sensor];
-  // fire legend: MODIS is red, VIIRS is yellow; harmonized shows both (orange where both satellites saw the fire)
+  // legend colors: MODIS red, VIIRS yellow, orange = both
   const fireRow = $('.layer[data-layer="fire"]');
   const LEG = { modis: ["linear-gradient(90deg,#E5383B,#E5383B)", "MODIS", ""], viirs: ["linear-gradient(90deg,#FFD60A,#FFD60A)", "", "VIIRS"],
     harmonized: ["linear-gradient(90deg,#E5383B 0 40%,#FF9F1C 40% 60%,#FFD60A 60% 100%)", "MODIS", "VIIRS (orange = both)"] }[sensor];
@@ -552,7 +549,7 @@ function showCalendar(days, year, month) {
     box.append(btn);
   }
 }
-// harmonized mode: days read from MODIS are scaled to VIIRS-equivalent with the area's k (once the history has loaded)
+// in harmonized mode, MODIS days get multiplied by k
 function harmonizeDays(days, month) {
   if (state.sensor !== "harmonized") return days;
   const k = window.FireHistory?.k?.(month);
@@ -602,7 +599,7 @@ function moveCalendar(delta) {
 $("#cal-prev").addEventListener("click", () => moveCalendar(-1));
 $("#cal-next").addEventListener("click", () => moveCalendar(1));
 
-// ---------------------------------------------------------------- color ramps (calendar, history grid, exported images)
+// color ramps (calendar, history grid, exported images)
 const PALETTES = {
   warm: ["#24181A", "#5A1A20", "#952029", "#D8333A", "#FF7A6E"],   // dark ember -> glowing red (on the dark theme)
   cvd:  ["#1E1A1C", "#3B528B", "#21918C", "#5EC962", "#FDE725"],   // viridis (dark -> bright): safe for colour-blind readers
@@ -627,7 +624,7 @@ window.firescoutPalette = () => PALETTES[document.documentElement.dataset.palett
 $("#palette").addEventListener("change", (e) => setPalette(e.target.value));
 setPalette((() => { try { return localStorage.getItem("firescout.palette"); } catch { return null; } })() || "warm");
 
-// ---------------------------------------------------------------- boot
+// boot
 async function boot() {
   state.watch = loadWatch(); renderWatch(); selectSensor(state.sensor);
 

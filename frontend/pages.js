@@ -1,10 +1,10 @@
 "use strict";
-/* Helios left panel tabs (explore / calendar / export / saved). */
+// left panel tabs
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-  // ---------------------------------------------------------------- left panel tabs
+  // left panel tabs
   const tabs = $$(".rail-tabs [role=tab]"), panels = $$(".tab-panel");
   function showTab(name) {
     if (!panels.some((p) => p.dataset.panel === name)) name = "explore";

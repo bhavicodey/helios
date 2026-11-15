@@ -1,10 +1,5 @@
 "use strict";
-/* Helios fire history: the harmonized MODIS + VIIRS record for the chosen area since Nov 2000.
-   - loads /api/history whenever the area changes (cached on the server for a day)
-   - fills the "this month vs its history" card in the readout
-   - gives the daily calendar its MODIS -> VIIRS scaling factor (k)
-   - draws the dashboard: years x months calendar, seasonal pattern, yearly totals + trend, harmonization check
-   Loaded after app.js and shares its globals (state, api, areaParams, setDate, iso, fmt, place, toast). */
+// fire history popup
 (function () {
   const q = (s, r = document) => r.querySelector(s);
   const MON = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -29,7 +24,7 @@
   const standing = (p, name) => p == null ? "–" : p >= 50 ? `busier than ${p}% of past ${name}s` : `quieter than ${100 - p}% of past ${name}s`;
   const ordinal = (n) => n === 1 ? "" : n + ({ 1: "st", 2: "nd", 3: "rd" }[n % 100 > 10 && n % 100 < 14 ? 0 : n % 10] || "th") + " ";
 
-  // ---------------------------------------------------------------- loading
+  // loading
   async function load() {
     if (!state.pin) return;
     const t = ++token; loading = true; data = null;
@@ -59,7 +54,7 @@
     q("#history-open").textContent = loading ? "loading fire history…" : "open fire history";
   }
 
-  // ---------------------------------------------------------------- the k used for a given month (calendar harmonization)
+  // the k used for a given month (calendar harmonization)
   function k(month) {
     if (!data) return null;
     const s = data.method.seasonal_k?.[String(month)];
@@ -67,30 +62,29 @@
   }
   window.FireHistory = { k, get data() { return data; }, open, load };
 
-  // ---------------------------------------------------------------- readout card: this month vs its history
+  // readout card: this month vs its history
   function rowFor(ym) { return data?.rows.find((r) => r.month === ym); }
   function renderAnomaly() {
     const box = q("#anomaly");
     if (!state.pin) { box.hidden = true; return; }
     box.hidden = false;
-    if (!data) { box.dataset.level = ""; q("#anom-big").textContent = loading ? "loading…" : "–"; q("#anom-sub").textContent = "comparing this month with every year since 2000."; return; }
+    if (!data) { box.dataset.level = ""; q("#anom-big").textContent = loading ? "loading…" : "–"; q("#anom-sub").textContent = ""; return; }
     const ym = ymOf(state.end), r = rowFor(ym), name = MONTH_LONG[+ym.slice(5) - 1];
-    if (!r || r.harmonized == null) { box.dataset.level = ""; q("#anom-big").textContent = "no data"; q("#anom-sub").textContent = `no hotspot record for ${name} ${ym.slice(0, 4)} yet.`; return; }
+    if (!r || r.harmonized == null) { box.dataset.level = ""; q("#anom-big").textContent = "no data"; q("#anom-sub").textContent = `no data for ${name} ${ym.slice(0, 4)} yet.`; return; }
     const n = data.rows.filter((x) => x.mon === r.mon && x.harmonized != null).length;
     const a = r.percentile, level = judge(r), tiny = a != null && !meaningful(r);
     const soFar = ym === ymOf(LATEST) ? " so far" : "";
     box.dataset.level = level;
-    q(".anom-label").textContent = `whole month: ${name} ${r.year}${soFar} vs past ${name}s`;
+    q(".anom-label").textContent = `${name} ${r.year}${soFar}`;
     q("#anom-big").textContent = a == null ? compact(r.harmonized) + " hotspots"
       : tiny ? `about usual for ${name}` : standing(a, name);
-    const critical = data.stats.critical_months.includes(r.mon) ? ` ${name} is one of this area's critical fire months.` : "";
-    q("#anom-sub").textContent = `${compact(r.harmonized)} hotspot pixel-days in ${name} ${r.year}${soFar}; a usual ${name} has ${compact(r.baseline_median)}. `
-      + (tiny ? "both numbers are very small, so the difference isn't meaningful." : (r.rank_in_month ? `${ordinal(r.rank_in_month)}highest of ${n} ${name}s on record.` : "") + critical);
+    const critical = data.stats.critical_months.includes(r.mon) ? ` ${name} is a busy month here.` : "";
+    q("#anom-sub").textContent = `${compact(r.harmonized)} hotspots. a usual ${name} has ${compact(r.baseline_median)}. `
+      + (tiny ? "too few to compare." : (r.rank_in_month ? `${ordinal(r.rank_in_month)}highest of ${n} ${name}s.` : "") + critical);
     syncBanner(r, level, name, soFar);
   }
 
-  // A month only counts as unusual when there is real fire activity behind the percentage:
-  // at least 20 hotspot pixel-days on one side and a gap of 10 or more. (13 vs a usual 4 is noise, not a fire season.)
+  // tiny numbers (like 13 vs 4) are not really unusual
   function meaningful(r) {
     const h = r.harmonized ?? 0, b = r.baseline_median ?? 0;
     return Math.max(h, b) >= 20 && Math.abs(h - b) >= 10;
@@ -115,7 +109,7 @@
     }
   }
 
-  // ---------------------------------------------------------------- dashboard
+  // dashboard
   function open() {
     if (!state.pin) return;
     lastFocus = document.activeElement;
@@ -143,7 +137,7 @@
   ["#h-from", "#h-to", "#h-view"].forEach((s) => q(s).addEventListener("change", () => { if (data) grid(); }));
   addEventListener("firescout:palette", () => { if (data && !modal.hidden) { grid(); season(); annual(); } });
 
-  // ---- headline tiles
+  // headline tiles
   function tiles() {
     const s = data.stats, box = q("#h-tiles");
     const cur = s.current, name = cur ? MONTH_LONG[cur.mon - 1] : "";
@@ -164,7 +158,7 @@
     }));
   }
 
-  // ---- years x months calendar
+  // years x months calendar
   function levels(rows) {
     const vals = rows.map((r) => r.harmonized).filter((v) => v != null && v > 0).sort((a, b) => a - b);
     const qv = (p) => vals.length ? vals[Math.min(vals.length - 1, Math.floor(p * vals.length))] : 0;
@@ -212,7 +206,7 @@
         c.addEventListener("click", () => {
           const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
           setDate(Date.UTC(y, m - 1, Math.min(15, last))); close();
-          toast(`jumped to ${MONTH_LONG[m - 1]} ${y}.`);
+          
         });
         row.append(c);
       }
@@ -236,13 +230,13 @@
     const st = document.createElement("span"); st.textContent = "* year not complete"; lg.append(st);
   }
 
-  // ---- small svg helpers
+  // small svg helpers
   function svg(w, h) { const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", `0 0 ${w} ${h}`); s.setAttribute("role", "img"); return s; }
   function el(name, attrs, parent) { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); parent?.append(e); return e; }
   function text(parent, x, y, t, attrs = {}) { const e = el("text", { x, y, ...attrs }, parent); e.textContent = t; return e; }
   function quant(xs, p) { const s = xs.slice().sort((a, b) => a - b); if (!s.length) return null; const i = (s.length - 1) * p, lo = Math.floor(i); return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo); }
 
-  // ---- seasonal pattern
+  // seasonal pattern
   function season() {
     const W = 520, H = 230, L = 46, R = 12, T = 12, B = 28, s = svg(W, H);
     const pal = window.firescoutPalette();
@@ -266,7 +260,7 @@
     q("#h-season").replaceChildren(s);
   }
 
-  // ---- yearly totals + trend
+  // yearly totals + trend
   function annual() {
     const W = 520, H = 230, L = 46, R = 12, T = 12, B = 28, s = svg(W, H), pal = window.firescoutPalette();
     const a = data.annual, max = Math.max(1, ...a.map((x) => x.total || 0)) * 1.1;
@@ -291,7 +285,7 @@
     q("#h-annual-note").textContent = `dashed line: trend across complete years${st.trend_pct_per_decade == null ? " (needs 5+ complete years)" : `, ${st.trend_pct_per_decade > 0 ? "+" : ""}${st.trend_pct_per_decade}% per decade`}. pale bars are years not yet complete.`;
   }
 
-  // ---- harmonization check: MODIS vs VIIRS in the months both flew
+  // harmonization check: MODIS vs VIIRS in the months both flew
   function method() {
     const m = data.method, pts = data.overlap_points, W = 360, H = 260, L = 46, R = 12, T = 12, B = 34, s = svg(W, H);
     const mx = Math.max(1, ...pts.map((p) => p[0])) * 1.05, my = Math.max(1, ...pts.map((p) => p[1])) * 1.05;
@@ -306,13 +300,12 @@
     const seasonal = Object.entries(m.seasonal_k || {});
     q("#h-method-text").innerHTML = "";
     const add = (tag, t) => { const e = document.createElement(tag); e.textContent = t; q("#h-method-text").append(e); return e; };
-    add("p", `in the ${m.overlap_months} months when both satellites watched this area, VIIRS saw ${m.overlap_viirs_total.toLocaleString()} hotspot pixel-days and MODIS saw ${m.overlap_modis_total.toLocaleString()}.`);
-    add("p", `so here one MODIS hotspot is worth about k = ${m.k} VIIRS hotspots (the solid line). ${m.r == null ? "" : `the two records move together with a correlation of r = ${m.r}${m.r >= .8 ? ", which is strong" : m.r >= .5 ? ", which is moderate" : ", which is weak, so treat pre-2012 values with care"}.`}`);
-    if (seasonal.length) add("p", `months with enough overlap get their own k: ${seasonal.map(([mm, v]) => `${MON[mm - 1]} ${v}`).join(" · ")}.`);
-    add("p", "the harmonized record uses VIIRS wherever it exists (from January 2012) and MODIS × k before that, so the whole series is in VIIRS-equivalent units and the sensor of origin no longer matters for comparing years.");
+    add("p", `MODIS and VIIRS flew together for ${m.overlap_months} months. VIIRS saw ${m.overlap_viirs_total.toLocaleString()} hotspots and MODIS saw ${m.overlap_modis_total.toLocaleString()}.`);
+    add("p", `so 1 MODIS hotspot counts as about ${m.k} VIIRS hotspots (k = ${m.k}).`);
+    add("p", "from 2012 on we use VIIRS. before that we use MODIS × k, so every year is on the same scale.");
   }
 
-  // ---------------------------------------------------------------- downloads
+  // downloads
   const cell = (v) => { if (v == null) return ""; const s = String(v); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   const csv = (rows, cols) => "﻿" + [cols.join(","), ...rows.map((r) => cols.map((c) => cell(r[c])).join(","))].join("\r\n") + "\r\n";
   function save(name, blob) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }

@@ -6,17 +6,16 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
-# ---- Earth Engine ----------------------------------------------------------
+# Earth Engine
 EE_PROJECT = os.getenv("EE_PROJECT", "").strip()
 EE_SERVICE_ACCOUNT = os.getenv("EE_SERVICE_ACCOUNT", "").strip()
 EE_KEY_FILE = os.getenv("EE_KEY_FILE", "").strip()
-# For hosting (Render, Railway, Cloud Run…): paste the whole service-account key JSON into this one variable.
-# Never commit it; set it in the host's dashboard. The service-account email is read from the key itself.
+# for hosting: the whole key json goes in this one variable (never commit it)
 EE_KEY_JSON = os.getenv("EE_KEY_JSON", "").strip()
 
 FRONTEND_DIR = ROOT / "frontend"
 
-# ---- Signal thresholds (tweak freely) ---------------------------------------
+# Signal thresholds (tweak freely)
 ALERT_MIN_FIRE_PIXELS = 1      # fires + raised SO2 together  -> "alert"
 ALERT_SO2_RATIO = 1.5          # SO2 vs the area's own 30-day normal
 WATCH_FIRE_PIXELS = 10         # lots of fire alone           -> "watch"

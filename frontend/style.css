@@ -309,7 +309,7 @@ body.loading #loadbar { width: 70%; transition: width 8s cubic-bezier(.1,.7,.3,1
 .cal-day:disabled { opacity: .4; cursor: not-allowed; }
 .cal-day:not(:disabled):hover { transform: scale(1.07); border-color: var(--accent); }
 
-/* ============================================================ fire render (click the area of interest) */
+/* fire render (click the area of interest) */
 .render-btn { margin-top: 16px; }
 .wide-btn { width: 100%; margin-top: 10px; text-align: center; border-radius: 999px; }
 .wide-btn:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }

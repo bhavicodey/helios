@@ -1,8 +1,4 @@
-/* Helios satellite pass: one short fly-over, played on request (not a loop).
-   When you pick a place, MODIS (red) and VIIRS (yellow) fly across it once, each sweeping its scan line and
-   leaving a faint footprint on the ground. When the pass ends everything disappears and the map is clean again.
-   "watch a pass" in the satellite dock replays it.
-   Real values: MODIS 705 km up, 2,330 km swath; VIIRS 824 km up, 3,040 km swath. Time is sped up (~18 s). */
+// satellite fly-over on the map
 const $ = (s, r = document) => r.querySelector(s);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const KM = 1000, R_EARTH = 6371;
@@ -92,7 +88,7 @@ function updateTags() {
   }
 }
 
-// ------------------------------------------------------------------ 3D satellites inside the map (three.js custom layer)
+// 3D satellites inside the map (three.js custom layer)
 async function threeLayer() {
   const T = await import("three");
   const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
@@ -139,7 +135,7 @@ async function threeLayer() {
   };
 }
 
-// ------------------------------------------------------------------ play once, then clear
+// play once, then clear
 function frame(now) {
   raf = 0;
   if (!playing) return;

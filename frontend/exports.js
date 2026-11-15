@@ -1,13 +1,11 @@
 "use strict";
-/* Helios exports: filtered hotspot records (csv), MODIS + VIIRS monthly harmonised summaries (csv),
-   and the burning activity calendar as a briefing-ready image (png) or its daily counts (csv).
-   Loaded after app.js, so it shares app.js's globals: state, api, iso, fmt, place, DAY, toast. */
+// csv and png downloads
 (function () {
   const q = (s) => document.querySelector(s);
   const btns = { hot: q("#exp-hotspots"), monthly: q("#exp-monthly"), png: q("#exp-cal-png"), cal: q("#exp-cal-csv") };
   const note = q("#export-note");
 
-  // ---- helpers
+  // helpers
   const cell = (v) => {
     if (v === null || v === undefined) return "";
     const s = String(v);
@@ -47,18 +45,18 @@
     finally { btn.classList.remove("working"); small.textContent = old; sync(); }
   }
 
-  // ---- enable / disable
+  // enable / disable
   function sync() {
     const pin = !!state.pin, cal = !!state.calendarDays;
     btns.hot.disabled = !pin; btns.monthly.disabled = !pin;
     btns.png.disabled = !cal; btns.cal.disabled = !cal;
     if (!pin) say("pick a place to turn on downloads.");
-    else if (!cal && note.dataset.kind !== "warn") say("calendar downloads turn on once the month loads.");
-    else if (note.dataset.kind !== "warn" && note.dataset.kind !== "ok") say("ready. files download to your computer.");
+    else if (!cal && note.dataset.kind !== "warn") say("loading calendar…");
+    else if (note.dataset.kind !== "warn" && note.dataset.kind !== "ok") say("");
   }
   ["firescout:pin", "firescout:calendar", "firescout:readout"].forEach((ev) => addEventListener(ev, () => { if (note.dataset.kind === "warn") note.dataset.kind = ""; sync(); }));
 
-  // ---- 1. filtered hotspot records
+  // 1. filtered hotspot records
   btns.hot.addEventListener("click", () => busy(btns.hot, "fetching records…", async () => {
     let start = fromIn.value, end = toIn.value; const conf = q("#exp-conf").value;
     if (!start || !end) throw new Error("choose a from and to date first.");
@@ -71,17 +69,17 @@
     say(`${rows.length.toLocaleString()} hotspot records saved (${state.sensor.toUpperCase()}, ${conf} confidence, ${start} → ${end})${r.truncated ? ". some days hit the 5,000-rows-per-month cap; shorten the range or shrink the area for the rest" : ""}.`, "ok");
   }));
 
-  // ---- 2. monthly harmonised summaries (MODIS + VIIRS on one schema)
+  // 2. monthly harmonised summaries (MODIS + VIIRS on one schema)
   btns.monthly.addEventListener("click", () => busy(btns.monthly, "summarising months…", async () => {
     const months = q("#exp-months").value;
     const r = await api("monthly_summary", { end: iso(state.end), ...areaParams(), months });
     const cols = ["month", "sensor", "product", "grid_km", "days_in_month", "days_observed", "days_with_detections", "fire_pixel_days",
       "mean_daily_pixels", "max_daily_pixels", "peak_date", "active_day_share", "area", "note"];
     download(`helios_monthly_summary_${tag()}_${r.months[0]}_to_${r.months[r.months.length - 1]}.csv`, csvBlob(toCSV(r.rows, cols)));
-    say(`monthly summary saved: ${r.months.length} months × MODIS + VIIRS.`, "ok");
+    say(`saved ${r.months.length} months.`, "ok");
   }));
 
-  // ---- 3. calendar days csv
+  // 3. calendar days csv
   btns.cal.addEventListener("click", () => busy(btns.cal, "saving…", async () => {
     const c = state.calendarDays;
     const rows = c.days.map((d) => ({
@@ -93,10 +91,10 @@
     const cols = ["date", "weekday", "sensor", "read_from", "fire_pixels", "raw_count", "scale_k", "observations", "status", "query_lat", "query_lon", "radius_km"];
     const ym = `${c.year}-${String(c.month).padStart(2, "0")}`;
     download(`helios_calendar_${c.sensor}_${ym}_${tag()}.csv`, csvBlob(toCSV(rows, cols)));
-    say(`calendar days for ${ym} saved.`, "ok");
+    say(`saved ${ym}.`, "ok");
   }));
 
-  // ---- 4. calendar image (png) for reports and briefings
+  // 4. calendar image (png) for reports and briefings
   const shades = () => ({ missing: "#eceef2", ...window.firescoutPrintPalette() });   // white report image
   const INK = "#161a26", MUTED = "#667085", LINE = "#e3e7ee";
   btns.png.addEventListener("click", () => busy(btns.png, "drawing…", async () => {
@@ -152,7 +150,7 @@
     const blob = await new Promise((res) => cv.toBlob(res, "image/png"));
     const ym = `${c.year}-${String(c.month).padStart(2, "0")}`;
     download(`helios_calendar_${c.sensor}_${ym}_${tag()}.png`, blob);
-    say(`calendar image for ${monthName} saved. drop it straight into slides or a report.`, "ok");
+    say(`saved ${monthName}.`, "ok");
   }));
 
   sync();

@@ -1,6 +1,4 @@
-/* Helios · the welcome screen.
-   Plain dark background (same as the app), the red HELIOS title, and smooth motion only:
-   things rise and fade in, cards lift on hover, steps slide between each other, and the screen fades into the app. */
+/* welcome screen */
 #intro {
   --red-0: #FFE9E3; --red-1: #FF9C8C; --red-2: #FF5A4E; --red-3: #E5383B; --red-4: #8E1022;
   --glass-line: rgba(255, 255, 255, .1); --glass-text: #F6EEEE; --glass-muted: #A9979A;
@@ -10,7 +8,7 @@
 }
 #intro .stage { width: min(800px, 100%); margin: 0 auto; }
 
-/* ---------------------------------------------------------------- title */
+/* title */
 .hero-head { text-align: center; margin: 6vh 0 24px; }
 .hero-kicker { display: inline-block; margin: 0 0 12px; padding: 5px 14px; border-radius: 999px; font-size: 11.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
   color: var(--red-1); border: 1px solid rgba(255, 110, 100, .28); animation: fadeUp .8s cubic-bezier(.2, .9, .25, 1) both; }
@@ -21,7 +19,7 @@
 .hero-word span:nth-child(4) { animation-delay: .28s; } .hero-word span:nth-child(5) { animation-delay: .34s; } .hero-word span:nth-child(6) { animation-delay: .4s; }
 .hero-tag { margin: 12px 0 0; font-size: clamp(15px, 2vw, 18px); color: var(--glass-muted); animation: fadeUp .9s cubic-bezier(.2, .9, .25, 1) .55s both; }
 
-/* ---------------------------------------------------------------- cards */
+/* cards */
 #intro .card { background: var(--panel-solid, #150D0E); border: 1px solid var(--glass-line); outline: 0; border-radius: 22px; color: var(--glass-text);
   box-shadow: 0 24px 60px rgba(0, 0, 0, .45); backdrop-filter: none; }
 #intro .step.active { animation: cardIn .7s cubic-bezier(.2, .9, .25, 1) .45s both; }
