@@ -309,6 +309,11 @@ body.loading #loadbar { width: 70%; transition: width 8s cubic-bezier(.1,.7,.3,1
 .render-stage { position: relative; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; background: #120a06 center / cover no-repeat url("media/fire-render-poster.jpg"); box-shadow: 0 14px 40px rgba(22, 26, 38, .28); }
 .render-stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 #r-zones { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* bigger renders: no low-fire poster behind them, and the large fire is pulled back with soft edges
+   so it doesn't fill the frame. the hover zones get the same scale so they stay on the flames. */
+.render-stage[data-size="med"], .render-stage[data-size="high"] { background: radial-gradient(ellipse 70% 60% at 50% 62%, #4a2108 0%, #1c0d06 45%, #0a0605 80%); }
+.render-stage[data-size="high"] video, .render-stage[data-size="high"] #r-zones { transform: scale(.72) translateY(4%); }
+.render-stage[data-size="high"] video { -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 52%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 58% 62% at 50% 52%, #000 55%, transparent 100%); }
 #r-zones .zone { --c: #fff; fill: transparent; stroke: transparent; stroke-width: 4; stroke-dasharray: 14 10; vector-effect: non-scaling-stroke; cursor: crosshair; outline: none; transition: fill .2s, stroke .2s; }
 #r-zones .zone.on, #r-zones .zone:focus-visible { fill: color-mix(in srgb, var(--c) 30%, transparent); stroke: var(--c); filter: drop-shadow(0 0 10px var(--c)); }
 #r-zones .zone[data-zone="air"].on, #r-zones .zone[data-zone="air"]:focus-visible { fill: color-mix(in srgb, var(--c) 16%, transparent); stroke: transparent; filter: none; }

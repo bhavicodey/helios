@@ -24,7 +24,7 @@
   const RENDERS = {
     low:  { src: "media/fire-render.mp4",      track: "media/fire-track.json",      poster: "media/fire-render-poster.jpg", fallback: [0.24, 0.76, 0.40, 0.98] },
     med:  { src: "media/fire-render-med.mp4",  track: "media/fire-track-med.json",  poster: "",                             fallback: [0.31, 0.69, 0.33, 0.84] },
-    high: { src: "media/fire-render-high.mp4", track: "media/fire-track-high.json", poster: "",                             fallback: [0.28, 0.72, 0.26, 0.84] },
+    high: { src: "media/fire-render-high.mp4", track: "media/fire-track-high.json", poster: "",                             fallback: [0.28, 0.72, 0.26, 0.84], rate: 0.55 },
   };
   const tracks = {};
   for (const [k, r] of Object.entries(RENDERS)) fetch(r.track).then((x) => x.json()).then((j) => { tracks[k] = j; }).catch(() => {});
@@ -208,7 +208,9 @@
     srcNow = r.src; lastKey = ""; loading.hidden = false; loading.textContent = "loading render…";
     video.addEventListener("loadeddata", () => { loading.hidden = true; }, { once: true });
     video.addEventListener("error", () => { loading.hidden = false; loading.textContent = `the render couldn't load. check that ${r.src} is there.`; }, { once: true });
+    stage.dataset.size = size;   // the large fire is drawn zoomed out (see style.css) so it has room to breathe
     video.poster = r.poster; video.src = r.src; video.load();
+    video.defaultPlaybackRate = video.playbackRate = r.rate || 1;
     if (!modal.hidden && !reduce) video.play().then(setPlayLabel).catch(setPlayLabel);
   }
   function open() {
