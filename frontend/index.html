@@ -330,6 +330,23 @@
           <figcaption><b>VIIRS</b><span>since 2012</span></figcaption>
         </figure>
         <label class="cad-sync"><input type="checkbox" id="cad-sync" checked> spin both together</label>
+        <div class="cad-diff">
+          <h3>what's different</h3>
+          <table>
+            <thead><tr><th scope="col"></th><th scope="col">MODIS</th><th scope="col">VIIRS</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">satellites</th><td>Terra (1999), Aqua (2002)</td><td>Suomi NPP (2011), NOAA-20, NOAA-21</td></tr>
+              <tr><th scope="row">height above Earth</th><td>705 km</td><td>824 km</td></tr>
+              <tr><th scope="row">width of each scan</th><td>2,330 km</td><td>3,040 km</td></tr>
+              <tr><th scope="row">fire pixel size</th><td>~1 km</td><td>375 m</td></tr>
+              <tr><th scope="row">spectral bands</th><td>36</td><td>22</td></tr>
+              <tr><th scope="row">fires it can see</th><td>bigger, hotter fires</td><td>smaller, cooler fires too</td></tr>
+              <tr><th scope="row">record in Helios</th><td>Nov 2000 → today</td><td>Jan 2012 → today</td></tr>
+              <tr><th scope="row">best for</th><td>long-term trends</td><td>recent, detailed fires</td></tr>
+            </tbody>
+          </table>
+          <p>VIIRS's sharper pixels catch fires MODIS misses, so it counts more fires over the same place. That's why the harmonized view scales MODIS counts before 2012 to match VIIRS.</p>
+        </div>
       </div>
       <div class="cad-parts" id="cad-parts" hidden>
         <div class="parts-stage" id="parts-stage">

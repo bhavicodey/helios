@@ -372,6 +372,16 @@ body.intro-on #sat-dock { opacity: 0; transform: translateY(-30px); }
 .cad-pair figcaption span { font-size: 12.5px; color: var(--muted); text-transform: none; }
 .cad-sync { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
 .cad-sync input { accent-color: var(--accent); }
+.cad-diff { grid-column: 1 / -1; padding: 14px 16px; border-radius: 16px; background: var(--paper); box-shadow: 0 0 0 1px rgba(255, 255, 255, .07); animation: fadeUp .5s .16s cubic-bezier(.2, .9, .25, 1) both; }
+.cad-diff h3 { margin: 0 0 8px; font-size: 14px; color: var(--ink); text-transform: none; }
+.cad-diff table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+.cad-diff th, .cad-diff td { padding: 7px 8px; text-align: left; vertical-align: top; border-top: 1px solid rgba(255, 255, 255, .07); color: var(--ink); text-transform: none; overflow-wrap: anywhere; }
+.cad-diff thead th { border-top: 0; font-size: 12px; font-weight: 700; }
+.cad-diff thead th:nth-child(2) { color: #E5383B; }
+.cad-diff thead th:nth-child(3) { color: #FFD60A; }
+.cad-diff tbody th { width: 34%; font-weight: 500; color: var(--muted); }
+.cad-diff p { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); text-transform: none; }
+@media (max-width: 700px) { .cad-diff { padding: 10px; } .cad-diff table { font-size: 12px; } .cad-diff th, .cad-diff td { padding: 6px 4px; } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (max-width: 700px) { .cad-compare { grid-template-columns: 1fr 1fr; gap: 8px; } .cad-pair figcaption span { display: none; } }
 
