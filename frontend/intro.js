@@ -40,7 +40,7 @@
   
   
   function personalize() {
-    $("#lede").textContent = "welcome to Helios. enter a town, pick a wildfire, or click the map.";
+    $("#lede").textContent = "Welcome to Helios. Enter a town, pick a wildfire, or click the map.";
     
     $$("#presets button").forEach((b, i) => b.classList.toggle("pick", i === 0));
   }

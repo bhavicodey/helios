@@ -183,12 +183,12 @@
     i = n; const s = STEPS[i];
     target = s.target ? s.target() : null;
     if (target) reveal(target);
-    stepLbl.textContent = s.final ? "tour complete" : `step ${i + 1} of ${STEPS.length - 1}`;
+    stepLbl.textContent = s.final ? "Tour complete" : `Step ${i + 1} of ${STEPS.length - 1}`;
     $("#coach-skip").hidden = !!s.final;
     title.textContent = s.title; text.textContent = s.body();
     [...dotsBox.children].forEach((d, k) => d.className = k < i ? "done" : k === i ? "on" : "");
     backBtn.hidden = i === 0 || s.final || !!STEPS[i - 1]?.wait;          
-    nextBtn.querySelector("span").textContent = s.final ? "start exploring" : "next";
+    nextBtn.querySelector("span").textContent = s.final ? "Start exploring" : "Next";
     card.classList.remove("swap"); void card.offsetWidth; card.classList.add("swap");
 
     if (s.wait) {
@@ -228,7 +228,7 @@
   function skip() {
     if (!active) return;
     finish();
-    window.toast?.("tour skipped. replay it any time from “tour”.");
+    window.toast?.("Tour skipped. Replay it any time from “Tour”.");
   }
   $("#coach-skip").addEventListener("click", skip);
 

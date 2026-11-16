@@ -41,7 +41,7 @@
     const small = btn.querySelector("small"), old = small.textContent;
     btn.disabled = true; btn.classList.add("working"); small.textContent = label;
     try { await fn(); }
-    catch (err) { say(err.message || String(err), "warn"); toast?.(`export failed: ${err.message || err}`); }
+    catch (err) { say(err.message || String(err), "warn"); toast?.(`Export failed: ${err.message || err}`); }
     finally { btn.classList.remove("working"); small.textContent = old; sync(); }
   }
 
@@ -50,8 +50,8 @@
     const pin = !!state.pin, cal = !!state.calendarDays;
     btns.hot.disabled = !pin; btns.monthly.disabled = !pin;
     btns.png.disabled = !cal; btns.cal.disabled = !cal;
-    if (!pin) say("pick a place to turn on downloads.");
-    else if (!cal && note.dataset.kind !== "warn") say("loading calendar…");
+    if (!pin) say("Pick a place to turn on downloads.");
+    else if (!cal && note.dataset.kind !== "warn") say("Loading calendar…");
     else if (note.dataset.kind !== "warn" && note.dataset.kind !== "ok") say("");
   }
   ["firescout:pin", "firescout:calendar", "firescout:readout"].forEach((ev) => addEventListener(ev, () => { if (note.dataset.kind === "warn") note.dataset.kind = ""; sync(); }));
@@ -66,7 +66,7 @@
     const cols = ["date", "latitude", "longitude", "sensor", "product", "confidence", "confidence_class", "brightness_t21_k", "frp_mw"];
     const rows = r.records.map((x) => ({ ...x }));
     download(`helios_hotspots_${state.sensor}_${conf}_${tag()}_${start}_to_${end}.csv`, csvBlob(toCSV(rows, cols)));
-    say(`${rows.length.toLocaleString()} hotspot records saved (${state.sensor.toUpperCase()}, ${conf} confidence, ${start} → ${end})${r.truncated ? ". some days hit the 5,000-rows-per-month cap; shorten the range or shrink the area for the rest" : ""}.`, "ok");
+    say(`${rows.length.toLocaleString()} hotspot records saved (${state.sensor.toUpperCase()}, ${conf} confidence, ${start} → ${end})${r.truncated ? ". Some days hit the 5,000-rows-per-month cap; shorten the range or shrink the area for the rest" : ""}.`, "ok");
   }));
 
   
@@ -76,7 +76,7 @@
     const cols = ["month", "sensor", "product", "grid_km", "days_in_month", "days_observed", "days_with_detections", "fire_pixel_days",
       "mean_daily_pixels", "max_daily_pixels", "peak_date", "active_day_share", "area", "note"];
     download(`helios_monthly_summary_${tag()}_${r.months[0]}_to_${r.months[r.months.length - 1]}.csv`, csvBlob(toCSV(r.rows, cols)));
-    say(`saved ${r.months.length} months.`, "ok");
+    say(`Saved ${r.months.length} months.`, "ok");
   }));
 
   
@@ -91,7 +91,7 @@
     const cols = ["date", "weekday", "sensor", "read_from", "fire_pixels", "raw_count", "scale_k", "observations", "status", "query_lat", "query_lon", "radius_km"];
     const ym = `${c.year}-${String(c.month).padStart(2, "0")}`;
     download(`helios_calendar_${c.sensor}_${ym}_${tag()}.csv`, csvBlob(toCSV(rows, cols)));
-    say(`saved ${ym}.`, "ok");
+    say(`Saved ${ym}.`, "ok");
   }));
 
   
@@ -113,7 +113,7 @@
     g.fillStyle = MUTED; g.font = `600 16px ${sans}`; g.fillText("BURNING ACTIVITY CALENDAR", 60, 64);
     g.fillStyle = INK; g.font = `700 44px ${serif}`; g.fillText(monthName, 60, 116);
     g.fillStyle = MUTED; g.font = `500 18px ${sans}`;
-    g.fillText(`${where} · ${state.poly ? "inside a drawn area" : `within ${state.radius} km`} · ${c.sensor === "harmonized" ? "harmonized MODIS + VIIRS" : c.sensor.toUpperCase()} daily detected fire pixels`, 60, 150);
+    g.fillText(`${where} · ${state.poly ? "inside a drawn area" : `within ${state.radius} km`} · ${c.sensor === "harmonized" ? "Harmonized MODIS + VIIRS" : c.sensor.toUpperCase()} daily detected fire pixels`, 60, 150);
 
     const max = Math.max(1, ...c.days.map((d) => d.count || 0));
     const offset = new Date(Date.UTC(c.year, c.month - 1, 1)).getUTCDay();
@@ -132,25 +132,25 @@
       const n = parseInt(String(SHADES[lvl]).slice(1), 16), dark = ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 < 140;
       g.fillStyle = dark ? "#fff" : INK; g.font = `700 22px ${serif}`; g.fillText(String(+d.date.slice(-2)), x + 14, y + 34);
       g.font = `600 16px ${sans}`; g.fillStyle = dark ? "#fff" : lvl === "missing" ? "#8a909b" : "#2b2f3a";
-      g.fillText(!has ? "no data" : d.count ? `${(Number.isInteger(d.count) ? d.count : Math.round(d.count)).toLocaleString()} px${d.scaled ? " *" : ""}` : "0", x + 14, y + ch - 18);
+      g.fillText(!has ? "No data" : d.count ? `${(Number.isInteger(d.count) ? d.count : Math.round(d.count)).toLocaleString()} px${d.scaled ? " *" : ""}` : "0", x + 14, y + ch - 18);
     });
 
     const rowsUsed = Math.ceil((offset + c.days.length) / 7), ly = gy + rowsUsed * (ch + gap) + 30;
-    g.font = `600 15px ${sans}`; g.fillStyle = MUTED; g.fillText("fewer", gx, ly + 18);
+    g.font = `600 15px ${sans}`; g.fillStyle = MUTED; g.fillText("Fewer", gx, ly + 18);
     [0, 1, 2, 3, 4].forEach((l, i) => { round(gx + 60 + i * 40, ly, 32, 24, 6); g.fillStyle = SHADES[l]; g.fill(); g.strokeStyle = LINE; g.lineWidth = 1; g.stroke(); });
-    g.fillStyle = MUTED; g.fillText("more detections", gx + 270, ly + 18);
-    round(gx + 430, ly, 32, 24, 6); g.fillStyle = SHADES.missing; g.fill(); g.fillStyle = MUTED; g.fillText("no observation", gx + 472, ly + 18);
+    g.fillStyle = MUTED; g.fillText("More detections", gx + 270, ly + 18);
+    round(gx + 430, ly, 32, 24, 6); g.fillStyle = SHADES.missing; g.fill(); g.fillStyle = MUTED; g.fillText("No observation", gx + 472, ly + 18);
 
     g.fillStyle = INK; g.font = `700 18px ${sans}`;
     g.fillText(`${active} days with detections · ${total.toLocaleString()} fire-pixel days · peak ${peak && peak.count ? `${peak.count.toLocaleString()} on ${peak.date}` : "none"}`, gx, ly + 66);
     g.fillStyle = MUTED; g.font = `500 14px ${sans}`;
-    g.fillText(`${observed} of ${c.days.length} days observed. colours are relative to this month's busiest day. counts are satellite fire pixels (~1 km), not individual fires or area burned.`, gx, ly + 94);
-    g.fillText(`source: ${c.sensor === "modis" ? "NASA FIRMS MODIS" : c.sensor === "viirs" ? "NASA VIIRS VNP14A1" : "NASA FIRMS MODIS + VIIRS VNP14A1, harmonized (* = MODIS × k)"} via Google Earth Engine · made with Helios on ${new Date().toISOString().slice(0, 10)}`, gx, ly + 116);
+    g.fillText(`${observed} of ${c.days.length} days observed. Colours are relative to this month's busiest day. Counts are satellite fire pixels (~1 km), not individual fires or area burned.`, gx, ly + 94);
+    g.fillText(`Source: ${c.sensor === "modis" ? "NASA FIRMS MODIS" : c.sensor === "viirs" ? "NASA VIIRS VNP14A1" : "NASA FIRMS MODIS + VIIRS VNP14A1, harmonized (* = MODIS × k)"} via Google Earth Engine · made with Helios on ${new Date().toISOString().slice(0, 10)}`, gx, ly + 116);
 
     const blob = await new Promise((res) => cv.toBlob(res, "image/png"));
     const ym = `${c.year}-${String(c.month).padStart(2, "0")}`;
     download(`helios_calendar_${c.sensor}_${ym}_${tag()}.png`, blob);
-    say(`saved ${monthName}.`, "ok");
+    say(`Saved ${monthName}.`, "ok");
   }));
 
   sync();

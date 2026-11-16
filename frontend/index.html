@@ -17,32 +17,32 @@
   <link href="mobile.css" rel="stylesheet">
 </head>
 <body>
-  <div id="map" aria-label="interactive globe"></div>
+  <div id="map" aria-label="Interactive globe"></div>
   <div id="loadbar" aria-hidden="true"></div>
   <div id="setup" role="alert" hidden></div>
 
-  <aside id="rail" class="panel" aria-label="layers and places">
+  <aside id="rail" class="panel" aria-label="Layers and places">
     <header class="panel-head">
       <div>
         <h1>Helios</h1>
-        <p class="lede" id="lede">see 25 years of fire near any place.</p>
+        <p class="lede" id="lede">See 25 years of fire near any place.</p>
       </div>
-      <button class="panel-toggle" type="button" aria-expanded="true" aria-label="show or hide layers">layers</button>
+      <button class="panel-toggle" type="button" aria-expanded="true" aria-label="Show or hide layers">Layers</button>
     </header>
 
     <div class="panel-body">
-      <div class="rail-tabs" role="tablist" aria-label="panel sections">
-        <button type="button" role="tab" data-tab="explore" aria-selected="true">explore</button>
-        <button type="button" role="tab" data-tab="calendar" aria-selected="false">calendar</button>
-        <button type="button" role="tab" data-tab="export" aria-selected="false">export</button>
-        <button type="button" role="tab" data-tab="saved" aria-selected="false">saved</button>
+      <div class="rail-tabs" role="tablist" aria-label="Panel sections">
+        <button type="button" role="tab" data-tab="explore" aria-selected="true">Explore</button>
+        <button type="button" role="tab" data-tab="calendar" aria-selected="false">Calendar</button>
+        <button type="button" role="tab" data-tab="export" aria-selected="false">Export</button>
+        <button type="button" role="tab" data-tab="saved" aria-selected="false">Saved</button>
       </div>
 
       <div class="tab-panel" role="tabpanel" data-panel="explore">
         <section class="sensor-section" aria-labelledby="h-sensor">
-          <h2 id="h-sensor">fire satellite</h2>
+          <h2 id="h-sensor">Fire satellite</h2>
           <div class="sensor-switch three" role="group" aria-label="Active fire satellite source">
-            <button type="button" data-sensor="harmonized" aria-pressed="true">harmonized</button>
+            <button type="button" data-sensor="harmonized" aria-pressed="true">Harmonized</button>
             <button type="button" data-sensor="modis" aria-pressed="false">MODIS</button>
             <button type="button" data-sensor="viirs" aria-pressed="false">VIIRS</button>
           </div>
@@ -50,58 +50,58 @@
         </section>
 
         <section aria-labelledby="h-places">
-          <h2 id="h-places">try a place</h2>
+          <h2 id="h-places">Try a place</h2>
           <div class="presets" id="presets">
-            <button type="button" data-lat="34.05" data-lon="-118.55" data-date="2025-01-14" data-radius="60" data-zoom="7.2" data-for="school" data-burn="1" data-fire="1">los angeles fires, jan 2025</button>
-            <button type="button" data-lat="50.2" data-lon="-73.5" data-date="2023-06-08" data-radius="250" data-zoom="4.6" data-for="curiosity" data-burn="0" data-fire="1">quebec smoke, june 2023</button>
-            <button type="button" data-lat="41.0" data-lon="26.1" data-date="2023-08-28" data-radius="80" data-zoom="7" data-for="research" data-burn="1" data-fire="1">evros wildfire, greece, aug 2023</button>
-            <button type="button" data-lat="19.4" data-lon="-155.28" data-date="2025-01-05" data-radius="100" data-zoom="7" data-for="research school" data-burn="0">kīlauea eruption, jan 2025</button>
+            <button type="button" data-lat="34.05" data-lon="-118.55" data-date="2025-01-14" data-radius="60" data-zoom="7.2" data-for="school" data-burn="1" data-fire="1">Los Angeles fires, Jan 2025</button>
+            <button type="button" data-lat="50.2" data-lon="-73.5" data-date="2023-06-08" data-radius="250" data-zoom="4.6" data-for="curiosity" data-burn="0" data-fire="1">Quebec smoke, June 2023</button>
+            <button type="button" data-lat="41.0" data-lon="26.1" data-date="2023-08-28" data-radius="80" data-zoom="7" data-for="research" data-burn="1" data-fire="1">Evros wildfire, Greece, Aug 2023</button>
+            <button type="button" data-lat="19.4" data-lon="-155.28" data-date="2025-01-05" data-radius="100" data-zoom="7" data-for="research school" data-burn="0">Kīlauea eruption, Jan 2025</button>
           </div>
 
         </section>
 
         <section id="area-section" aria-labelledby="h-area">
-          <h2 id="h-area">area of interest</h2>
+          <h2 id="h-area">Area of interest</h2>
           <form id="place-form" class="place-form" autocomplete="off" role="search">
-            <label class="place-field"><span>enter a place</span>
-              <input id="place-q" type="search" placeholder="e.g. Sacramento, CA" aria-label="enter a city, town or address" required>
+            <label class="place-field"><span>Enter a place</span>
+              <input id="place-q" type="search" placeholder="E.g. Sacramento, CA" aria-label="Enter a city, town or address" required>
             </label>
-            <button type="submit" class="ghost coord-go">go</button>
+            <button type="submit" class="ghost coord-go">Go</button>
           </form>
           <ul id="place-results" class="place-results" hidden></ul>
-          <button id="draw-area" type="button" class="ghost wide-btn draw-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 8 5l9 3 3 9-9 3z"/><circle cx="4" cy="18" r="1.6"/><circle cx="8" cy="5" r="1.6"/><circle cx="17" cy="8" r="1.6"/><circle cx="20" cy="17" r="1.6"/><circle cx="11" cy="20" r="1.6"/></svg><span>draw an area on the map</span></button>
+          <button id="draw-area" type="button" class="ghost wide-btn draw-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 8 5l9 3 3 9-9 3z"/><circle cx="4" cy="18" r="1.6"/><circle cx="8" cy="5" r="1.6"/><circle cx="17" cy="8" r="1.6"/><circle cx="20" cy="17" r="1.6"/><circle cx="11" cy="20" r="1.6"/></svg><span>Draw an area on the map</span></button>
 
         </section>
 
         <section aria-labelledby="h-layers">
-          <h2 id="h-layers">layers</h2>
+          <h2 id="h-layers">Layers</h2>
 
           <div class="layer" data-layer="so2">
-            <label class="switch"><input type="checkbox" checked><span>sulfur dioxide</span></label>
-            <p class="src">sentinel-5p column density, 7-day median</p>
-            <input type="range" class="opacity" min="0" max="1" step="0.05" value="0.7" aria-label="sulfur dioxide opacity">
+            <label class="switch"><input type="checkbox" checked><span>Sulfur dioxide</span></label>
+            <p class="src">Sentinel-5P column density, 7-day median</p>
+            <input type="range" class="opacity" min="0" max="1" step="0.05" value="0.7" aria-label="Sulfur dioxide opacity">
             <div class="legend"><i class="bar"></i><span class="lo"></span><span class="hi"></span></div>
             <p class="status" role="status"></p>
           </div>
 
           <div class="layer" data-layer="fire">
-            <label class="switch"><input type="checkbox" checked><span>active fires</span></label>
+            <label class="switch"><input type="checkbox" checked><span>Active fires</span></label>
             <p class="src"><span id="fire-source-caption">MODIS FIRMS hotspots</span>, last 7 days</p>
-            <input type="range" class="opacity" min="0" max="1" step="0.05" value="1" aria-label="active fires opacity">
+            <input type="range" class="opacity" min="0" max="1" step="0.05" value="1" aria-label="Active fires opacity">
             <div class="legend"><i class="bar"></i><span class="lo"></span><span class="hi"></span></div>
             <p class="status" role="status"></p>
           </div>
 
           <div class="layer" data-layer="burn">
-            <label class="switch"><input type="checkbox"><span>burn scars</span></label>
-            <p class="src">sentinel-2 burn severity (dnbr) around your pin</p>
-            <input type="range" class="opacity" min="0" max="1" step="0.05" value="0.9" aria-label="burn scars opacity">
+            <label class="switch"><input type="checkbox"><span>Burn scars</span></label>
+            <p class="src">Sentinel-2 burn severity (dNBR) around your pin</p>
+            <input type="range" class="opacity" min="0" max="1" step="0.05" value="0.9" aria-label="Burn scars opacity">
             <div class="legend"><i class="bar"></i><span class="lo"></span><span class="hi"></span></div>
             <p class="status" role="status"></p>
           </div>
 
           <label class="radius">
-            <span>area radius <b id="radius-val">150 km</b></span>
+            <span>Area radius <b id="radius-val">150 km</b></span>
             <input id="radius" type="range" min="25" max="300" step="5" value="150">
           </label>
         </section>
@@ -109,108 +109,108 @@
 
       <div class="tab-panel" role="tabpanel" data-panel="calendar" hidden>
         <section aria-labelledby="h-calendar">
-          <h2 id="h-calendar">burning activity calendar</h2>
+          <h2 id="h-calendar">Burning activity calendar</h2>
 
-          <label class="field"><span>colors</span>
-            <select id="palette" aria-label="calendar color ramp">
-              <option value="warm">warm (orange → red)</option>
-              <option value="cvd">color-blind safe (viridis)</option>
-              <option value="mono">high contrast (greys)</option>
+          <label class="field"><span>Colors</span>
+            <select id="palette" aria-label="Calendar color ramp">
+              <option value="warm">Warm (orange → red)</option>
+              <option value="cvd">Color-blind safe (viridis)</option>
+              <option value="mono">High contrast (greys)</option>
             </select>
           </label>
-          <div class="calendar-nav"><button id="cal-prev" type="button" aria-label="Previous month">‹</button><strong id="cal-title">month</strong><button id="cal-next" type="button" aria-label="Next month">›</button></div>
-          <div class="cal-weekdays" aria-hidden="true"><span>su</span><span>mo</span><span>tu</span><span>we</span><span>th</span><span>fr</span><span>sa</span></div>
+          <div class="calendar-nav"><button id="cal-prev" type="button" aria-label="Previous month">‹</button><strong id="cal-title">Month</strong><button id="cal-next" type="button" aria-label="Next month">›</button></div>
+          <div class="cal-weekdays" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
           <div id="fire-calendar" class="fire-calendar" aria-label="Daily fire activity calendar"></div>
-          <div class="cal-legend" aria-hidden="true"><span>less fire</span><i style="background:var(--h0)"></i><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><span>more fire</span></div>
-          <p id="calendar-note" class="note" role="status">pick a place to see the calendar.</p>
+          <div class="cal-legend" aria-hidden="true"><span>Less fire</span><i style="background:var(--h0)"></i><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><span>More fire</span></div>
+          <p id="calendar-note" class="note" role="status">Pick a place to see the calendar.</p>
           </section>
       </div>
 
       <div class="tab-panel" role="tabpanel" data-panel="export" hidden>
         <section id="export-section" aria-labelledby="h-export">
-          <h2 id="h-export">export for reports</h2>
+          <h2 id="h-export">Export for reports</h2>
 
           <div class="range-row">
-            <label><span>from</span><input id="exp-from" type="date" aria-label="export start date"></label>
-            <label><span>to</span><input id="exp-to" type="date" aria-label="export end date"></label>
+            <label><span>From</span><input id="exp-from" type="date" aria-label="Export start date"></label>
+            <label><span>To</span><input id="exp-to" type="date" aria-label="Export end date"></label>
           </div>
 
-          <label class="field"><span>hotspot confidence</span>
-            <select id="exp-conf" aria-label="hotspot confidence filter">
-              <option value="all">all detections</option>
-              <option value="nominal">nominal + high</option>
-              <option value="high">high confidence only</option>
+          <label class="field"><span>Hotspot confidence</span>
+            <select id="exp-conf" aria-label="Hotspot confidence filter">
+              <option value="all">All detections</option>
+              <option value="nominal">Nominal + high</option>
+              <option value="high">High confidence only</option>
             </select>
           </label>
-          <label class="field"><span>monthly summary covers</span>
-            <select id="exp-months" aria-label="months in the monthly summary">
-              <option value="6">last 6 months</option>
-              <option value="12" selected>last 12 months</option>
-              <option value="24">last 24 months</option>
+          <label class="field"><span>Monthly summary covers</span>
+            <select id="exp-months" aria-label="Months in the monthly summary">
+              <option value="6">Last 6 months</option>
+              <option value="12" selected>Last 12 months</option>
+              <option value="24">Last 24 months</option>
             </select>
           </label>
           <div class="export-grid">
-            <button id="exp-hotspots" type="button" class="exp-btn" disabled><b>hotspot records</b><small>csv</small></button>
-            <button id="exp-monthly" type="button" class="exp-btn" disabled><b>monthly summary</b><small>csv</small></button>
-            <button id="exp-cal-png" type="button" class="exp-btn" disabled><b>calendar image</b><small>png</small></button>
-            <button id="exp-cal-csv" type="button" class="exp-btn" disabled><b>calendar days</b><small>csv</small></button>
+            <button id="exp-hotspots" type="button" class="exp-btn" disabled><b>Hotspot records</b><small>CSV</small></button>
+            <button id="exp-monthly" type="button" class="exp-btn" disabled><b>Monthly summary</b><small>CSV</small></button>
+            <button id="exp-cal-png" type="button" class="exp-btn" disabled><b>Calendar image</b><small>PNG</small></button>
+            <button id="exp-cal-csv" type="button" class="exp-btn" disabled><b>Calendar days</b><small>CSV</small></button>
           </div>
-          <p id="export-note" class="note" role="status">drop a pin or pick a place first.</p>
+          <p id="export-note" class="note" role="status">Drop a pin or pick a place first.</p>
         </section>
       </div>
 
       <div class="tab-panel" role="tabpanel" data-panel="saved" hidden>
         <section aria-labelledby="h-watch">
-          <h2 id="h-watch">watched places</h2>
+          <h2 id="h-watch">Watched places</h2>
           <ul id="watchlist"></ul>
-          <p id="watch-empty" class="note">no saved places yet.</p>
-          <button id="watch-check" type="button" class="ghost" hidden>check all for this date</button>
+          <p id="watch-empty" class="note">No saved places yet.</p>
+          <button id="watch-check" type="button" class="ghost" hidden>Check all for this date</button>
         </section>
 
         <details class="how" id="how">
-          <summary>about the data</summary>
+          <summary>About the data</summary>
 
           <ol>
-            <li data-layer="so2"><b>sulfur dioxide:</b> Sentinel-5P satellite.</li>
-            <li data-layer="fire"><b>fires:</b> MODIS (since 2000) and VIIRS (since 2012). harmonized uses both.</li>
-            <li data-layer="burn"><b>burn scars:</b> Sentinel-2 satellite.</li>
+            <li data-layer="so2"><b>Sulfur dioxide:</b> Sentinel-5P satellite.</li>
+            <li data-layer="fire"><b>Fires:</b> MODIS (since 2000) and VIIRS (since 2012). harmonized uses both.</li>
+            <li data-layer="burn"><b>Burn scars:</b> Sentinel-2 satellite.</li>
           </ol>
-          <p class="how-foot"><b>alert</b> = fires and sulfur dioxide are both high. <b>watch</b> = lots of fires, or high sulfur dioxide.</p>
+          <p class="how-foot"><b>Alert</b> = fires and sulfur dioxide are both high. <b>Watch</b> = lots of fires, or high sulfur dioxide.</p>
         </details>
       </div>
 
       <footer class="team-credit">
-        <p class="team-label">meet the team</p>
-        <p class="team-names">made by <b>Akhilesh Madhavan</b> + <b>Bhavishyaa Vignesh</b></p>
+        <p class="team-label">Meet the team</p>
+        <p class="team-names">Made by <b>Akhilesh Madhavan</b> + <b>Bhavishyaa Vignesh</b></p>
         <p class="team-event">Foothill High School</p>
-        <p class="team-event">for the NASA Space Apps Challenge</p>
+        <p class="team-event">For the NASA Space Apps Challenge</p>
         <p class="team-event">CAD done on Blender</p>
       </footer>
     </div>
   </aside>
 
-  <div id="nav" role="toolbar" aria-label="map navigation">
-    <button id="zoom-in" type="button" aria-label="zoom in" data-tip="zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button id="zoom-out" type="button" aria-label="zoom out" data-tip="zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+  <div id="nav" role="toolbar" aria-label="Map navigation">
+    <button id="zoom-in" type="button" aria-label="Zoom in" data-tip="zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button id="zoom-out" type="button" aria-label="Zoom out" data-tip="zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
     <i class="sep"></i>
-    <button id="compass" type="button" aria-label="point north" data-tip="point north"><svg viewBox="0 0 24 24"><path d="M12 3l4 9h-8z" fill="currentColor"/><path d="M8 12l4 9 4-9" opacity=".45"/></svg></button>
-    <button id="home" type="button" aria-label="reset the view" data-tip="reset view"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></button>
-    <button id="spin" type="button" aria-label="spin the globe" aria-pressed="false" data-tip="spin globe"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg></button>
-    <button id="proj" type="button" aria-label="switch to flat map" data-tip="flat map"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18M9 6v12M15 6v12"/></svg></button>
+    <button id="compass" type="button" aria-label="Point north" data-tip="point north"><svg viewBox="0 0 24 24"><path d="M12 3l4 9h-8z" fill="currentColor"/><path d="M8 12l4 9 4-9" opacity=".45"/></svg></button>
+    <button id="home" type="button" aria-label="Reset the view" data-tip="reset view"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></button>
+    <button id="spin" type="button" aria-label="Spin the globe" aria-pressed="false" data-tip="spin globe"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg></button>
+    <button id="proj" type="button" aria-label="Switch to flat map" data-tip="flat map"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18M9 6v12M15 6v12"/></svg></button>
   </div>
-  <section id="sat-dock" aria-label="satellites in use">
+  <section id="sat-dock" aria-label="Satellites in use">
     <header class="dock-head">
-      <span class="dock-live"><i></i>satellites</span>
-      <span class="dock-mode" id="dock-mode">harmonized</span>
-      <button type="button" class="dock-pass" id="pass-play" disabled title="watch MODIS and VIIRS fly over your place once">watch a pass</button>
-      <button type="button" class="dock-min" id="dock-min" aria-expanded="true" aria-label="minimize the satellite dock">–</button>
+      <span class="dock-live"><i></i>Satellites</span>
+      <span class="dock-mode" id="dock-mode">Harmonized</span>
+      <button type="button" class="dock-pass" id="pass-play" disabled title="Watch MODIS and VIIRS fly over your place once">Watch a pass</button>
+      <button type="button" class="dock-min" id="dock-min" aria-expanded="true" aria-label="Minimize the satellite dock">–</button>
     </header>
     <div class="dock-sats">
-      <button type="button" class="dock-sat" data-cad="modis" aria-label="open the MODIS 3D model">
+      <button type="button" class="dock-sat" data-cad="modis" aria-label="Open the MODIS 3D model">
         <span class="dock-vid"><video src="media/cad-modis.mp4" muted loop playsinline preload="metadata"></video><span class="dock-3d">3D</span></span>
         <span class="dock-name"><b>MODIS</b><small>Terra · Aqua · since 2000</small><em class="dock-state"></em></span>
       </button>
-      <button type="button" class="dock-sat" data-cad="viirs" aria-label="open the VIIRS 3D model">
+      <button type="button" class="dock-sat" data-cad="viirs" aria-label="Open the VIIRS 3D model">
         <span class="dock-vid"><video src="media/cad-viirs.mp4" muted loop playsinline preload="metadata"></video><span class="dock-3d">3D</span></span>
         <span class="dock-name"><b>VIIRS</b><small>Suomi NPP · NOAA-20 · since 2012</small><em class="dock-state"></em></span>
       </button>
@@ -218,63 +218,63 @@
     <p class="dock-note" id="dock-note">CAD done on Blender</p>
   </section>
 
-  <div id="draw-bar" hidden><span id="draw-msg">click the map to add corners (need 3+)</span><button id="draw-undo" type="button">undo</button><button id="draw-cancel" type="button">cancel</button></div>
-  <p id="hint"><b>drag</b> to turn · <b>scroll</b> to zoom · <b>click</b> to pick a place</p>
+  <div id="draw-bar" hidden><span id="draw-msg">Click the map to add corners (need 3+)</span><button id="draw-undo" type="button">Undo</button><button id="draw-cancel" type="button">Cancel</button></div>
+  <p id="hint"><b>Drag</b> to turn · <b>Scroll</b> to zoom · <b>Click</b> to pick a place</p>
 
-  <aside id="readout" class="panel" aria-label="area readout">
+  <aside id="readout" class="panel" aria-label="Area readout">
     <header class="panel-head">
       <div>
-        <h2 id="place">no place chosen</h2>
-        <p class="note" id="place-sub">click the map or enter a place.</p>
+        <h2 id="place">No place chosen</h2>
+        <p class="note" id="place-sub">Click the map or enter a place.</p>
       </div>
-      <button class="panel-toggle" type="button" aria-expanded="true" aria-label="show or hide readout">readout</button>
+      <button class="panel-toggle" type="button" aria-expanded="true" aria-label="Show or hide readout">Readout</button>
     </header>
 
     <div class="panel-body">
-      <p id="signal" data-level="none">no place yet.</p>
+      <p id="signal" data-level="none">No place yet.</p>
 
       <dl class="rows">
-        <div data-layer="fire"><dt>fire pixels</dt><dd id="v-fire">–</dd></div>
-        <div data-layer="fire"><dt>separate fires</dt><dd id="v-fires">–<small id="n-fires"></small></dd></div>
-        <div data-layer="fire"><dt>reported fires</dt><dd id="v-reported">–<small id="n-reported"></small></dd></div>
-        <div data-layer="so2"><dt>sulfur dioxide</dt><dd id="v-so2">–<small id="n-so2"></small></dd></div>
-        <div data-layer="burn"><dt>burned area</dt><dd id="v-burn">–</dd></div>
+        <div data-layer="fire"><dt>Fire pixels</dt><dd id="v-fire">–</dd></div>
+        <div data-layer="fire"><dt>Separate fires</dt><dd id="v-fires">–<small id="n-fires"></small></dd></div>
+        <div data-layer="fire"><dt>Reported fires</dt><dd id="v-reported">–<small id="n-reported"></small></dd></div>
+        <div data-layer="so2"><dt>Sulfur dioxide</dt><dd id="v-so2">–<small id="n-so2"></small></dd></div>
+        <div data-layer="burn"><dt>Burned area</dt><dd id="v-burn">–</dd></div>
       </dl>
 
       <div id="anomaly" class="anomaly" hidden>
-        <p class="anom-label">this month vs its history</p>
+        <p class="anom-label">This month vs its history</p>
         <p class="anom-big" id="anom-big">–</p>
         <p class="anom-sub" id="anom-sub"></p>
       </div>
 
       <figure class="spark">
         <canvas id="spark" height="84"></canvas>
-        <figcaption id="spark-cap">daily sulfur dioxide, dobson units</figcaption>
+        <figcaption id="spark-cap">Daily sulfur dioxide, Dobson units</figcaption>
       </figure>
 
-      <button id="history-open" type="button" class="solid render-btn history-main" disabled>open fire history</button>
-      <button id="render-open" type="button" class="solid render-btn" disabled>open fire render</button>
-      <button id="watch-add" type="button" class="ghost wide-btn" disabled>watch this place</button>
+      <button id="history-open" type="button" class="solid render-btn history-main" disabled>Open fire history</button>
+      <button id="render-open" type="button" class="solid render-btn" disabled>Open fire render</button>
+      <button id="watch-add" type="button" class="ghost wide-btn" disabled>Watch this place</button>
     </div>
   </aside>
 
   <div id="tl-hud" hidden data-state="loading" role="status">
-    <div class="tl-top"><b id="tl-date">loading…</b><button id="tl-stop" type="button" aria-label="close the time-lapse">×</button></div>
+    <div class="tl-top"><b id="tl-date">Loading…</b><button id="tl-stop" type="button" aria-label="Close the time-lapse">×</button></div>
     <div class="tl-counts"><span><i style="background:#E5383B"></i><b id="tl-n-modis">0</b> MODIS</span><span><i style="background:#FFD60A"></i><b id="tl-n-viirs">0</b> VIIRS</span></div>
     <div class="tl-track"><i id="tl-bar"></i></div>
   </div>
 
-  <nav id="timeline" class="panel" aria-label="date">
-    <div class="tl-left"><button id="play" type="button" aria-label="play through time">play</button><button id="tl-btn" type="button" title="watch the last year of fires on the map" disabled>time-lapse</button></div>
-    <input id="slider" type="range" min="0" max="1" step="1" value="1" aria-label="date slider">
-    <div id="datebox"><button id="prev-day" class="step-btn" type="button" aria-label="one day earlier" title="one day earlier">‹</button><input id="date" type="date" aria-label="choose a date"><button id="next-day" class="step-btn" type="button" aria-label="one day later" title="one day later">›</button></div>
+  <nav id="timeline" class="panel" aria-label="Date">
+    <div class="tl-left"><button id="play" type="button" aria-label="Play through time">Play</button><button id="tl-btn" type="button" title="Watch the last year of fires on the map" disabled>Time-lapse</button></div>
+    <input id="slider" type="range" min="0" max="1" step="1" value="1" aria-label="Date slider">
+    <div id="datebox"><button id="prev-day" class="step-btn" type="button" aria-label="One day earlier" title="One day earlier">‹</button><input id="date" type="date" aria-label="Choose a date"><button id="next-day" class="step-btn" type="button" aria-label="One day later" title="One day later">›</button></div>
     <p id="window-note"></p>
   </nav>
 
-  <section id="chat" class="panel" hidden aria-label="ask Helios">
+  <section id="chat" class="panel" hidden aria-label="Ask Helios">
     <header>
-      <div><b>ask Helios</b><small id="chat-where"></small></div>
-      <button id="chat-x" class="x" type="button" aria-label="close the chat">×</button>
+      <div><b>Ask Helios</b><small id="chat-where"></small></div>
+      <button id="chat-x" class="x" type="button" aria-label="Close the chat">×</button>
     </header>
     <div id="chat-log" aria-live="polite">
       <div class="msg assistant">Hi! Pick a spot on the map, then ask me about the fire, smoke or burn scars you see there.</div>
@@ -286,85 +286,85 @@
       <button type="button">What's the difference between MODIS and VIIRS?</button>
     </div>
     <form id="chat-form">
-      <textarea id="chat-input" rows="1" maxlength="2000" placeholder="ask about this fire…" aria-label="your question"></textarea>
-      <button id="chat-send" type="submit" aria-label="send">→</button>
+      <textarea id="chat-input" rows="1" maxlength="2000" placeholder="Ask about this fire…" aria-label="Your question"></textarea>
+      <button id="chat-send" type="submit" aria-label="Send">→</button>
     </form>
     <p class="chat-note">AI answers can be wrong. In an emergency, follow local officials.</p>
   </section>
 
   <div id="fabs">
-    <button id="chat-btn" class="fab fab-accent" type="button" aria-controls="chat" aria-expanded="false"><span>ask Helios AI</span></button>
-    <button id="about-btn" class="fab" type="button" aria-haspopup="dialog"><span>about</span></button>
-    <button id="help-btn" class="fab" type="button" aria-haspopup="dialog" title="replay the guided tour"><span>tour</span></button>
+    <button id="chat-btn" class="fab fab-accent" type="button" aria-controls="chat" aria-expanded="false"><span>Ask Helios AI</span></button>
+    <button id="about-btn" class="fab" type="button" aria-haspopup="dialog"><span>About</span></button>
+    <button id="help-btn" class="fab" type="button" aria-haspopup="dialog" title="Replay the guided tour"><span>Tour</span></button>
   </div>
 
-  <div id="intro" role="dialog" aria-modal="true" aria-label="welcome to Helios">
+  <div id="intro" role="dialog" aria-modal="true" aria-label="Welcome to Helios">
 
     <div class="stage">
       <header class="hero-head">
         <h1 class="hero-word" aria-label="Helios"><span>H</span><span>E</span><span>L</span><span>I</span><span>O</span><span>S</span></h1>
-        <p class="hero-tag">fire data from space, 2000 to today</p>
+        <p class="hero-tag">Fire data from space, 2000 to today</p>
       </header>
       <form id="s-sensor" class="step card" autocomplete="off">
-        <h2 class="q">choose a satellite</h2>
+        <h2 class="q">Choose a satellite</h2>
         <div class="sensor-choices" role="radiogroup" aria-label="Choose fire satellite">
           <label class="sensor-choice">
             <span class="cad-thumb">
-              <video src="media/cad-modis.mp4" autoplay muted loop playsinline preload="auto" aria-label="rotating CAD model for MODIS"></video>
-              <button type="button" class="cad-enlarge" data-cad="modis" aria-label="make the MODIS CAD bigger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>make bigger</span></button>
+              <video src="media/cad-modis.mp4" autoplay muted loop playsinline preload="auto" aria-label="Rotating CAD model for MODIS"></video>
+              <button type="button" class="cad-enlarge" data-cad="modis" aria-label="Make the MODIS CAD bigger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Make bigger</span></button>
             </span>
-            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="modis"><span><strong>MODIS</strong><small>since 2000</small></span></span>
+            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="modis"><span><strong>MODIS</strong><small>Since 2000</small></span></span>
           </label>
           <label class="sensor-choice">
             <span class="cad-thumb">
-              <video src="media/cad-viirs.mp4" autoplay muted loop playsinline preload="auto" aria-label="rotating CAD model for VIIRS"></video>
-              <button type="button" class="cad-enlarge" data-cad="viirs" aria-label="make the VIIRS CAD bigger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>make bigger</span></button>
+              <video src="media/cad-viirs.mp4" autoplay muted loop playsinline preload="auto" aria-label="Rotating CAD model for VIIRS"></video>
+              <button type="button" class="cad-enlarge" data-cad="viirs" aria-label="Make the VIIRS CAD bigger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Make bigger</span></button>
             </span>
-            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="viirs"><span><strong>VIIRS</strong><small>since 2012</small></span></span>
+            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="viirs"><span><strong>VIIRS</strong><small>Since 2012</small></span></span>
           </label>
           <label class="sensor-choice harmonized-choice">
-            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="harmonized" checked><span><strong>both, harmonized <em>recommended</em></strong><small>MODIS + VIIRS combined</small></span></span>
+            <span class="sensor-text"><input type="radio" name="welcome-sensor" value="harmonized" checked><span><strong>Both, harmonized <em>Recommended</em></strong><small>MODIS + VIIRS combined</small></span></span>
           </label>
         </div>
-        <button class="cta" type="submit" id="w-go"><span>let's go</span> <i>→</i></button>
+        <button class="cta" type="submit" id="w-go"><span>Let's go</span> <i>→</i></button>
       </form>
     </div>
   </div>
 
   <div id="cad" class="modal" role="dialog" aria-modal="true" aria-labelledby="cad-title" hidden>
     <div class="card cad-card">
-      <button class="x" type="button" id="cad-x" aria-label="close">×</button>
+      <button class="x" type="button" id="cad-x" aria-label="Close">×</button>
       <p class="eyebrow">3D model</p>
       <h2 id="cad-title">MODIS</h2>
-      <div class="cad-tabs" role="tablist" aria-label="choose a CAD">
+      <div class="cad-tabs" role="tablist" aria-label="Choose a CAD">
         <button type="button" role="tab" data-cad="modis" aria-selected="true">MODIS</button>
         <button type="button" role="tab" data-cad="viirs" aria-selected="false">VIIRS</button>
-        <button type="button" role="tab" data-cad="both" aria-selected="false">side by side</button>
-        <button type="button" role="tab" data-cad="parts" aria-selected="false">explain parts</button>
+        <button type="button" role="tab" data-cad="both" aria-selected="false">Side by side</button>
+        <button type="button" role="tab" data-cad="parts" aria-selected="false">Explain parts</button>
       </div>
       <div class="cad-compare" id="cad-compare" hidden>
         <figure class="cad-pair" data-cad="modis">
           <div class="cad-pair-stage"><video src="media/cad-modis.mp4" muted loop playsinline preload="none"></video></div>
-          <figcaption><b>MODIS</b><span>since 2000</span></figcaption>
+          <figcaption><b>MODIS</b><span>Since 2000</span></figcaption>
         </figure>
         <figure class="cad-pair" data-cad="viirs">
           <div class="cad-pair-stage"><video src="media/cad-viirs.mp4" muted loop playsinline preload="none"></video></div>
-          <figcaption><b>VIIRS</b><span>since 2012</span></figcaption>
+          <figcaption><b>VIIRS</b><span>Since 2012</span></figcaption>
         </figure>
-        <label class="cad-sync"><input type="checkbox" id="cad-sync" checked> spin both together</label>
+        <label class="cad-sync"><input type="checkbox" id="cad-sync" checked> Spin both together</label>
         <div class="cad-diff">
-          <h3>what's different</h3>
+          <h3>What's different</h3>
           <table>
             <thead><tr><th scope="col"></th><th scope="col">MODIS</th><th scope="col">VIIRS</th></tr></thead>
             <tbody>
-              <tr><th scope="row">satellites</th><td>Terra (1999), Aqua (2002)</td><td>Suomi NPP (2011), NOAA-20, NOAA-21</td></tr>
-              <tr><th scope="row">height above Earth</th><td>705 km</td><td>824 km</td></tr>
-              <tr><th scope="row">width of each scan</th><td>2,330 km</td><td>3,040 km</td></tr>
-              <tr><th scope="row">fire pixel size</th><td>~1 km</td><td>375 m</td></tr>
-              <tr><th scope="row">spectral bands</th><td>36</td><td>22</td></tr>
-              <tr><th scope="row">fires it can see</th><td>bigger, hotter fires</td><td>smaller, cooler fires too</td></tr>
-              <tr><th scope="row">record in Helios</th><td>Nov 2000 → today</td><td>Jan 2012 → today</td></tr>
-              <tr><th scope="row">best for</th><td>long-term trends</td><td>recent, detailed fires</td></tr>
+              <tr><th scope="row">Satellites</th><td>Terra (1999), Aqua (2002)</td><td>Suomi NPP (2011), NOAA-20, NOAA-21</td></tr>
+              <tr><th scope="row">Height above Earth</th><td>705 km</td><td>824 km</td></tr>
+              <tr><th scope="row">Width of each scan</th><td>2,330 km</td><td>3,040 km</td></tr>
+              <tr><th scope="row">Fire pixel size</th><td>~1 km</td><td>375 m</td></tr>
+              <tr><th scope="row">Spectral bands</th><td>36</td><td>22</td></tr>
+              <tr><th scope="row">Fires it can see</th><td>Bigger, hotter fires</td><td>Smaller, cooler fires too</td></tr>
+              <tr><th scope="row">Record in Helios</th><td>Nov 2000 → today</td><td>Jan 2012 → today</td></tr>
+              <tr><th scope="row">Best for</th><td>Long-term trends</td><td>Recent, detailed fires</td></tr>
             </tbody>
           </table>
           <p>VIIRS's sharper pixels catch fires MODIS misses, so it counts more fires over the same place. That's why the harmonized view scales MODIS counts before 2012 to match VIIRS.</p>
@@ -372,26 +372,26 @@
       </div>
       <div class="cad-parts" id="cad-parts" hidden>
         <div class="parts-stage" id="parts-stage">
-          <video id="parts-video" muted playsinline preload="none" aria-label="satellite model"></video>
+          <video id="parts-video" muted playsinline preload="none" aria-label="Satellite model"></video>
           <div id="parts-spot"></div>
           <div id="parts-dots"></div>
           <div id="parts-tip" hidden></div>
-          <p class="parts-hint">hover a dot</p>
+          <p class="parts-hint">Hover a dot</p>
         </div>
         <aside class="parts-side">
           <div class="parts-pick" role="tablist"><button type="button" role="tab" data-pinst="modis" aria-selected="true">MODIS</button><button type="button" role="tab" data-pinst="viirs" aria-selected="false">VIIRS</button></div>
           <p class="parts-title" id="parts-name"></p>
-          <p class="parts-info" id="parts-info">hover a dot on the satellite, or a part below.</p>
-          <h4>on the satellite</h4>
+          <p class="parts-info" id="parts-info">Hover a dot on the satellite, or a part below.</p>
+          <h4>On the satellite</h4>
           <ul id="parts-list"></ul>
-          <h4>inside the instrument</h4>
+          <h4>Inside the instrument</h4>
           <ul id="parts-inside"></ul>
         </aside>
       </div>
       <div class="cad-grid">
-        <div class="cad-stage" id="cad-stage" tabindex="0" aria-label="drag to spin the model, scroll to zoom">
+        <div class="cad-stage" id="cad-stage" tabindex="0" aria-label="Drag to spin the model, scroll to zoom">
           <video id="cad-video" muted loop playsinline preload="auto"></video>
-          <p class="cad-hint">drag to spin · scroll to zoom</p>
+          <p class="cad-hint">Drag to spin · scroll to zoom</p>
           <p class="cad-zoom-badge" id="cad-zoom-badge">100%</p>
         </div>
         <aside class="cad-side">
@@ -400,19 +400,19 @@
         </aside>
       </div>
       <div class="cad-controls">
-        <button type="button" id="cad-play" class="cad-btn">pause</button>
-        <input id="cad-scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="spin position">
-        <label class="cad-speed"><span>speed</span>
-          <select id="cad-speed" aria-label="spin speed"><option value="0.25">0.25×</option><option value="0.5" selected>0.5×</option><option value="1">1×</option><option value="2">2×</option></select>
+        <button type="button" id="cad-play" class="cad-btn">Pause</button>
+        <input id="cad-scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="Spin position">
+        <label class="cad-speed"><span>Speed</span>
+          <select id="cad-speed" aria-label="Spin speed"><option value="0.25">0.25×</option><option value="0.5" selected>0.5×</option><option value="1">1×</option><option value="2">2×</option></select>
         </label>
         <div class="cad-zoom">
-          <button type="button" id="cad-zoom-out" class="cad-btn" aria-label="zoom out">−</button>
-          <button type="button" id="cad-zoom-in" class="cad-btn" aria-label="zoom in">+</button>
-          <button type="button" id="cad-reset" class="cad-btn">reset</button>
-          <button type="button" id="cad-full" class="cad-btn">full screen</button>
+          <button type="button" id="cad-zoom-out" class="cad-btn" aria-label="Zoom out">−</button>
+          <button type="button" id="cad-zoom-in" class="cad-btn" aria-label="Zoom in">+</button>
+          <button type="button" id="cad-reset" class="cad-btn">Reset</button>
+          <button type="button" id="cad-full" class="cad-btn">Full screen</button>
         </div>
       </div>
-      <button type="button" id="cad-use" class="cta cad-use"><span>use MODIS</span> <i>→</i></button>
+      <button type="button" id="cad-use" class="cta cad-use"><span>Use MODIS</span> <i>→</i></button>
     </div>
   </div>
 
@@ -423,61 +423,61 @@
     <div class="coach-block" data-side="right"></div>
     <div class="coach-hole" aria-hidden="true"></div>
     <div class="coach-card" role="dialog" aria-modal="false" aria-labelledby="coach-title" tabindex="-1">
-      <div class="coach-top"><p class="eyebrow" id="coach-step">step 1 of 8</p><div class="coach-dots" aria-hidden="true"></div><button type="button" class="coach-skip" id="coach-skip" title="skip the guided tour (esc)">skip tour</button></div>
-      <h2 id="coach-title">title</h2>
+      <div class="coach-top"><p class="eyebrow" id="coach-step">Step 1 of 8</p><div class="coach-dots" aria-hidden="true"></div><button type="button" class="coach-skip" id="coach-skip" title="Skip the guided tour (Esc)">Skip tour</button></div>
+      <h2 id="coach-title">Title</h2>
       <p id="coach-text"></p>
       <p id="coach-todo" class="coach-todo" hidden></p>
       <div class="coach-actions">
         <button type="button" class="back" id="coach-back">← back</button>
-        <button type="button" class="cta" id="coach-next"><span>next</span> <i>→</i></button>
+        <button type="button" class="cta" id="coach-next"><span>Next</span> <i>→</i></button>
       </div>
     </div>
   </div>
 
   <div id="history" class="modal" role="dialog" aria-modal="true" aria-labelledby="h-title" hidden>
     <div class="card history-card">
-      <button class="x" type="button" id="history-x" aria-label="close">×</button>
-      <p class="eyebrow">fire history</p>
-      <h2 id="h-title">your area since 2000</h2>
+      <button class="x" type="button" id="history-x" aria-label="Close">×</button>
+      <p class="eyebrow">Fire history</p>
+      <h2 id="h-title">Your area since 2000</h2>
       <p class="note" id="h-sub"></p>
-      <p id="h-loading" class="h-loading" role="status">loading… this can take a minute.</p>
+      <p id="h-loading" class="h-loading" role="status">Loading… this can take a minute.</p>
 
       <div id="h-body" hidden>
         <div class="h-tiles" id="h-tiles"></div>
 
         <div class="h-block">
           <div class="h-block-head">
-            <h3>burning activity calendar, month by month</h3>
+            <h3>Burning activity calendar, month by month</h3>
             <div class="h-controls">
-              <label><span>years</span><select id="h-from"></select></label><span class="h-dash">→</span><label><select id="h-to"></select></label>
-              <label><span>show</span>
+              <label><span>Years</span><select id="h-from"></select></label><span class="h-dash">→</span><label><select id="h-to"></select></label>
+              <label><span>Show</span>
                 <select id="h-view">
-                  <option value="count">hotspot counts</option>
-                  <option value="anomaly">vs past years (percentile)</option>
+                  <option value="count">Hotspot counts</option>
+                  <option value="anomaly">Vs past years (percentile)</option>
                 </select>
               </label>
             </div>
           </div>
-          <div id="h-grid" class="h-grid" aria-label="years by months hotspot calendar"></div>
+          <div id="h-grid" class="h-grid" aria-label="Years by months hotspot calendar"></div>
           <div class="h-legend" id="h-legend"></div>
-          <p class="note">each box is a month. brighter = more fire.</p>
+          <p class="note">Each box is a month. brighter = more fire.</p>
         </div>
 
         <div class="h-two">
           <div class="h-block">
-            <h3>seasonal pattern</h3>
+            <h3>Seasonal pattern</h3>
             <div id="h-season" class="h-chart"></div>
-            <p class="note">red line: <span id="h-season-year">this year</span>. white line: typical year.</p>
+            <p class="note">Red line: <span id="h-season-year">This year</span>. white line: typical year.</p>
           </div>
           <div class="h-block">
-            <h3>hotspots per year</h3>
+            <h3>Hotspots per year</h3>
             <div id="h-annual" class="h-chart"></div>
-            <p class="note" id="h-annual-note">dashed line: trend.</p>
+            <p class="note" id="h-annual-note">Dashed line: trend.</p>
           </div>
         </div>
 
         <details class="h-block h-method" id="h-method">
-          <summary>how MODIS and VIIRS were combined</summary>
+          <summary>How MODIS and VIIRS were combined</summary>
           <div class="h-two">
             <div id="h-scatter" class="h-chart"></div>
             <div id="h-method-text" class="h-method-text"></div>
@@ -485,9 +485,9 @@
         </details>
 
         <div class="h-downloads">
-          <button id="h-csv" type="button" class="exp-btn"><b>harmonized monthly record</b><small>csv</small></button>
-          <button id="h-png" type="button" class="exp-btn"><b>history calendar image</b><small>png</small></button>
-          <button id="h-annual-csv" type="button" class="exp-btn"><b>yearly totals + trend</b><small>csv</small></button>
+          <button id="h-csv" type="button" class="exp-btn"><b>Harmonized monthly record</b><small>CSV</small></button>
+          <button id="h-png" type="button" class="exp-btn"><b>History calendar image</b><small>PNG</small></button>
+          <button id="h-annual-csv" type="button" class="exp-btn"><b>Yearly totals + trend</b><small>CSV</small></button>
         </div>
       </div>
     </div>
@@ -495,40 +495,40 @@
 
   <div id="about" class="modal page" role="dialog" aria-modal="true" aria-labelledby="about-title" hidden>
     <div class="card page-card">
-      <button class="x" type="button" data-close aria-label="close">×</button>
-      <h2 id="about-title">about helios</h2>
+      <button class="x" type="button" data-close aria-label="Close">×</button>
+      <h2 id="about-title">About helios</h2>
 
       <section class="about-sec">
-        <h3>the challenge</h3>
+        <h3>The challenge</h3>
         <p>NASA Space Apps 2026: <b>Harmonization of MODIS and VIIRS Hot Spots</b>.</p>
         <p>MODIS has tracked fires from space since 2000, but it is getting old. VIIRS is taking its place. The two count fires differently, so you can't just put their data together. We made one fire record out of both, so you can see how fire changes over the years.</p>
       </section>
 
       <section class="about-sec">
-        <h3>what helios does</h3>
+        <h3>What helios does</h3>
         <ul class="about-list">
-          <li>combines MODIS and VIIRS fire data into one record, 2000 to today</li>
-          <li>shows every month as a calendar, so you can see the busy months</li>
-          <li>tells you if this month is busier than past years</li>
-          <li>lets you type a place or draw your own area</li>
-          <li>downloads the data as CSV files and images</li>
-          <li>has a color-blind safe color option</li>
+          <li>Combines MODIS and VIIRS fire data into one record, 2000 to today</li>
+          <li>Shows every month as a calendar, so you can see the busy months</li>
+          <li>Tells you if this month is busier than past years</li>
+          <li>Lets you type a place or draw your own area</li>
+          <li>Downloads the data as CSV files and images</li>
+          <li>Has a color-blind safe color option</li>
           <li>3D models of both satellites, with their parts explained</li>
         </ul>
       </section>
 
       <section class="about-sec">
-        <h3>technology we used</h3>
+        <h3>Technology we used</h3>
         <div class="tech-grid">
-          <div><h4>data</h4><ul><li>NASA FIRMS (MODIS fires)</li><li>NASA VIIRS VNP14A1 (VIIRS fires)</li><li>Sentinel-5P (sulfur dioxide)</li><li>Sentinel-2 (burn scars)</li><li>Google Earth Engine</li></ul></div>
-          <div><h4>website</h4><ul><li>HTML, CSS and JavaScript</li><li>MapLibre GL JS (the map and globe)</li><li>three.js (3D satellites on the map)</li><li>CARTO basemap (OpenStreetMap data)</li><li>OpenStreetMap Nominatim (place search)</li><li>Google Fonts (Fraunces, Inter)</li></ul></div>
-          <div><h4>server</h4><ul><li>Python</li><li>FastAPI</li><li>Uvicorn</li><li>Earth Engine Python API</li><li>python-dotenv</li></ul></div>
-          <div><h4>tools</h4><ul><li>Blender (CAD models)</li><li>Git and GitHub</li><li>Render (hosting)</li><li>VS Code</li></ul></div>
+          <div><h4>Data</h4><ul><li>NASA FIRMS (MODIS fires)</li><li>NASA VIIRS VNP14A1 (VIIRS fires)</li><li>Sentinel-5P (sulfur dioxide)</li><li>Sentinel-2 (burn scars)</li><li>Google Earth Engine</li></ul></div>
+          <div><h4>Website</h4><ul><li>HTML, CSS and JavaScript</li><li>MapLibre GL JS (the map and globe)</li><li>Three.js (3D satellites on the map)</li><li>CARTO basemap (OpenStreetMap data)</li><li>OpenStreetMap Nominatim (place search)</li><li>Google Fonts (Fraunces, Inter)</li></ul></div>
+          <div><h4>Server</h4><ul><li>Python</li><li>FastAPI</li><li>Uvicorn</li><li>Earth Engine Python API</li><li>Python-dotenv</li></ul></div>
+          <div><h4>Tools</h4><ul><li>Blender (CAD models)</li><li>Git and GitHub</li><li>Render (hosting)</li><li>VS Code</li></ul></div>
         </div>
       </section>
 
       <section class="about-sec">
-        <h3>meet the team</h3>
+        <h3>Meet the team</h3>
         <p>Akhilesh Madhavan and Bhavishyaa Vignesh, from Foothill High School. We live in California, where wildfires are a real thing, so we wanted to know what is happening in our community.</p>
       </section>
     </div>
@@ -536,43 +536,43 @@
 
   <div id="namer" class="modal" role="dialog" aria-modal="true" aria-labelledby="n-title" hidden>
     <form class="card small" id="namer-form" autocomplete="off">
-      <h2 id="n-title">name this place</h2>
-      <input id="namer-input" type="text" maxlength="40" aria-label="place name">
+      <h2 id="n-title">Name this place</h2>
+      <input id="namer-input" type="text" maxlength="40" aria-label="Place name">
       <div class="row">
-        <button class="cta" type="submit"><span>save</span></button>
-        <button class="back" type="button" id="namer-cancel">cancel</button>
+        <button class="cta" type="submit"><span>Save</span></button>
+        <button class="back" type="button" id="namer-cancel">Cancel</button>
       </div>
     </form>
   </div>
 
   <div id="render" class="modal" role="dialog" aria-modal="true" aria-labelledby="r-title" hidden>
     <div class="card render-card">
-      <button class="x" type="button" id="render-x" aria-label="close">×</button>
-      <p class="eyebrow">fire render</p>
-      <h2 id="r-title">your area</h2>
+      <button class="x" type="button" id="render-x" aria-label="Close">×</button>
+      <p class="eyebrow">Fire render</p>
+      <h2 id="r-title">Your area</h2>
       <p class="note" id="r-sub"></p>
 
       <div class="render-grid">
         <div class="render-stage" id="r-stage">
           <video id="r-video" muted loop playsinline preload="none" poster="media/fire-render-poster.jpg" aria-label="3d render of a wildfire"></video>
-          <svg id="r-zones" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-label="hoverable parts of the fire">
-            <rect class="zone" data-zone="air" tabindex="0" role="button" aria-label="air quality" x="0" y="0" width="1600" height="900"/>
-            <rect class="zone" data-zone="fire" tabindex="0" role="button" aria-label="fire pixels" rx="60"/>
-            <rect class="zone" data-zone="heat" tabindex="0" role="button" aria-label="heat intensity" rx="60"/>
-            <ellipse class="zone" data-zone="burn" tabindex="0" role="button" aria-label="burned area"/>
-            <rect class="zone" data-zone="smoke" tabindex="0" role="button" aria-label="smoke" rx="60"/>
+          <svg id="r-zones" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-label="Hoverable parts of the fire">
+            <rect class="zone" data-zone="air" tabindex="0" role="button" aria-label="Air quality" x="0" y="0" width="1600" height="900"/>
+            <rect class="zone" data-zone="fire" tabindex="0" role="button" aria-label="Fire pixels" rx="60"/>
+            <rect class="zone" data-zone="heat" tabindex="0" role="button" aria-label="Heat intensity" rx="60"/>
+            <ellipse class="zone" data-zone="burn" tabindex="0" role="button" aria-label="Burned area"/>
+            <rect class="zone" data-zone="smoke" tabindex="0" role="button" aria-label="Smoke" rx="60"/>
             <g id="r-dots" aria-hidden="true"></g>
           </svg>
           <div id="r-tip" role="status" hidden></div>
-          <p id="r-loading" class="r-loading">loading render…</p>
-          <button id="r-play" class="r-play" type="button" aria-label="pause the render">pause</button>
-          <p class="r-hint">hover over the fire</p>
+          <p id="r-loading" class="r-loading">Loading render…</p>
+          <button id="r-play" class="r-play" type="button" aria-label="Pause the render">Pause</button>
+          <p class="r-hint">Hover over the fire</p>
         </div>
 
-        <ul id="r-list" class="r-list" aria-label="what the render shows"></ul>
+        <ul id="r-list" class="r-list" aria-label="What the render shows"></ul>
       </div>
 
-      <p class="r-foot">the fire is an illustration. the numbers are real satellite data.</p>
+      <p class="r-foot">The fire is an illustration. the numbers are real satellite data.</p>
     </div>
   </div>
 

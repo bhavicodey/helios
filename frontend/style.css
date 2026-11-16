@@ -17,10 +17,10 @@ html, body { height: 100%; margin: 0; }
 /* keep off-screen (sliding-in) panels from widening the page on phones */
 html { overflow: hidden; }
 body { position: relative; overflow: clip; }
-body { color: var(--text); background: #fff; font-size: 14px; line-height: 1.5; overflow: hidden; text-transform: lowercase; -webkit-font-smoothing: antialiased; }
-button, input { font: inherit; color: inherit; text-transform: lowercase; }
+body { color: var(--text); background: #fff; font-size: 14px; line-height: 1.5; overflow: hidden; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
-input::placeholder { text-transform: lowercase; color: #a3abb9; opacity: 1; }
+input::placeholder { color: #a3abb9; opacity: 1; }
 :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 ::selection { background: #cfdcf7; }
 h1, h2, h3, h4, #place, .q, .brand, .rows dd { font-family: "Fraunces", Georgia, serif; font-weight: 600; letter-spacing: -.01em; }

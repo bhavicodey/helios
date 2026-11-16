@@ -22,6 +22,7 @@
     }
   }
   const standing = (p, name) => p == null ? "–" : p >= 50 ? `busier than ${p}% of past ${name}s` : `quieter than ${100 - p}% of past ${name}s`;
+  const cap = (t) => t ? t[0].toUpperCase() + t.slice(1) : t;
   const ordinal = (n) => n === 1 ? "" : n + ({ 1: "st", 2: "nd", 3: "rd" }[n % 100 > 10 && n % 100 < 14 ? 0 : n % 10] || "th") + " ";
 
   
@@ -30,7 +31,7 @@
     const t = ++token; loading = true; data = null;
     setButtons(); renderAnomaly();
     q("#h-loading").hidden = false; q("#h-body").hidden = true;
-    q("#h-loading").textContent = "reading 25 years of satellite hotspots… the first load for a new area can take a minute.";
+    q("#h-loading").textContent = "Reading 25 years of satellite hotspots… The first load for a new area can take a minute.";
     try {
       const r = await api("history", { ...areaParams(), current: ymOf(state.end) });
       if (t !== token) return;
@@ -40,7 +41,7 @@
     } catch (err) {
       if (t !== token) return;
       loading = false;
-      q("#h-loading").textContent = `couldn't load the history: ${err.message}`;
+      q("#h-loading").textContent = `Couldn't load the history: ${err.message}`;
     }
     setButtons(); renderAnomaly();
   }
@@ -51,7 +52,7 @@
   function setButtons() {
     const on = !!state.pin;
     ["#history-open", "#history-open-rail"].forEach((s) => { const b = q(s); if (!b) return; b.disabled = !on; b.classList.toggle("is-loading", on && loading); });
-    q("#history-open").textContent = loading ? "loading fire history…" : "open fire history";
+    q("#history-open").textContent = loading ? "Loading fire history…" : "Open fire history";
   }
 
   
@@ -68,19 +69,19 @@
     const box = q("#anomaly");
     if (!state.pin) { box.hidden = true; return; }
     box.hidden = false;
-    if (!data) { box.dataset.level = ""; q("#anom-big").textContent = loading ? "loading…" : "–"; q("#anom-sub").textContent = ""; return; }
+    if (!data) { box.dataset.level = ""; q("#anom-big").textContent = loading ? "Loading…" : "–"; q("#anom-sub").textContent = ""; return; }
     const ym = ymOf(state.end), r = rowFor(ym), name = MONTH_LONG[+ym.slice(5) - 1];
-    if (!r || r.harmonized == null) { box.dataset.level = ""; q("#anom-big").textContent = "no data"; q("#anom-sub").textContent = `no data for ${name} ${ym.slice(0, 4)} yet.`; return; }
+    if (!r || r.harmonized == null) { box.dataset.level = ""; q("#anom-big").textContent = "No data"; q("#anom-sub").textContent = `No data for ${name} ${ym.slice(0, 4)} yet.`; return; }
     const n = data.rows.filter((x) => x.mon === r.mon && x.harmonized != null).length;
     const a = r.percentile, level = judge(r), tiny = a != null && !meaningful(r);
     const soFar = ym === ymOf(LATEST) ? " so far" : "";
     box.dataset.level = level;
     q(".anom-label").textContent = `${name} ${r.year}${soFar}`;
     q("#anom-big").textContent = a == null ? compact(r.harmonized) + " hotspots"
-      : tiny ? `about usual for ${name}` : standing(a, name);
+      : tiny ? `About usual for ${name}` : cap(standing(a, name));
     const critical = data.stats.critical_months.includes(r.mon) ? ` ${name} is a busy month here.` : "";
-    q("#anom-sub").textContent = `${compact(r.harmonized)} hotspots. a usual ${name} has ${compact(r.baseline_median)}. `
-      + (tiny ? "too few to compare." : (r.rank_in_month ? `${ordinal(r.rank_in_month)}highest of ${n} ${name}s.` : "") + critical);
+    q("#anom-sub").textContent = `${compact(r.harmonized)} hotspots. A usual ${name} has ${compact(r.baseline_median)}. `
+      + (tiny ? "Too few to compare." : (r.rank_in_month ? `${cap(ordinal(r.rank_in_month) + "highest")} of ${n} ${name}s.` : "") + critical);
     syncBanner(r, level, name, soFar);
   }
 
@@ -102,7 +103,7 @@
     if (!ins) return;
     if (ins.signal === "none" && (level === "high" || level === "up")) {
       sig.dataset.level = "watch"; sig.classList.add("seen");
-      sig.textContent = `quiet in the last 7 days, but ${name}${soFar} is ${standing(r.percentile, name)}.`;
+      sig.textContent = `Quiet in the last 7 days, but ${name}${soFar} is ${standing(r.percentile, name)}.`;
     } else {
       sig.dataset.level = ins.signal;
       sig.textContent = ins.signal_reason;
@@ -114,7 +115,7 @@
     if (!state.pin) return;
     lastFocus = document.activeElement;
     modal.hidden = false; q("#history-x").focus({ preventScroll: true });
-    q("#h-sub").textContent = `${state.poly ? `your drawn shape near ${place(state.pin.lat, state.pin.lon)}` : `${place(state.pin.lat, state.pin.lon)} · within ${state.radius} km`} · hotspot pixel-days, VIIRS-equivalent`;
+    q("#h-sub").textContent = `${state.poly ? `Your drawn shape near ${place(state.pin.lat, state.pin.lon)}` : `${place(state.pin.lat, state.pin.lon)} · within ${state.radius} km`} · hotspot pixel-days, VIIRS-equivalent`;
     if (data) render(); else { q("#h-loading").hidden = false; q("#h-body").hidden = true; if (!loading) load(); }
   }
   function close() { if (modal.hidden) return; modal.hidden = true; lastFocus?.focus?.({ preventScroll: true }); }
@@ -142,16 +143,16 @@
     const s = data.stats, box = q("#h-tiles");
     const cur = s.current, name = cur ? MONTH_LONG[cur.mon - 1] : "";
     const items = [
-      ["hotspots since 2000", compact(s.total), "harmonized pixel-days"],
-      ["worst year", s.peak_year ? String(s.peak_year.year) : "–", s.peak_year ? `${compact(s.peak_year.total)} hotspots` : "no complete year yet"],
-      ["critical months", s.critical_months.length ? s.critical_months.map((m) => MON[m - 1]).join(" · ") : "–", "highest median activity"],
-      ["long-term trend", s.trend_pct_per_decade == null ? "–" : `${s.trend_pct_per_decade > 0 ? "+" : ""}${s.trend_pct_per_decade}% / decade`, "across complete years"],
-      [`${name || "this month"} vs past years`, cur && cur.percentile != null ? `busier than ${cur.percentile}%` : "–", cur && cur.rank_in_month ? `${ordinal(cur.rank_in_month)}highest ${name} on record` : "needs 3+ years of history"],
+      ["Hotspots since 2000", compact(s.total), "Harmonized pixel-days"],
+      ["Worst year", s.peak_year ? String(s.peak_year.year) : "–", s.peak_year ? `${compact(s.peak_year.total)} hotspots` : "No complete year yet"],
+      ["Critical months", s.critical_months.length ? s.critical_months.map((m) => MON[m - 1]).join(" · ") : "–", "Highest median activity"],
+      ["Long-term trend", s.trend_pct_per_decade == null ? "–" : `${s.trend_pct_per_decade > 0 ? "+" : ""}${s.trend_pct_per_decade}% / decade`, "Across complete years"],
+      [`${name || "This month"} vs past years`, cur && cur.percentile != null ? `Busier than ${cur.percentile}%` : "–", cur && cur.rank_in_month ? `${cap(ordinal(cur.rank_in_month) + "highest")} ${name} on record` : "Needs 3+ years of history"],
     ];
     box.replaceChildren(...items.map(([label, big, sub], i) => {
       const d = document.createElement("div"); d.className = "h-tile";
       if (i === 4 && cur?.percentile != null) d.dataset.level = judge(cur);
-      if (i === 4 && cur?.percentile != null && !meaningful(cur)) { big = "about usual"; sub = "activity is very low either way"; }
+      if (i === 4 && cur?.percentile != null && !meaningful(cur)) { big = "About usual"; sub = "Activity is very low either way"; }
       d.innerHTML = "<span></span><b></b><small></small>";
       d.children[0].textContent = label; d.children[1].textContent = big; d.children[2].textContent = sub;
       return d;
@@ -182,7 +183,7 @@
     const head = document.createElement("div"); head.className = "h-row h-head";
     head.append(Object.assign(document.createElement("span"), { textContent: "" }));
     MON.forEach((m, i) => { const s = document.createElement("span"); s.textContent = m; if (crit.has(i + 1)) s.className = "crit"; head.append(s); });
-    head.append(Object.assign(document.createElement("span"), { textContent: "year" }));
+    head.append(Object.assign(document.createElement("span"), { textContent: "Year" }));
     box.append(head);
     const annualMax = Math.max(1, ...data.annual.map((a) => a.total || 0));
     for (let y = y1; y >= y0; y--) {
@@ -222,7 +223,7 @@
     const lg = q("#h-legend"); lg.replaceChildren();
     const sw = (c, label) => { const s = document.createElement("span"); s.innerHTML = "<i></i>"; s.firstChild.style.background = c; s.append(label); return s; };
     if (view === "anomaly") {
-      ["quieter than 90% of past years", "quieter than usual", "about usual (≈ = too few hotspots)", "busier than usual", "busier than 90% of past years"].forEach((l, i) => lg.append(sw(DIVERGE_DARK[i], l)));
+      ["Quieter than 90% of past years", "Quieter than usual", "About usual (≈ = too few hotspots)", "Busier than usual", "Busier than 90% of past years"].forEach((l, i) => lg.append(sw(DIVERGE_DARK[i], l)));
     } else {
       lg.append(sw(pal[0], "none"), sw(pal[1], `≤ ${compact(th[0])}`), sw(pal[2], `≤ ${compact(th[1])}`), sw(pal[3], `≤ ${compact(th[2])}`), sw(pal[4], `> ${compact(th[2])}`));
     }
@@ -282,7 +283,7 @@
     }
     q("#h-annual").replaceChildren(s);
     const st = data.stats;
-    q("#h-annual-note").textContent = `dashed line: trend across complete years${st.trend_pct_per_decade == null ? " (needs 5+ complete years)" : `, ${st.trend_pct_per_decade > 0 ? "+" : ""}${st.trend_pct_per_decade}% per decade`}. pale bars are years not yet complete.`;
+    q("#h-annual-note").textContent = `Dashed line: trend across complete years${st.trend_pct_per_decade == null ? " (needs 5+ complete years)" : `, ${st.trend_pct_per_decade > 0 ? "+" : ""}${st.trend_pct_per_decade}% per decade`}. Pale bars are years not yet complete.`;
   }
 
   
@@ -301,8 +302,8 @@
     q("#h-method-text").innerHTML = "";
     const add = (tag, t) => { const e = document.createElement(tag); e.textContent = t; q("#h-method-text").append(e); return e; };
     add("p", `MODIS and VIIRS flew together for ${m.overlap_months} months. VIIRS saw ${m.overlap_viirs_total.toLocaleString()} hotspots and MODIS saw ${m.overlap_modis_total.toLocaleString()}.`);
-    add("p", `so 1 MODIS hotspot counts as about ${m.k} VIIRS hotspots (k = ${m.k}).`);
-    add("p", "from 2012 on we use VIIRS. before that we use MODIS × k, so every year is on the same scale.");
+    add("p", `So 1 MODIS hotspot counts as about ${m.k} VIIRS hotspots (k = ${m.k}).`);
+    add("p", "From 2012 on we use VIIRS. Before that we use MODIS × k, so every year is on the same scale.");
   }
 
   
@@ -335,7 +336,7 @@
     g.fillStyle = "#667085"; g.font = `600 15px ${sans}`; g.fillText("BURNING ACTIVITY CALENDAR · HARMONIZED MODIS + VIIRS", 40, 50);
     g.fillStyle = "#161a26"; g.font = `700 36px ${serif}`; g.fillText(`${from}–${to}, month by month`, 40, 94);
     g.fillStyle = "#667085"; g.font = `500 16px ${sans}`;
-    g.fillText(`${state.poly ? `drawn area near ${place(state.pin.lat, state.pin.lon)}` : `${place(state.pin.lat, state.pin.lon)} · within ${state.radius} km`} · ${view === "anomaly" ? "change vs the usual for each month" : "hotspot pixel-days (VIIRS-equivalent)"}`, 40, 124);
+    g.fillText(`${state.poly ? `Drawn area near ${place(state.pin.lat, state.pin.lon)}` : `${place(state.pin.lat, state.pin.lon)} · within ${state.radius} km`} · ${view === "anomaly" ? "change vs the usual for each month" : "hotspot pixel-days (VIIRS-equivalent)"}`, 40, 124);
     g.font = `600 14px ${sans}`;
     MON.forEach((m, i) => { g.fillStyle = data.stats.critical_months.includes(i + 1) ? "#c42b14" : "#667085"; g.fillText(m.toUpperCase(), gx + i * cw + 8, gy - 12); });
     g.fillStyle = "#667085"; g.fillText("YEAR", gx + 12 * cw + 14, gy - 12);

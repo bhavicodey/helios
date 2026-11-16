@@ -3,7 +3,7 @@
 if (typeof maplibregl === "undefined") {
   const b = document.getElementById("setup");
   b.hidden = false;
-  b.textContent = "the map couldn't load. check your internet connection and refresh the page";
+  b.textContent = "The map couldn't load. Check your internet connection and refresh the page.";
   throw new Error("maplibre-gl failed to load");
 }
 
@@ -200,7 +200,7 @@ async function loadLayer(name) {
   const token = ++state.tokens[name];
   if (!state.layers[name].on) { removeRaster(name); setStatus(name, ""); return; }
   if (name === "burn" && !state.pin) { removeRaster(name); setStatus(name, "Pick a place first."); return; }
-  setStatus(name, "loading…");
+  setStatus(name, "Loading…");
   try {
     const { url } = await api(`tiles/${name}`, tileParams());
     if (token !== state.tokens[name]) return;
@@ -226,9 +226,9 @@ function setPin(lat, lon, { refresh = true, poly = null } = {}) {
   map.getSource("area")?.setData(poly
     ? { type: "Feature", geometry: { type: "Polygon", coordinates: [[...poly, poly[0]]] } }
     : circle(lat, lon, state.radius));
-  $("#place").textContent = poly ? `drawn area near ${place(lat, lon)}` : place(lat, lon);
-  $("#place-sub").textContent = poly ? "inside your drawn shape" : `Within ${state.radius} km`;
-  const areaNote = $("#area-note"); if (areaNote) areaNote.textContent = poly ? `your drawn area (${poly.length} corners). click the map to use a circle again.` : `circle of ${state.radius} km around ${place(lat, lon)}.`;
+  $("#place").textContent = poly ? `Drawn area near ${place(lat, lon)}` : place(lat, lon);
+  $("#place-sub").textContent = poly ? "Inside your drawn shape" : `Within ${state.radius} km`;
+  const areaNote = $("#area-note"); if (areaNote) areaNote.textContent = poly ? `Your drawn area (${poly.length} corners). Click the map to use a circle again.` : `Circle of ${state.radius} km around ${place(lat, lon)}.`;
   window.dispatchEvent(new CustomEvent("firescout:area"));
   $("#watch-add").disabled = false;
   $("#render-open").disabled = false;
@@ -247,7 +247,7 @@ async function analyze() {
   const area = areaParams();
   
   $("#v-fire").textContent = "…"; setText("#v-fires", "…"); $("#n-fires").textContent = ""; $("#v-so2").firstChild.textContent = "…"; $("#n-so2").textContent = ""; $("#v-burn").textContent = "…";
-  $("#signal").dataset.level = "none"; $("#signal").classList.remove("seen"); $("#signal").textContent = "reading the satellites…";
+  $("#signal").dataset.level = "none"; $("#signal").classList.remove("seen"); $("#signal").textContent = "Reading the satellites…";
   $("#place-sub").textContent = `${state.poly ? "Inside your drawn shape" : `Within ${state.radius} km`}, 7 days to ${fmt(state.end)}`;
 
   
@@ -256,13 +256,13 @@ async function analyze() {
   
   const burnP = api("burned", { ...area, end: iso(state.end) })
     .catch(() => api("insights", { ...area, end: iso(state.end), sensor: state.sensor, start: iso(state.end - 6 * DAY) }));
-  $("#v-burn").textContent = "measuring…";
+  $("#v-burn").textContent = "Measuring…";
 
   // wildfires US agencies reported in the same window, beside what the satellites saw
   setText("#v-reported", "…"); $("#n-reported").textContent = "";
   const inUS = state.poly ? state.poly.some(([x, y]) => inUSBox(y, x)) : inUSBox(lat, lon);
-  if (!inUS) { setText("#v-reported", "US only"); $("#n-reported").textContent = "agency reports cover the United States"; state.readout.reported = null; }
-  else if (state.end < Date.UTC(2014, 0, 1)) { setText("#v-reported", "from 2014"); $("#n-reported").textContent = "US agency records start in 2014"; state.readout.reported = null; }
+  if (!inUS) { setText("#v-reported", "US only"); $("#n-reported").textContent = "Agency reports cover the United States"; state.readout.reported = null; }
+  else if (state.end < Date.UTC(2014, 0, 1)) { setText("#v-reported", "From 2014"); $("#n-reported").textContent = "US agency records start in 2014"; state.readout.reported = null; }
   else api("reported", { ...area, start: iso(state.end - 6 * DAY), end: iso(state.end) }).then((rep) => {
     if (token !== state.tokens.read) return;
     state.readout.reported = rep; renderReported(rep); notifyReadout();
@@ -307,10 +307,10 @@ function renderReported(rep) {
   setText("#v-reported", rep.count.toLocaleString());
   const big = rep.fires.find((f) => f.acres) || rep.fires[0];
   const large = rep.fires.filter((f) => f.acres >= 100).length;   // satellites mostly see these; tiny incidents are often too small
-  $("#n-reported").textContent = !rep.count ? "no wildfires reported here" : big?.acres
-    ? `${large} over 100 acres · biggest: ${big.name}, ${Math.round(big.acres).toLocaleString()} acres` : "small incidents only";
+  $("#n-reported").textContent = !rep.count ? "No wildfires reported here" : big?.acres
+    ? `${large} over 100 acres · biggest: ${big.name}, ${Math.round(big.acres).toLocaleString()} acres` : "Small incidents only";
   $("#v-reported").title = rep.fires.slice(0, 8).map((f) => `${f.name} · found ${f.discovered}${f.acres ? ` · ${Math.round(f.acres).toLocaleString()} acres` : ""}`).join("\n")
-    + "\nsource: NIFC wildfire incidents reported by US fire agencies";
+    + "\nSource: NIFC wildfire incidents reported by US fire agencies";
 }
 
 function renderInsights(r) {
@@ -318,9 +318,9 @@ function renderInsights(r) {
   if (!r) { sig.dataset.level = "none"; sig.classList.remove("seen"); sig.textContent = "No reading for this window."; setText("#v-fires", "No data"); $("#n-fires").textContent = ""; return; }
   $("#v-fire").textContent = r.fire_pixels == null ? "No data" : r.fire_pixels.toLocaleString();
   setText("#v-fires", r.fire_count == null ? "No data" : r.fire_count.toLocaleString());
-  $("#n-fires").textContent = !r.fire_count ? "" : `biggest covers ${r.largest_fire_px.toLocaleString()} pixels (about ${r.largest_fire_px.toLocaleString()} km²)`;
-  $("#v-fires").title = "hotspot pixels that touch, or sit within ~2 km of each other, count as one fire";
-  if (r.sensor_used) $("#v-fire").title = `read from ${r.sensor_used.toUpperCase()}${r.sensor === "harmonized" ? " (harmonized mode)" : ""}`;
+  $("#n-fires").textContent = !r.fire_count ? "" : `Biggest covers ${r.largest_fire_px.toLocaleString()} pixels (about ${r.largest_fire_px.toLocaleString()} km²)`;
+  $("#v-fires").title = "Hotspot pixels that touch, or sit within ~2 km of each other, count as one fire";
+  if (r.sensor_used) $("#v-fire").title = `Read from ${r.sensor_used.toUpperCase()}${r.sensor === "harmonized" ? " (harmonized mode)" : ""}`;
   $("#v-so2").firstChild.textContent = r.so2_du == null ? "No data" : `${r.so2_du.toFixed(2)} DU`;
   $("#n-so2").textContent = r.so2_ratio == null ? "" : `${r.so2_ratio.toFixed(1)} times the 30-day normal`;
   if (r.burned_ha !== undefined) $("#v-burn").textContent = r.burned_ha == null ? "No data" : `${Math.round(r.burned_ha).toLocaleString()} ha`;
@@ -333,7 +333,7 @@ function drawSpark(rows, cv = $("#spark")) {
   const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
   const vals = rows.map((r) => r.v), ok = vals.filter((v) => v != null);
   const css = getComputedStyle(document.documentElement), col = css.getPropertyValue("--so2").trim(), mut = css.getPropertyValue("--muted").trim();
-  if (ok.length < 2) { g.fillStyle = mut; g.font = "13px sans-serif"; g.fillText("not enough clear-sky days to chart.", 4, h / 2); return; }
+  if (ok.length < 2) { g.fillStyle = mut; g.font = "13px sans-serif"; g.fillText("Not enough clear-sky days to chart.", 4, h / 2); return; }
   const lo = Math.min(0, ...ok), hi = Math.max(...ok) * 1.15 || 1;
   const x = (i) => 4 + i * (w - 8) / (rows.length - 1), y = (v) => h - 6 - (v - lo) / (hi - lo) * (h - 14);
   g.strokeStyle = mut; g.globalAlpha = .35; g.setLineDash([3, 4]); g.beginPath(); g.moveTo(4, y(0)); g.lineTo(w - 4, y(0)); g.stroke();
@@ -366,14 +366,14 @@ dateInput.addEventListener("change", () => dateInput.value && setDate(Date.parse
 
 async function togglePlay() {
   const btn = $("#play");
-  if (state.playing) { state.playing = false; btn.textContent = "play"; return; }
-  state.playing = true; btn.textContent = "pause";
+  if (state.playing) { state.playing = false; btn.textContent = "Play"; return; }
+  state.playing = true; btn.textContent = "Pause";
   if (state.end + 3 * DAY > LATEST) setDate(LATEST - 30 * DAY, { refresh: false });
   while (state.playing && state.end + 3 * DAY <= LATEST) {
     setDate(state.end + 3 * DAY, { refresh: false });
     await refreshAll(); await sleep(500);
   }
-  state.playing = false; btn.textContent = "play";
+  state.playing = false; btn.textContent = "Play";
 }
 $("#play").addEventListener("click", togglePlay);
 
@@ -456,7 +456,7 @@ $("#proj").addEventListener("click", () => {
   flat = !flat; stopSpin();
   map.setProjection({ type: flat ? "mercator" : "globe" });
   const b = $("#proj");
-  b.setAttribute("aria-label", flat ? "switch to globe" : "switch to flat map"); b.dataset.tip = flat ? "globe" : "flat map";
+  b.setAttribute("aria-label", flat ? "Switch to globe" : "Switch to flat map"); b.dataset.tip = flat ? "Globe" : "Flat map";
   b.setAttribute("aria-pressed", String(flat));
 });
 map.on("rotate", () => { const c = $("#compass svg"); if (c) c.style.transform = `rotate(${-map.getBearing()}deg)`; });
@@ -481,7 +481,7 @@ function renderWatch() {
       stopSpin(); state.radius = w.radius; $("#radius").value = w.radius; $("#radius-val").textContent = `${w.radius} km`;
       setPin(w.lat, w.lon); map.flyTo({ center: [w.lon, w.lat], zoom: 6, duration: reduceMotion ? 0 : 1800 });
     });
-    const rm = document.createElement("button"); rm.className = "rm"; rm.type = "button"; rm.textContent = "remove"; rm.setAttribute("aria-label", `Remove ${w.name}`);
+    const rm = document.createElement("button"); rm.className = "rm"; rm.type = "button"; rm.textContent = "Remove"; rm.setAttribute("aria-label", `Remove ${w.name}`);
     rm.addEventListener("click", () => { state.watch.splice(i, 1); saveWatch(); renderWatch(); });
     li.append(dot, go, rm); ul.append(li);
   });
@@ -511,7 +511,7 @@ $("#watch-add").addEventListener("click", async () => {
 });
 
 $("#watch-check").addEventListener("click", async () => {
-  const btn = $("#watch-check"); btn.disabled = true; btn.textContent = "checking…";
+  const btn = $("#watch-check"); btn.disabled = true; btn.textContent = "Checking…";
   await Promise.all(state.watch.map(async (w) => {
     try {
       const r = await api("insights", { start: iso(state.end - 6 * DAY), end: iso(state.end), lat: w.lat, lon: w.lon, radius_km: w.radius, sensor: state.sensor, include_burn: false });
@@ -519,12 +519,12 @@ $("#watch-check").addEventListener("click", async () => {
       if (r.signal === "alert") toast(`${w.name}: ${r.signal_reason}`);
     } catch (err) { toast(`${w.name}: ${err.message}`); }
   }));
-  renderWatch(); btn.disabled = false; btn.textContent = "check all for this date";
+  renderWatch(); btn.disabled = false; btn.textContent = "Check all for this date";
 });
 
 
 const SENSOR_DETAILS = {
-  harmonized: "both satellites combined, 2000 – today.",
+  harmonized: "Both satellites combined, 2000 – today.",
   modis: "MODIS only · since 2000 · ~1 km pixels.",
   viirs: "VIIRS only · since 2012 · ~1 km pixels.",
 };
@@ -616,8 +616,8 @@ async function loadCalendar() {
   const empty = Array.from({length: daysInMonth}, (_, i) => ({date:`${ym}-${String(i+1).padStart(2,"0")}`, count:null}));
   showCalendar(empty, year, month); lastCalendar = null;
   state.calendarDays = null; window.dispatchEvent(new CustomEvent("firescout:calendar"));
-  if (!state.pin) { $("#calendar-note").textContent = "pick a place to see the calendar."; return; }
-  $("#calendar-note").textContent = `loading ${SENSOR_NAME[state.sensor]} daily detections…`;
+  if (!state.pin) { $("#calendar-note").textContent = "Pick a place to see the calendar."; return; }
+  $("#calendar-note").textContent = `Loading ${SENSOR_NAME[state.sensor]} daily detections…`;
   try {
     const r = await api("fire_calendar", { year, month, sensor: state.sensor, ...areaParams() });
     if (token !== state.calendarToken) return;

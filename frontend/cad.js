@@ -8,12 +8,12 @@
     modis: {
       src: "media/cad-modis.mp4", title: "MODIS",
       blurb: "MODIS (Moderate Resolution Imaging Spectroradiometer) flies on NASA's Terra and Aqua satellites. Its thermal bands spot the heat of active fires, and its record goes back to 2000, which makes it the go-to sensor for long-term fire history.",
-      facts: [["satellites", "Terra (1999) · Aqua (2002)"], ["spectral bands", "36"], ["fire pixel size", "~1 km"], ["record in Helios", "Nov 2000 → today"], ["best for", "long-term trends"]],
+      facts: [["Satellites", "Terra (1999) · Aqua (2002)"], ["Spectral bands", "36"], ["Fire pixel size", "~1 km"], ["Record in Helios", "Nov 2000 → today"], ["Best for", "Long-term trends"]],
     },
     viirs: {
       src: "media/cad-viirs.mp4", title: "VIIRS",
       blurb: "VIIRS (Visible Infrared Imaging Radiometer Suite) flies on Suomi NPP and the NOAA-20/21 satellites. It sees smaller and cooler fires than MODIS, so it is the sharper choice for recent fire seasons.",
-      facts: [["satellites", "Suomi NPP (2011) · NOAA-20 · NOAA-21"], ["spectral bands", "22"], ["fire pixel size", "375 m – 1 km"], ["record in Helios", "Jan 2012 → today"], ["best for", "recent, detailed fires"]],
+      facts: [["Satellites", "Suomi NPP (2011) · NOAA-20 · NOAA-21"], ["Spectral bands", "22"], ["Fire pixel size", "375 m – 1 km"], ["Record in Helios", "Jan 2012 → today"], ["Best for", "Recent, detailed fires"]],
     },
   };
 
@@ -40,7 +40,7 @@
 
   
   function setPlaying(on) {
-    playing = on; playBtn.textContent = on ? "pause" : "play";
+    playing = on; playBtn.textContent = on ? "Pause" : "Play";
     if (on) video.play().catch(() => {}); else video.pause();
   }
   video.addEventListener("timeupdate", () => { if (video.duration) scrub.value = Math.round(video.currentTime / video.duration * 1000); });
@@ -110,13 +110,13 @@
     if (document.fullscreenElement) document.exitFullscreen?.();
     else stage.requestFullscreen?.().catch(() => {});
   });
-  document.addEventListener("fullscreenchange", () => { $("#cad-full").textContent = document.fullscreenElement ? "exit full screen" : "full screen"; });
+  document.addEventListener("fullscreenchange", () => { $("#cad-full").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen"; });
 
   
   const compare = $("#cad-compare"), pairVids = $$("#cad-compare video"), sync = $("#cad-sync");
   let comparing = false;
   function setPairsPlaying(on) {
-    playing = on; playBtn.textContent = on ? "pause" : "play";
+    playing = on; playBtn.textContent = on ? "Pause" : "Play";
     pairVids.forEach((v) => (on ? v.play().catch(() => {}) : v.pause()));
   }
   $$(".cad-pair-stage").forEach((box) => {
@@ -147,7 +147,7 @@
     video.pause();
     pairVids.forEach((v) => { v.playbackRate = +speed.value; v.currentTime = 0; });
     setPairsPlaying(true);
-    $("#cad-use span").textContent = "use both";
+    $("#cad-use span").textContent = "Use both";
   }
 
   
@@ -188,7 +188,7 @@
   };
   const partsBox = $("#cad-parts"), partsVideo = $("#parts-video"), partsTip = $("#parts-tip"), partsInfo = $("#parts-info");
   let partsInst = "modis";
-  function describe(item) { partsInfo.textContent = item ? `${item.name}: ${item.text}` : "hover a dot on the satellite, or a part below."; }
+  function describe(item) { partsInfo.textContent = item ? `${item.name}: ${item.text}` : "Hover a dot on the satellite, or a part below."; }
   function renderParts(k) {
     partsInst = k; const d = PARTS[k];
     $$("[data-pinst]", partsBox).forEach((b) => b.setAttribute("aria-selected", String(b.dataset.pinst === k)));
@@ -240,7 +240,7 @@
   function showParts() {
     if (comparing) { comparing = false; modal.classList.remove("comparing"); compare.hidden = true; pairVids.forEach((v) => v.pause()); }
     current = "parts"; video.pause();
-    $("#cad-title").textContent = "explain parts";
+    $("#cad-title").textContent = "Explain parts";
     $$(".cad-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.cad === "parts")));
     modal.classList.add("explaining"); partsBox.hidden = false;
     renderParts(partsInst);
@@ -261,7 +261,7 @@
     if (!video.src.endsWith(c.src)) { video.src = c.src; }
     video.playbackRate = +speed.value;
     reset(); setPlaying(true);
-    $("#cad-use span").textContent = `use ${c.title}`;
+    $("#cad-use span").textContent = `Use ${c.title}`;
   }
   $$(".cad-tabs button").forEach((b) => b.addEventListener("click", () => show(b.dataset.cad)));
 
@@ -324,7 +324,7 @@
         b.classList.toggle("both", s === "harmonized");                  
         b.querySelector(".dock-state").textContent = s === "harmonized"
           ? (k === "modis" ? "2000 – 2011" : "2012 – today")
-          : k === reading ? "selected" : "not in use";
+          : k === reading ? "Selected" : "Not in use";
       });
     }
     ["firescout:sensor-changed", "firescout:readout", "firescout:calendar", "firescout:area"].forEach((ev) => addEventListener(ev, syncDock));

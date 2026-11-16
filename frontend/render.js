@@ -10,11 +10,11 @@
 
   
   const ZONES = {
-    fire:  { name: "fire pixels",      color: "#e5391f" },
-    heat:  { name: "heat intensity",   color: "#f59e0b" },
-    burn:  { name: "burned area",      color: "#7a2416" },
-    smoke: { name: "smoke",            color: "#6a4bd8" },
-    air:   { name: "air quality",      color: "#2457c5" },
+    fire:  { name: "Fire pixels",      color: "#e5391f" },
+    heat:  { name: "Heat intensity",   color: "#f59e0b" },
+    burn:  { name: "Burned area",      color: "#7a2416" },
+    smoke: { name: "Smoke",            color: "#6a4bd8" },
+    air:   { name: "Air quality",      color: "#2457c5" },
   };
   const ORDER = ["fire", "heat", "burn", "smoke", "air"];
   for (const [k, z] of Object.entries(ZONES)) zoneEl[k].style.setProperty("--c", z.color);
@@ -66,41 +66,41 @@
 
   
   const fmtN = (n) => Number(n).toLocaleString();
-  function heatLevel(n) { return n == null ? null : n === 0 ? "none detected" : n < 10 ? "low" : n < 50 ? "moderate" : "high"; }
+  function heatLevel(n) { return n == null ? null : n === 0 ? "None detected" : n < 10 ? "Low" : n < 50 ? "Moderate" : "High"; }
   function info(zone) {
     const s = window.firescout.snapshot(), r = s.ins, win = `7 days to ${window.firescout.fmt(s.end)}`;
     const sensor = s.sensor.toUpperCase();
     const state = s.loading ? "loading" : !r ? "none" : "ok";
     const out = { zone, state, big: "", sub: "", note: "", short: "", chart: false };
-    if (state === "loading") { out.big = "reading the satellites…"; out.short = "loading…"; return out; }
-    if (state === "none") { out.big = "no reading yet"; out.sub = "Helios couldn't read this area for this date. try an earlier date."; out.short = "–"; return out; }
+    if (state === "loading") { out.big = "Reading the satellites…"; out.short = "Loading…"; return out; }
+    if (state === "none") { out.big = "No reading yet"; out.sub = "Helios couldn't read this area for this date. Try an earlier date."; out.short = "–"; return out; }
     if (zone === "fire") {
-      out.big = r.fire_pixels == null ? "no data" : `${fmtN(r.fire_pixels)} fire pixels`;
+      out.big = r.fire_pixels == null ? "No data" : `${fmtN(r.fire_pixels)} fire pixels`;
       out.sub = `${sensor} detections within ${s.radius} km, ${win}.`
-        + (r.fire_count ? ` they group into ${fmtN(r.fire_count)} separate fire${r.fire_count === 1 ? "" : "s"}; the biggest covers ${fmtN(r.largest_fire_px)} pixels.` : "");
-      out.note = "each pixel is a ~1 km hotspot, not a single fire. pixels within ~2 km of each other count as one fire.";
+        + (r.fire_count ? ` They group into ${fmtN(r.fire_count)} separate fire${r.fire_count === 1 ? "" : "s"}; the biggest covers ${fmtN(r.largest_fire_px)} pixels.` : "");
+      out.note = "Each pixel is a ~1 km hotspot, not a single fire. Pixels within ~2 km of each other count as one fire.";
       out.short = r.fire_pixels == null ? "–" : fmtN(r.fire_pixels);
     } else if (zone === "heat") {
       const lv = heatLevel(r.fire_pixels);
-      out.big = lv ? `${lv}` : "no data";
-      out.sub = r.fire_pixels == null ? "" : `worked out from ${fmtN(r.fire_pixels)} fire pixels in the area.`;
-      out.note = "this is a relative level, not a temperature. low is under 10 pixels, moderate under 50.";
+      out.big = lv ? `${lv}` : "No data";
+      out.sub = r.fire_pixels == null ? "" : `Worked out from ${fmtN(r.fire_pixels)} fire pixels in the area.`;
+      out.note = "This is a relative level, not a temperature. Low is under 10 pixels, moderate under 50.";
       out.short = lv || "–";
     } else if (zone === "burn") {
       const ha = r.burned_ha;
-      out.big = ha == null ? "no data" : `${Math.round(ha).toLocaleString()} ha`;
-      out.sub = `land that lost its greenery (dnbr above 0.27) within ${Math.min(s.radius, 150)} km, 30 days to ${window.firescout.fmt(s.end)}.`;
-      out.note = "from sentinel-2. 0 can also mean there were no clear-sky photos.";
+      out.big = ha == null ? "No data" : `${Math.round(ha).toLocaleString()} ha`;
+      out.sub = `Land that lost its greenery (dNBR above 0.27) within ${Math.min(s.radius, 150)} km, 30 days to ${window.firescout.fmt(s.end)}.`;
+      out.note = "From Sentinel-2. 0 can also mean there were no clear-sky photos.";
       out.short = ha == null ? "–" : `${Math.round(ha).toLocaleString()} ha`;
     } else if (zone === "smoke") {
-      out.big = r.so2_du == null ? "no data" : `${r.so2_du.toFixed(2)} DU`;
-      out.sub = r.so2_ratio == null ? `sulfur dioxide, ${win}.` : `sulfur dioxide, ${r.so2_ratio.toFixed(1)} times this area's 30-day normal (${win}).`;
-      out.note = "sulfur dioxide travels with smoke plumes but isn't a smoke particle count. volcanoes and industry add it too.";
+      out.big = r.so2_du == null ? "No data" : `${r.so2_du.toFixed(2)} DU`;
+      out.sub = r.so2_ratio == null ? `Sulfur dioxide, ${win}.` : `Sulfur dioxide, ${r.so2_ratio.toFixed(1)} times this area's 30-day normal (${win}).`;
+      out.note = "Sulfur dioxide travels with smoke plumes but isn't a smoke particle count. Volcanoes and industry add it too.";
       out.short = r.so2_du == null ? "–" : `${r.so2_du.toFixed(2)} DU`;
     } else {
-      out.big = r.signal === "alert" ? "alert" : r.signal === "watch" ? "watch" : "nothing unusual";
+      out.big = r.signal === "alert" ? "Alert" : r.signal === "watch" ? "Watch" : "Nothing unusual";
       out.sub = r.signal_reason;
-      out.note = "fires and raised sulfur dioxide together means they co-occur, not that one caused the other. this isn't a pm2.5 or aqi reading.";
+      out.note = "Fires and raised sulfur dioxide together means they co-occur, not that one caused the other. This isn't a PM2.5 or AQI reading.";
       out.chart = true;
       out.short = r.signal === "none" ? "calm" : r.signal;
     }
@@ -122,7 +122,7 @@
     if (d.sub) { const p = document.createElement("p"); p.className = "tip-sub"; p.textContent = d.sub; tip.append(p); }
     if (d.chart && d.state === "ok") {
       const cv = document.createElement("canvas"); cv.className = "tip-chart"; cv.height = 56; tip.append(cv);
-      const cap = document.createElement("p"); cap.className = "tip-note"; cap.textContent = "daily sulfur dioxide, last 30 days"; tip.append(cap);
+      const cap = document.createElement("p"); cap.className = "tip-note"; cap.textContent = "Daily sulfur dioxide, last 30 days"; tip.append(cap);
       requestAnimationFrame(() => window.firescout.drawSpark(window.firescout.snapshot().series, cv));
     }
     if (d.note) { const p = document.createElement("p"); p.className = "tip-note"; p.textContent = d.note; tip.append(p); }
@@ -195,8 +195,8 @@
   const SIZE_NAME = { low: "small fire", med: "medium fire", high: "large fire" };   // biggest fire: under 10 pixels, 10–49, 50 or more
   function refreshTitle() {
     const s = window.firescout.snapshot();
-    $("#r-title").textContent = s.place || "your area";
-    $("#r-sub").textContent = `within ${s.radius} km · ${s.sensor.toUpperCase()} · 7 days to ${window.firescout.fmt(s.end)} · showing a ${SIZE_NAME[size]}`;
+    $("#r-title").textContent = s.place || "Your area";
+    $("#r-sub").textContent = `Within ${s.radius} km · ${s.sensor.toUpperCase()} · 7 days to ${window.firescout.fmt(s.end)} · showing a ${SIZE_NAME[size]}`;
   }
   // pick the render that matches how much is burning, and swap it in if it changed
   function pickRender() {
@@ -205,9 +205,9 @@
     size = sizeOf(s.ins?.largest_fire_px ?? s.ins?.fire_pixels);   // the biggest single fire sets the render
     const r = RENDERS[size];
     if (srcNow === r.src) return;
-    srcNow = r.src; lastKey = ""; loading.hidden = false; loading.textContent = "loading render…";
+    srcNow = r.src; lastKey = ""; loading.hidden = false; loading.textContent = "Loading render…";
     video.addEventListener("loadeddata", () => { loading.hidden = true; }, { once: true });
-    video.addEventListener("error", () => { loading.hidden = false; loading.textContent = `the render couldn't load. check that ${r.src} is there.`; }, { once: true });
+    video.addEventListener("error", () => { loading.hidden = false; loading.textContent = `The render couldn't load. Check that ${r.src} is there.`; }, { once: true });
     stage.dataset.size = size;   // the large fire is drawn zoomed out (see style.css) so it has room to breathe
     video.poster = r.poster; video.src = r.src; video.load();
     video.defaultPlaybackRate = video.playbackRate = r.rate || 1;
@@ -227,7 +227,7 @@
     modal.hidden = true; video.pause(); pinned = null; hide();
     lastFocus?.focus?.({ preventScroll: true });
   }
-  function setPlayLabel() { const p = video.paused; playBtn.textContent = p ? "play" : "pause"; playBtn.setAttribute("aria-label", p ? "play the render" : "pause the render"); }
+  function setPlayLabel() { const p = video.paused; playBtn.textContent = p ? "Play" : "Pause"; playBtn.setAttribute("aria-label", p ? "Play the render" : "Pause the render"); }
   playBtn.addEventListener("click", (e) => { e.stopPropagation(); video.paused ? video.play() : video.pause(); });
   video.addEventListener("play", setPlayLabel); video.addEventListener("pause", setPlayLabel);
 

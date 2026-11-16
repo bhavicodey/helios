@@ -147,14 +147,14 @@ function stop() {
   playing = false;
   for (const id of ["pass-track", "pass-swath", "pass-edge", "pass-scan", "pass-spot"]) map.getSource(id)?.setData(empty);
   for (const s of Object.values(SATS)) { s.now = null; s.marker?.remove(); }
-  const b = $("#pass-play"); if (b) { b.disabled = !center; b.textContent = "watch a pass"; }
+  const b = $("#pass-play"); if (b) { b.disabled = !center; b.textContent = "Watch a pass"; }
   map.triggerRepaint();
 }
 function play() {
   if (!center || reduce) return;
   if (playing) stop();
   playing = true; startT = performance.now();
-  const b = $("#pass-play"); if (b) { b.disabled = true; b.textContent = "passing…"; }
+  const b = $("#pass-play"); if (b) { b.disabled = true; b.textContent = "Passing…"; }
   raf = requestAnimationFrame(frame);
 }
 function onArea() {

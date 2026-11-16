@@ -28,9 +28,9 @@
     try {
       const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&addressdetails=0&q=${encodeURIComponent(text)}`;
       const res = await fetch(url, { headers: { "Accept-Language": "en" } });
-      if (!res.ok) throw new Error(`place search failed (${res.status})`);
+      if (!res.ok) throw new Error(`Place search failed (${res.status})`);
       const found = await res.json();
-      if (!found.length) { toast(`couldn't find "${text}". try adding the state.`); return; }
+      if (!found.length) { toast(`Couldn't find "${text}". Try adding the state.`); return; }
       if (found.length === 1) { goTo(found[0]); return; }
       
       list.replaceChildren(...found.map((r) => {
@@ -40,7 +40,7 @@
       }));
       list.hidden = false; list.querySelector("button")?.focus();
     } catch (err) {
-      toast("search isn't working. click the map instead.");
+      toast("Search isn't working. Click the map instead.");
     } finally { searching = false; form.classList.remove("busy"); }
   });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && !list.hidden) { list.hidden = true; input.focus(); } });
@@ -65,11 +65,11 @@
     else if (ring.length === 2) f.push({ type: "Feature", geometry: { type: "LineString", coordinates: ring } });
     map.getSource("draw")?.setData({ type: "FeatureCollection", features: f.filter((x, i) => i < pts.length || x.geometry.type !== "Point") });
     msg.textContent = pts.length < 3
-      ? `click the map to add corners (${pts.length}, need 3+) · esc to cancel`
+      ? `Click the map to add corners (${pts.length}, need 3+) · esc to cancel`
       : `${pts.length} corners · double-click or press enter to finish`;
   }
   function start() {
-    if (!map.loaded()) { toast("map is still loading."); return; }
+    if (!map.loaded()) { toast("Map is still loading."); return; }
     stopSpin(); sources();
     pts = []; state.drawing = true; bar.hidden = false;
     navBtn?.setAttribute("aria-pressed", "true"); railBtn.classList.add("on");
@@ -84,7 +84,7 @@
     map.getCanvas().style.cursor = "";
   }
   function finish() {
-    if (pts.length < 3) { toast("need at least 3 corners."); return; }
+    if (pts.length < 3) { toast("Need at least 3 corners."); return; }
     const poly = pts.slice();
     
     const lon = poly.reduce((a, p) => a + p[0], 0) / poly.length, lat = poly.reduce((a, p) => a + p[1], 0) / poly.length;
@@ -101,7 +101,7 @@
     const p = [((e.lngLat.lng + 540) % 360) - 180, e.lngLat.lat];
     if (pts.length >= 3 && near(p, pts[0])) { finish(); return; }
     if (pts.length && near(p, pts[pts.length - 1])) return;      
-    if (pts.length >= 300) { toast("too many corners."); return; }
+    if (pts.length >= 300) { toast("Too many corners."); return; }
     pts.push(p); paint();
   });
   map.on("dblclick", (e) => { if (state.drawing) { e.preventDefault(); if (pts.length > 3) pts.pop(); finish(); } });

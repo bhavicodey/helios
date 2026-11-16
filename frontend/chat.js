@@ -38,7 +38,7 @@
     busy = true; send.disabled = true; chips.hidden = true;
     bubble("user", text);
     history.push({ role: "user", content: text });
-    const wait = bubble("assistant", "reading the satellites…", "typing");
+    const wait = bubble("assistant", "Reading the satellites…", "typing");
     try {
       const res = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -60,7 +60,7 @@
   function open() {
     panel.hidden = false; btn.setAttribute("aria-expanded", "true");
     const s = window.firescout?.snapshot?.();
-    $("#chat-where").textContent = s?.pin ? `about ${s.place}` : "click the map first, or ask anything";
+    $("#chat-where").textContent = s?.pin ? `About ${s.place}` : "Click the map first, or ask anything";
     input.focus();
   }
   function close() { panel.hidden = true; btn.setAttribute("aria-expanded", "false"); btn.focus(); }
