@@ -18,46 +18,18 @@
   function burst() {}
 
   
-  const sSensor = $("#s-sensor"), sName = $("#s-name"), sWhy = $("#s-why");
-  const nameIn = $("#w-name"), goBtn = $("#w-go");
-
-  function go(next, focusEl) {
-    const from = $(".step.active", intro);
-    const show = () => { next.classList.add("active"); (focusEl || next.querySelector("input"))?.focus({ preventScroll: true }); };
-    if (!from) return show();
-    from.classList.remove("active"); from.classList.add("leaving");
-    setTimeout(() => { from.classList.remove("leaving"); show(); }, reduce ? 0 : 340);
-  }
+  const sSensor = $("#s-sensor"), goBtn = $("#w-go");
 
   const saved = load();
-  if (saved?.name) nameIn.value = saved.name;
   if (saved?.sensor) { const input = $(`input[name=welcome-sensor][value="${saved.sensor}"]`); if (input) input.checked = true; }
-  go(sSensor, $("input[name=welcome-sensor]:checked"));
-  sSensor.addEventListener("submit", (e) => {
+  sSensor.classList.add("active");
+  $("input[name=welcome-sensor]:checked")?.focus({ preventScroll: true });
+
+  sSensor.addEventListener("submit", async (e) => {
     e.preventDefault();
     const sensor = $("input[name=welcome-sensor]:checked").value;
     window.dispatchEvent(new CustomEvent("firescout:sensor", { detail: sensor }));
-    go(sName, nameIn);
-  });
-  $("#w-sensor-back").addEventListener("click", () => go(sSensor, $("input[name=welcome-sensor]:checked")));
-
-  sName.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const n = nameIn.value.trim();
-    if (!n) { nameIn.classList.remove("shake"); void nameIn.offsetWidth; nameIn.classList.add("shake"); nameIn.focus(); return; }
-    $("#w-hello").textContent = n;
-    go(sWhy, $("input[name=why]", sWhy));
-  });
-  $("#w-back").addEventListener("click", () => go(sName, nameIn));
-
-  $$("input[name=why]").forEach((r) => r.addEventListener("change", () => { goBtn.disabled = false; }));
-
-  
-  sWhy.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const pick = $("input[name=why]:checked");
-    if (!pick) return;
-    const profile = { sensor: $("input[name=welcome-sensor]:checked").value, name: nameIn.value.trim(), fireArea: pick.value };
+    const profile = { sensor };
     save(profile);
     const r = goBtn.getBoundingClientRect();
     burst(r.left + r.width / 2, r.top + r.height / 2);
@@ -67,13 +39,8 @@
 
   
   
-  const LEDE = {
-    yes: "enter your town to see its fire history.",
-    unsure: "enter your town to see how often fires burn near you.",
-    no: "pick a wildfire to explore, or click the map.",
-  };
-  function personalize(p) {
-    $("#lede").textContent = `welcome, ${p.name}. ${LEDE[p.fireArea] || "click the map to start."}`;
+  function personalize() {
+    $("#lede").textContent = "welcome to Helios. enter a town, pick a wildfire, or click the map.";
     
     $$("#presets button").forEach((b, i) => b.classList.toggle("pick", i === 0));
   }
@@ -89,9 +56,8 @@
   }
 
   if (location.search.includes("skip")) {          
-    const p = saved?.name ? saved : { name: "friend", fireArea: "unsure" };
     $$(".step", intro).forEach((s) => s.classList.remove("active"));
-    intro.hidden = true; body.classList.remove("intro-on"); personalize(p);
+    intro.hidden = true; body.classList.remove("intro-on"); personalize();
     window.dispatchEvent(new CustomEvent("firescout:sensor", { detail: saved?.sensor || "modis" }));
   }
 
