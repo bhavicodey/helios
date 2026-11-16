@@ -117,7 +117,7 @@
     {
       target: null,
       title: "You're ready",
-      body: () => "Try your own places. Replay this tour with “how it works”.",
+      body: () => "Try your own places. Replay this tour with “tour”.",
       final: true,
     },
   ];
@@ -228,7 +228,7 @@
   function skip() {
     if (!active) return;
     finish();
-    window.toast?.("tour skipped. replay it any time from “how it works”.");
+    window.toast?.("tour skipped. replay it any time from “tour”.");
   }
   $("#coach-skip").addEventListener("click", skip);
 

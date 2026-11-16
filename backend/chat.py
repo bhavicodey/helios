@@ -1,6 +1,7 @@
 """Ask Helios: a chat endpoint that answers questions about the fire the user is looking at."""
 import json
 import logging
+import re
 from typing import List, Literal, Optional
 
 import anthropic
@@ -33,7 +34,13 @@ How to answer:
 - Base answers on the "current view" data you are given. Say plainly when a number is missing or still loading, and never invent fire names, dates or figures.
 - You can add general wildfire knowledge (behavior, smoke health, safety, how the satellites work), labeled as general.
 - For anything about personal safety or evacuation, tell them to follow local officials and emergency alerts (911 in an emergency); satellite data is delayed and is not a warning system.
-- Keep replies short: 2 to 5 sentences or a few bullets, plain words, no headings."""
+How to write (the chat shows plain text, so formatting symbols show up as clutter):
+- Write for someone with no science background, like a curious 12-year-old or a worried neighbor.
+- Start with a one-sentence direct answer. Then, if needed, up to 3 short points, each on its own line starting with "• ".
+- Short sentences. Everyday words. Explain any term the first time, e.g. "fire pixels (spots where the satellite saw heat)".
+- Turn numbers into meaning: round them, and say what they mean ("about 3 times more smoke gas than last month"), not just the raw value.
+- Never use markdown: no **, no *, no #, no backticks, no tables, no headings.
+- Keep the whole reply under about 100 words."""
 
 
 class Turn(BaseModel):
@@ -44,6 +51,17 @@ class Turn(BaseModel):
 class ChatIn(BaseModel):
     messages: List[Turn] = Field(..., min_length=1)
     context: Optional[dict] = None
+
+
+def plain(text: str) -> str:
+    """Strip markdown the model might still slip in, so the chat shows clean text."""
+    text = re.sub(r"\*\*(.+?)\*\*|__(.+?)__", lambda m: m.group(1) or m.group(2), text)
+    text = re.sub(r"(?<!\w)\*(\S.*?\S|\S)\*(?!\w)", r"\1", text)
+    text = re.sub(r"`([^`]*)`", r"\1", text)
+    text = re.sub(r"^\s{0,3}#{1,6}\s*", "", text, flags=re.M)
+    text = re.sub(r"^\s*[-*+]\s+", "• ", text, flags=re.M)
+    text = text.replace("**", "")
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
 _client: Optional[anthropic.Anthropic] = None
@@ -99,5 +117,5 @@ def chat(body: ChatIn):
 
     if res.stop_reason == "refusal":
         return {"reply": "I can't help with that one. Ask me about the fire, smoke or satellite data on the map."}
-    text = "".join(b.text for b in res.content if b.type == "text").strip()
+    text = plain("".join(b.text for b in res.content if b.type == "text"))
     return {"reply": text or "I don't have an answer for that. Try asking another way."}
