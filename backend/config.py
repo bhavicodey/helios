@@ -12,6 +12,9 @@ EE_KEY_FILE = os.getenv("EE_KEY_FILE", "").strip()
 
 EE_KEY_JSON = os.getenv("EE_KEY_JSON", "").strip()
 
+# Ask Helios (AI chat). Optional: without it the chat button says the chat is off.
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
+
 FRONTEND_DIR = ROOT / "frontend"
 
 ALERT_MIN_FIRE_PIXELS = 1

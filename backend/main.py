@@ -17,6 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from . import config, ee_client
 from . import layers as L
 from . import reported as R
+from .chat import router as chat_router
 
 log = logging.getLogger("firescout")
 app = FastAPI(title="Helios")
@@ -483,6 +484,9 @@ def so2_series(
             raise HTTPException(502, f"Earth Engine error: {exc}") from exc
 
     return cached(("series", end, area_key(lat, lon, radius_km, pts), days), build)
+
+app.include_router(chat_router)
+
 
 @app.middleware("http")
 async def cache_headers(request, call_next):

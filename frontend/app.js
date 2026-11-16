@@ -78,6 +78,7 @@ window.firescout = {
     pin: state.pin, radius: state.radius, end: state.end, sensor: state.sensor,
     place: state.pin ? place(state.pin.lat, state.pin.lon) : "",
     ins: state.readout.ins, series: state.readout.series, loading: state.readout.loading,
+    poly: !!state.poly, reported: state.readout.reported,
   }),
 };
 const RENDER_SEEN = "firescout.renderSeen";

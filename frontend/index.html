@@ -13,6 +13,7 @@
   <link href="features.css" rel="stylesheet">
   <link href="theme.css" rel="stylesheet">
   <link href="hero.css" rel="stylesheet">
+  <link href="chat.css" rel="stylesheet">
   <link href="mobile.css" rel="stylesheet">
 </head>
 <body>
@@ -270,7 +271,29 @@
     <p id="window-note"></p>
   </nav>
 
+  <section id="chat" class="panel" hidden aria-label="ask Helios">
+    <header>
+      <div><b>ask Helios</b><small id="chat-where"></small></div>
+      <button id="chat-x" class="x" type="button" aria-label="close the chat">×</button>
+    </header>
+    <div id="chat-log" aria-live="polite">
+      <div class="msg assistant">Hi! Pick a spot on the map, then ask me about the fire, smoke or burn scars you see there.</div>
+    </div>
+    <div id="chat-chips">
+      <button type="button">What's happening here?</button>
+      <button type="button">Is the smoke getting worse?</button>
+      <button type="button">How big is the burn scar?</button>
+      <button type="button">What's the difference between MODIS and VIIRS?</button>
+    </div>
+    <form id="chat-form">
+      <textarea id="chat-input" rows="1" maxlength="2000" placeholder="ask about this fire…" aria-label="your question"></textarea>
+      <button id="chat-send" type="submit" aria-label="send">→</button>
+    </form>
+    <p class="chat-note">AI answers can be wrong. In an emergency, follow local officials.</p>
+  </section>
+
   <div id="fabs">
+    <button id="chat-btn" class="fab fab-accent" type="button" aria-controls="chat" aria-expanded="false"><span>ask Helios AI</span></button>
     <button id="about-btn" class="fab" type="button" aria-haspopup="dialog"><span>about</span></button>
     <button id="help-btn" class="fab" type="button" aria-haspopup="dialog" title="replay the guided tour"><span>how it works</span></button>
     <a id="feedback-btn" class="fab fab-accent" href="https://forms.gle/YNwHiS4tBCrbS3LJ9" target="_blank" rel="noopener" title="share your feedback (opens a Google Form)"><span>give feedback</span></a>
@@ -568,6 +591,7 @@
   <script src="tour.js"></script>
   <script src="pages.js"></script>
   <script src="timelapse.js"></script>
+  <script src="chat.js"></script>
   <script type="module" src="passes.js"></script>
 </body>
 </html>
